@@ -7,49 +7,54 @@ import java.net.InetAddress;
 
 public class Client {
 
-	// TODO place this somewhere better
-	private static final String SEPARATOR = "_";
-
 	private static String hostName;
 	private static int port;
-	private static MessageType oper;
+	private static RequestType oper;
 	private static String plate, owner;
 
 	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
 
-		String message = oper.toString();
+		// build message
+		String request = oper.toString();
 
 		switch (oper) {
 		case LOOKUP:
-			message += SEPARATOR + plate;
+			request += Utils.SEPARATOR + plate;
 			break;
 
 		case REGISTER:
-			message += SEPARATOR + plate + SEPARATOR + owner;
+			request += Utils.SEPARATOR + plate + Utils.SEPARATOR + owner;
 			break;
 		}
 
+		// open socket
+		System.out.println("Opening socket...");
+		System.out.println("----------------------------");
 		DatagramSocket socket = new DatagramSocket();
 
 		// send request
-		byte[] buf = message.getBytes();
+		byte[] buf = request.getBytes();
 		InetAddress address = InetAddress.getByName(hostName);
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, address,
 				port);
 		socket.send(packet);
+		System.out.println("SENT: " + request);
 
-		// response
+		// receive response
 		packet = new DatagramPacket(buf, buf.length);
 		socket.receive(packet);
-		String received = new String(packet.getData(), 0, packet.getLength());
-		System.out.println("Received: " + received);
+		String response = new String(packet.getData(), 0, packet.getLength());
+		System.out.println("RECEIVED: " + response);
 
-		System.out.println("Closing socket");
+		// close socket
+		System.out.println("----------------------------");
+		System.out.println("Closing socket...");
 		socket.close();
 
-		System.out.println("Client terminated");
+		System.out.println("Client terminated.");
+		System.out.println("----------------------------");
 	}
 
 	private static boolean validArgs(String[] args) {
@@ -61,13 +66,14 @@ public class Client {
 			return false;
 		} else {
 			hostName = args[0];
+			System.out.println("----------------------------");
 			System.out.println("Host name: " + hostName);
 
 			port = Integer.parseInt(args[1]);
-			System.out.println("Starting client on port " + port);
+			System.out.println("Port: " + port);
 
 			String operStr = args[2];
-			if (MessageType.REGISTER.toString().equals(operStr)) {
+			if (RequestType.REGISTER.toString().equals(operStr)) {
 				if (args.length != 5) {
 					System.out.println("Usage:");
 					System.out
@@ -76,13 +82,12 @@ public class Client {
 					return false;
 				}
 
-				oper = MessageType.REGISTER;
+				oper = RequestType.REGISTER;
 				plate = args[3];
 				owner = args[4];
 
-				System.out.println("Registering plate " + plate + " of owner "
-						+ owner);
-			} else if (MessageType.LOOKUP.toString().equals(operStr)) {
+				System.out.println("Register " + plate + " " + owner);
+			} else if (RequestType.LOOKUP.toString().equals(operStr)) {
 				if (args.length != 4) {
 					System.out.println("Usage:");
 					System.out
@@ -91,10 +96,10 @@ public class Client {
 					return false;
 				}
 
-				oper = MessageType.LOOKUP;
+				oper = RequestType.LOOKUP;
 				plate = args[3];
 
-				System.out.println("Looking up plate " + plate);
+				System.out.println("Look up: " + plate);
 			} else {
 				System.out.println("Usage:");
 				System.out

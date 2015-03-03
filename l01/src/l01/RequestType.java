@@ -1,6 +1,6 @@
 package l01;
 
-public enum MessageType {
+public enum RequestType {
 	REGISTER("register"), LOOKUP("lookup");
 
 	private final String text;
@@ -8,7 +8,7 @@ public enum MessageType {
 	/**
 	 * @param text
 	 */
-	private MessageType(String text) {
+	private RequestType(String text) {
 		this.text = text;
 	}
 
