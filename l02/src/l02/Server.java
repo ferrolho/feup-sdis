@@ -4,24 +4,50 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.util.HashMap;
 
 public class Server {
 
-	private static int port;
+	private static int servicePort;
+	private static String multicastIP;
+	private static int multicastPort;
+
 	private static HashMap<String, String> plates;
 
 	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
 
+		// ////////////////////////
+		// join a Multicast group and send the group salutations
+		InetAddress address = InetAddress.getByName(multicastIP);
+		MulticastSocket socket = new MulticastSocket();
+
+		for (int i = 0; i < 5; i++) {
+			String msg = "Sent message no " + i;
+
+			DatagramPacket packet = new DatagramPacket(msg.getBytes(),
+					msg.getBytes().length, address, multicastPort);
+			socket.send(packet);
+
+			System.out.println("Server sent packet with msg: " + msg);
+			socket.setSoTimeout(1000);
+		}
+		
+		socket.close();
+		// ////////////////////////
+
+		System.out.println("Done");
+		
+		/*
 		// create database
 		plates = new HashMap<String, String>();
 
 		// open socket
 		System.out.println("Opening socket...");
 		System.out.println("----------------------------");
-		DatagramSocket socket = new DatagramSocket(port);
+		DatagramSocket socket = new DatagramSocket(servicePort);
 
 		boolean done = false;
 		while (!done) {
@@ -84,18 +110,27 @@ public class Server {
 
 		System.out.println("Server terminated.");
 		System.out.println("----------------------------");
+		*/
 	}
 
 	private static boolean validArgs(String[] args) {
-		if (args.length != 1) {
+		if (args.length != 3) {
 			System.out.println("Usage:");
-			System.out.println("\tjava Server <port>");
+			System.out
+					.println("\tjava Server <servicePort> <multicastIP> <multicastPort>");
 
 			return false;
 		} else {
 			System.out.println("----------------------------");
-			port = Integer.parseInt(args[0]);
-			System.out.println("Port: " + port);
+
+			servicePort = Integer.parseInt(args[0]);
+			System.out.println("Server port: " + servicePort);
+
+			multicastIP = args[1];
+			System.out.println("Multicast IP: " + multicastIP);
+
+			multicastPort = Integer.parseInt(args[2]);
+			System.out.println("Multicast port: " + multicastPort);
 
 			return true;
 		}

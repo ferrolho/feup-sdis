@@ -4,17 +4,45 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 public class Client {
 
-	private static String hostName;
-	private static int port;
+	private static String multicastIP, serviceIP;
+	private static int multicastPort, servicePort;
 	private static RequestType oper;
 	private static String plate, owner;
 
 	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
+
+		// ////////////////////////
+		// join a Multicast group and send the group salutations
+		InetAddress group = InetAddress.getByName(multicastIP);
+		MulticastSocket socket = new MulticastSocket(multicastPort);
+		socket.joinGroup(group);
+
+		byte[] buf = new byte[256];
+
+		boolean done = false;
+		while (!done) {
+			// Receive the information and print it.
+			DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
+			socket.receive(msgPacket);
+
+			String msg = new String(buf, 0, buf.length);
+			System.out.println("Socket 1 received msg: " + msg);
+		}
+
+		// OK, I'm done talking - leave the group...
+		socket.leaveGroup(group);
+		socket.close();
+		// ////////////////////////
+
+		/*
+		System.out.println("multicast: " + multicastIP + " " + multicastPort
+				+ ": " + serviceIP + " " + servicePort);
 
 		// build message
 		String request = oper.toString();
@@ -36,9 +64,9 @@ public class Client {
 
 		// send request
 		byte[] buf = request.getBytes();
-		InetAddress address = InetAddress.getByName(hostName);
+		InetAddress address = InetAddress.getByName(multicastIP);
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, address,
-				port);
+				multicastPort);
 		socket.send(packet);
 		System.out.println("SENT: " + request);
 
@@ -55,29 +83,31 @@ public class Client {
 
 		System.out.println("Client terminated.");
 		System.out.println("----------------------------");
+		*/
 	}
 
 	private static boolean validArgs(String[] args) {
 		if (args.length < 3) {
 			System.out.println("Usage:");
 			System.out
-					.println("\tjava Client <hostname> <port> <oper> <opnd>*");
+					.println("\tjava Client <multicastIP> <multicastPort> <oper> <opnd>*");
 
 			return false;
 		} else {
-			hostName = args[0];
 			System.out.println("----------------------------");
-			System.out.println("Host name: " + hostName);
 
-			port = Integer.parseInt(args[1]);
-			System.out.println("Port: " + port);
+			multicastIP = args[0];
+			System.out.println("Host name: " + multicastIP);
+
+			multicastPort = Integer.parseInt(args[1]);
+			System.out.println("Port: " + multicastPort);
 
 			String operStr = args[2];
 			if (RequestType.REGISTER.toString().equals(operStr)) {
 				if (args.length != 5) {
 					System.out.println("Usage:");
 					System.out
-							.println("\tjava Client <hostname> <port> register <plate number> <owner name>");
+							.println("\tjava Client <multicastIP> <multicastPort> register <plate number> <owner name>");
 
 					return false;
 				}
@@ -91,7 +121,7 @@ public class Client {
 				if (args.length != 4) {
 					System.out.println("Usage:");
 					System.out
-							.println("\tjava Client <hostname> <port> lookup <plate number>");
+							.println("\tjava Client <multicastIP> <multicastPort> lookup <plate number>");
 
 					return false;
 				}
