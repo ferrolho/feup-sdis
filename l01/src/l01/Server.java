@@ -34,7 +34,7 @@ public class Server {
 			System.out.println("RECEIVED: " + request);
 
 			// process request
-			String[] tokens = request.split("_");
+			String[] tokens = request.split(Utils.SEPARATOR);
 			RequestType oper = RequestType.REGISTER.toString()
 					.equals(tokens[0]) ? RequestType.REGISTER
 					: RequestType.LOOKUP;
