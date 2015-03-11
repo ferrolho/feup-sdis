@@ -1,9 +1,10 @@
 package l03;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class Client {
 
@@ -30,27 +31,31 @@ public class Client {
 		}
 
 		// open socket
-		System.out.println("Opening socket...");
+		Socket socket = new Socket(hostName, port);
+
+		// open streams
+		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				socket.getInputStream()));
+
 		System.out.println("----------------------------");
-		DatagramSocket socket = new DatagramSocket();
 
 		// send request
-		byte[] buf = request.getBytes();
-		InetAddress address = InetAddress.getByName(hostName);
-		DatagramPacket packet = new DatagramPacket(buf, buf.length, address,
-				port);
-		socket.send(packet);
+		out.println(request);
 		System.out.print(request + " :: ");
 
 		// receive response
-		packet = new DatagramPacket(buf, buf.length);
-		socket.receive(packet);
-		String response = new String(packet.getData(), 0, packet.getLength());
+		String response = in.readLine();
 		System.out.println(response);
+		System.out.println();
+
+		System.out.println("----------------------------");
+
+		// close streams
+		out.close();
+		in.close();
 
 		// close socket
-		System.out.println("----------------------------");
-		System.out.println("Closing socket...");
 		socket.close();
 
 		System.out.println("Client terminated.");
