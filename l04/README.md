@@ -2,13 +2,18 @@
 
 ## Server
 
-Open a Terminal by pressing **CTRL+ALT+T**, and run the server at a chosen port:
+- Open a Terminal by pressing <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>T</kbd>
 
-**Usage:** java l03.Server \<port\>
+- Start the RMI registry
+	```
+	rmiregistry &
+	```
 
-**Example:** ```java l03.Server 8080```
+**Usage:** java Server <remote_object_name>
 
-Press **CTRL+C** to stop the server.
+**Example:** ```java l04/Server test```
+
+Press <kbd>CTRL</kbd> + <kbd>C</kbd> to stop the server.
 
 
 ## Client
@@ -17,20 +22,13 @@ Open a Terminal and send a request to the server:
 
 ### Register a plate
 
-**Usage:** java l03.Client \<serverIP\> \<port\> register \<plate\> \<owner\>
+**Usage:** java Client <host_name> <remote_object_name> register <opnd>*
 
-**Example:** ```java l03.Client 192.168.1.66 8080 register 11-22-33 Rafiki```
+**Example:** ```java l04/Client localhost test register 11-22-AA ferrolho```
 
-To which the server will respond:
-- 1 (size of the database), if the plate was added to the database;
-- -1, if the plate already exists in the database.
 
 ### Lookup a plate
 
-**Usage:** java l03.Client \<serverIP\> \<port\> lookup \<plate\>
+**Usage:** java Client <host_name> <remote_object_name> lookup <opnd>*
 
-**Example:** ```java l03.Client 192.168.1.66 8080 lookup 11-22-33```
-
-To which the server will respond:
-- Rafiki (plate owner), if the plate was found;
-- NOT_FOUND, if the plate was not found.
+**Example:** ```java l04/Client localhost test lookup 11-22-AA```
