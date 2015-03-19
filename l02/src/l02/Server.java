@@ -2,16 +2,19 @@ package l02;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 
 public class Server {
 
+	private static String serviceAddressStr;
 	private static int servicePort;
 
-	private static String multicastIP;
+	private static String multicastAddressStr;
 	private static int multicastPort;
 
 	private static HashMap<String, String> plates;
@@ -23,14 +26,18 @@ public class Server {
 		// create database
 		plates = new HashMap<String, String>();
 
-		// open socket
-		MulticastSocket socket = new MulticastSocket();
-		socket.setSoTimeout(1000);
-		socket.setTimeToLive(1);
+		// open multicast socket
+		MulticastSocket multicastSocket = new MulticastSocket();
+		multicastSocket.setTimeToLive(1);
 
-		// join a multicast group and send the group salutations
-		InetAddress address = InetAddress.getByName(multicastIP);
+		InetAddress multicastAddress = InetAddress
+				.getByName(multicastAddressStr);
 
+		// open server socket
+		DatagramSocket serverSocket = new DatagramSocket(servicePort);
+		serverSocket.setSoTimeout(1000);
+
+		// 1s interval advertisement control variables
 		long elapsedTime = 1000;
 		long prevTime = System.currentTimeMillis();
 
@@ -40,8 +47,8 @@ public class Server {
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
 			try {
-				System.out.println("WAITING FOR REQUEST...");
-				socket.receive(packet);
+				System.out.print("WAITING FOR REQUEST... ");
+				serverSocket.receive(packet);
 				String request = new String(packet.getData(), 0,
 						packet.getLength());
 				System.out.println("RECEIVED: " + request);
@@ -59,7 +66,7 @@ public class Server {
 						owner = plates.get(plate);
 						response = owner;
 					} else {
-						response = "NOT_FOUND";
+						response = "ERROR";
 					}
 
 					break;
@@ -86,9 +93,9 @@ public class Server {
 				InetAddress cliAddress = packet.getAddress();
 				int port = packet.getPort();
 				packet = new DatagramPacket(buf, buf.length, cliAddress, port);
-				socket.send(packet);
+				serverSocket.send(packet);
 			} catch (SocketTimeoutException e) {
-				System.out.println("TIMEOUT REACHED! " + e);
+				System.out.println(e);
 			}
 
 			// BEGIN --- service advertisement every 1 second
@@ -100,28 +107,28 @@ public class Server {
 			if (elapsedTime >= 1000) {
 				elapsedTime -= 1000;
 
-				String msg = "localhost " + servicePort;
-				System.out.println(msg);
+				String advertisement = serviceAddressStr + ":"
+						+ Integer.toString(servicePort);
+				packet = new DatagramPacket(advertisement.getBytes(),
+						advertisement.getBytes().length, multicastAddress,
+						multicastPort);
+				multicastSocket.send(packet);
 
-				packet = new DatagramPacket(msg.getBytes(),
-						msg.getBytes().length, address, multicastPort);
-				socket.send(packet);
-
-				System.out.println("Server sent packet with msg: " + msg);
+				System.out.println("multicast: " + multicastAddressStr + " "
+						+ multicastPort + ": " + serviceAddressStr + " "
+						+ servicePort);
 			}
 			// END ---service advertisement
 		}
 
-		// close socket
-		System.out.println("----------------------------");
-		System.out.println("Closing socket...");
-		socket.close();
+		// close server socket
+		serverSocket.close();
 
-		System.out.println("Server terminated.");
-		System.out.println("----------------------------");
+		// close multicast socket
+		multicastSocket.close();
 	}
 
-	private static boolean validArgs(String[] args) {
+	private static boolean validArgs(String[] args) throws UnknownHostException {
 		if (args.length != 3) {
 			System.out.println("Usage:");
 			System.out
@@ -129,16 +136,11 @@ public class Server {
 
 			return false;
 		} else {
-			System.out.println("----------------------------");
-
+			serviceAddressStr = Utils.getIPv4();
 			servicePort = Integer.parseInt(args[0]);
-			System.out.println("Server port: " + servicePort);
 
-			multicastIP = args[1];
-			System.out.println("Multicast IP: " + multicastIP);
-
+			multicastAddressStr = args[1];
 			multicastPort = Integer.parseInt(args[2]);
-			System.out.println("Multicast port: " + multicastPort);
 
 			return true;
 		}

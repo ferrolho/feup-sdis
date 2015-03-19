@@ -2,13 +2,18 @@ package l02;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 public class Client {
 
-	private static String multicastIP, serviceIP;
-	private static int multicastPort, servicePort;
+	private static String serviceAddressStr;
+	private static int servicePort;
+
+	private static String multicastAddressStr;
+	private static int multicastPort;
+
 	private static RequestType oper;
 	private static String plate, owner;
 
@@ -16,61 +21,57 @@ public class Client {
 		if (!validArgs(args))
 			return;
 
-		// ////////////////////////
-		// join a Multicast group and send the group salutations
-		InetAddress group = InetAddress.getByName(multicastIP);
-		MulticastSocket socket = new MulticastSocket(multicastPort);
-		socket.joinGroup(group);
+		InetAddress group = InetAddress.getByName(multicastAddressStr);
+		MulticastSocket multicastSocket = new MulticastSocket(multicastPort);
+		multicastSocket.joinGroup(group);
 
 		byte[] buf = new byte[256];
+		DatagramPacket multicastPacket = new DatagramPacket(buf, buf.length);
+		multicastSocket.receive(multicastPacket);
 
-		boolean done = false;
-		while (!done) {
-			// Receive the information and print it.
-			DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
-			socket.receive(msgPacket);
+		String msg = new String(multicastPacket.getData());
+		String[] parts = msg.split(":");
+		serviceAddressStr = parts[0];
+		servicePort = Integer.parseInt(parts[1].replaceAll("[^\\d.]", ""));
 
-			String msg = new String(buf, 0, buf.length);
-			System.out.println("Socket 1 received msg: " + msg);
+		System.out.println("multicast: " + multicastAddressStr + " "
+				+ multicastPort + ": " + serviceAddressStr + " " + servicePort);
+
+		// build message
+		String request = oper.toString();
+
+		switch (oper) {
+		case LOOKUP:
+			request += Utils.SEPARATOR + plate;
+			break;
+
+		case REGISTER:
+			request += Utils.SEPARATOR + plate + Utils.SEPARATOR + owner;
+			break;
 		}
 
-		// OK, I'm done talking - leave the group...
-		socket.leaveGroup(group);
-		socket.close();
-		// ////////////////////////
+		// open socket
+		DatagramSocket socket = new DatagramSocket();
 
-		/*
-		 * System.out.println("multicast: " + multicastIP + " " + multicastPort
-		 * + ": " + serviceIP + " " + servicePort);
-		 * 
-		 * // build message String request = oper.toString();
-		 * 
-		 * switch (oper) { case LOOKUP: request += Utils.SEPARATOR + plate;
-		 * break;
-		 * 
-		 * case REGISTER: request += Utils.SEPARATOR + plate + Utils.SEPARATOR +
-		 * owner; break; }
-		 * 
-		 * // open socket System.out.println("Opening socket...");
-		 * System.out.println("----------------------------"); DatagramSocket
-		 * socket = new DatagramSocket();
-		 * 
-		 * // send request byte[] buf = request.getBytes(); InetAddress address
-		 * = InetAddress.getByName(multicastIP); DatagramPacket packet = new
-		 * DatagramPacket(buf, buf.length, address, multicastPort);
-		 * socket.send(packet); System.out.println("SENT: " + request);
-		 * 
-		 * // receive response packet = new DatagramPacket(buf, buf.length);
-		 * socket.receive(packet); String response = new
-		 * String(packet.getData(), 0, packet.getLength());
-		 * System.out.println("RECEIVED: " + response);
-		 * 
-		 * // close socket System.out.println("----------------------------");
-		 * System.out.println("Closing socket..."); socket.close();
-		 * 
-		 * System.out.println("Client terminated.");
-		 * System.out.println("----------------------------");
-		 */
+		// send request
+		buf = request.getBytes();
+		InetAddress address = InetAddress.getByName(serviceAddressStr);
+		DatagramPacket packet = new DatagramPacket(buf, buf.length, address,
+				servicePort);
+		socket.send(packet);
+		System.out.println("SENT: " + request);
+
+		// receive response
+		packet = new DatagramPacket(buf, buf.length);
+		socket.receive(packet);
+		String response = new String(packet.getData(), 0, packet.getLength());
+		System.out.println("RECEIVED: " + response);
+
+		// close socket
+		socket.close();
+
+		multicastSocket.leaveGroup(group);
+		multicastSocket.close();
 	}
 
 	private static boolean validArgs(String[] args) {
@@ -81,13 +82,8 @@ public class Client {
 
 			return false;
 		} else {
-			System.out.println("----------------------------");
-
-			multicastIP = args[0];
-			System.out.println("Host name: " + multicastIP);
-
+			multicastAddressStr = args[0];
 			multicastPort = Integer.parseInt(args[1]);
-			System.out.println("Port: " + multicastPort);
 
 			String operStr = args[2];
 			if (RequestType.REGISTER.toString().equals(operStr)) {
@@ -102,8 +98,6 @@ public class Client {
 				oper = RequestType.REGISTER;
 				plate = args[3];
 				owner = args[4];
-
-				System.out.println("Register " + plate + " " + owner);
 			} else if (RequestType.LOOKUP.toString().equals(operStr)) {
 				if (args.length != 4) {
 					System.out.println("Usage:");
@@ -115,8 +109,6 @@ public class Client {
 
 				oper = RequestType.LOOKUP;
 				plate = args[3];
-
-				System.out.println("Look up: " + plate);
 			} else {
 				System.out.println("Usage:");
 				System.out
