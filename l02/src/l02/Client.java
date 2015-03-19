@@ -2,7 +2,6 @@ package l02;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
@@ -41,49 +40,37 @@ public class Client {
 		// ////////////////////////
 
 		/*
-		System.out.println("multicast: " + multicastIP + " " + multicastPort
-				+ ": " + serviceIP + " " + servicePort);
-
-		// build message
-		String request = oper.toString();
-
-		switch (oper) {
-		case LOOKUP:
-			request += Utils.SEPARATOR + plate;
-			break;
-
-		case REGISTER:
-			request += Utils.SEPARATOR + plate + Utils.SEPARATOR + owner;
-			break;
-		}
-
-		// open socket
-		System.out.println("Opening socket...");
-		System.out.println("----------------------------");
-		DatagramSocket socket = new DatagramSocket();
-
-		// send request
-		byte[] buf = request.getBytes();
-		InetAddress address = InetAddress.getByName(multicastIP);
-		DatagramPacket packet = new DatagramPacket(buf, buf.length, address,
-				multicastPort);
-		socket.send(packet);
-		System.out.println("SENT: " + request);
-
-		// receive response
-		packet = new DatagramPacket(buf, buf.length);
-		socket.receive(packet);
-		String response = new String(packet.getData(), 0, packet.getLength());
-		System.out.println("RECEIVED: " + response);
-
-		// close socket
-		System.out.println("----------------------------");
-		System.out.println("Closing socket...");
-		socket.close();
-
-		System.out.println("Client terminated.");
-		System.out.println("----------------------------");
-		*/
+		 * System.out.println("multicast: " + multicastIP + " " + multicastPort
+		 * + ": " + serviceIP + " " + servicePort);
+		 * 
+		 * // build message String request = oper.toString();
+		 * 
+		 * switch (oper) { case LOOKUP: request += Utils.SEPARATOR + plate;
+		 * break;
+		 * 
+		 * case REGISTER: request += Utils.SEPARATOR + plate + Utils.SEPARATOR +
+		 * owner; break; }
+		 * 
+		 * // open socket System.out.println("Opening socket...");
+		 * System.out.println("----------------------------"); DatagramSocket
+		 * socket = new DatagramSocket();
+		 * 
+		 * // send request byte[] buf = request.getBytes(); InetAddress address
+		 * = InetAddress.getByName(multicastIP); DatagramPacket packet = new
+		 * DatagramPacket(buf, buf.length, address, multicastPort);
+		 * socket.send(packet); System.out.println("SENT: " + request);
+		 * 
+		 * // receive response packet = new DatagramPacket(buf, buf.length);
+		 * socket.receive(packet); String response = new
+		 * String(packet.getData(), 0, packet.getLength());
+		 * System.out.println("RECEIVED: " + response);
+		 * 
+		 * // close socket System.out.println("----------------------------");
+		 * System.out.println("Closing socket..."); socket.close();
+		 * 
+		 * System.out.println("Client terminated.");
+		 * System.out.println("----------------------------");
+		 */
 	}
 
 	private static boolean validArgs(String[] args) {
