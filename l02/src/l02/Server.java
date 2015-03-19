@@ -24,8 +24,6 @@ public class Server {
 		plates = new HashMap<String, String>();
 
 		// open socket
-		System.out.println("Opening socket...");
-		System.out.println("----------------------------");
 		MulticastSocket socket = new MulticastSocket();
 		socket.setSoTimeout(1000);
 		socket.setTimeToLive(1);
@@ -93,7 +91,7 @@ public class Server {
 				System.out.println("TIMEOUT REACHED! " + e);
 			}
 
-			// --- service advertisement every 1 second
+			// BEGIN --- service advertisement every 1 second
 			long currentTime = System.currentTimeMillis();
 
 			elapsedTime += currentTime - prevTime;
@@ -111,6 +109,7 @@ public class Server {
 
 				System.out.println("Server sent packet with msg: " + msg);
 			}
+			// END ---service advertisement
 		}
 
 		// close socket
