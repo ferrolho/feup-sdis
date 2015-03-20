@@ -6,7 +6,7 @@ Open a Terminal by pressing <kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>T</kbd>
 
 Start the RMI registry: ```rmiregistry &```
 
-**Usage:** java Server <remote_object_name>
+**Usage:** java Server \<remote_object_name\>
 
 **Example:** ```java l04/Server test```
 

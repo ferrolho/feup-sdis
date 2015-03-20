@@ -59,13 +59,13 @@ public class Client {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length, address,
 				servicePort);
 		socket.send(packet);
-		System.out.println("SENT: " + request);
 
 		// receive response
 		packet = new DatagramPacket(buf, buf.length);
 		socket.receive(packet);
 		String response = new String(packet.getData(), 0, packet.getLength());
-		System.out.println("RECEIVED: " + response);
+
+		System.out.println(request + " :: " + response);
 
 		// close socket
 		socket.close();

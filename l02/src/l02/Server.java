@@ -47,11 +47,10 @@ public class Server {
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
 			try {
-				System.out.print("WAITING FOR REQUEST... ");
+				// receive request
 				serverSocket.receive(packet);
 				String request = new String(packet.getData(), 0,
 						packet.getLength());
-				System.out.println("RECEIVED: " + request);
 
 				// process request
 				String[] tokens = request.split(Utils.SEPARATOR);
@@ -88,14 +87,15 @@ public class Server {
 				}
 
 				// send response
-				System.out.println("SENT: " + response);
 				buf = response.getBytes();
 				InetAddress cliAddress = packet.getAddress();
 				int port = packet.getPort();
 				packet = new DatagramPacket(buf, buf.length, cliAddress, port);
 				serverSocket.send(packet);
+
+				System.out.println(request + " :: " + response);
 			} catch (SocketTimeoutException e) {
-				System.out.println(e);
+				// System.out.println(e);
 			}
 
 			// BEGIN --- service advertisement every 1 second
