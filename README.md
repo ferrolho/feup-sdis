@@ -1,2 +1,3 @@
-# feup-sdis
+# FEUP-SDIS
+
 A repository to host SDIS projects
