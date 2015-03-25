@@ -2,6 +2,6 @@ package service;
 
 import java.rmi.Remote;
 
-public interface Service extends Remote {
+public interface RMIService extends Remote {
 
 }
