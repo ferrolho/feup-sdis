@@ -1,8 +1,6 @@
 package service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -53,55 +51,7 @@ public class Peer {
 				mdrAddress, mdrPort);
 		mdrSocket.send(packet);
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-		boolean done = false;
-		while (!done) {
-			System.out.print("$ ");
-			String command = br.readLine();
-
-			String[] commandTokens = command.split("\\s+");
-			// for (int i = 0; i < commandTokens.length; i++)
-			// System.out.println(i + ": " + commandTokens[i]);
-
-			switch (commandTokens[0]) {
-			case Commands.QUIT:
-			case Commands.QUIT_ALT:
-				done = true;
-				break;
-
-			case Commands.BACKUP:
-				System.out.println("back up a file");
-				break;
-
-			case Commands.RESTORE:
-				System.out.println("restore a file");
-				break;
-
-			case Commands.DELETE:
-				System.out.println("delete a file");
-				break;
-
-			case Commands.FREE:
-				System.out.println("free some disk space");
-				break;
-
-			case Commands.HELP:
-			case Commands.HELP_ALT:
-				printHelp();
-				break;
-
-			default:
-				System.out.println("Unknown command.");
-				break;
-			}
-
-			/*
-			 * System.out.print("Enter Integer:"); try { int i =
-			 * Integer.parseInt(br.readLine()); } catch (NumberFormatException
-			 * nfe) { System.err.println("Invalid Format!"); }
-			 */
-		}
+		// repl was here
 
 		mcSocket.close();
 		mdbSocket.close();
@@ -139,38 +89,6 @@ public class Peer {
 
 			return true;
 		}
-	}
-
-	private static void printHelp() {
-		System.out.println("Distributed backup service, version 1.0-alpha.");
-		System.out.println("These shell commands are defined internally.");
-		System.out.println("Type 'help' to see this list.");
-		System.out.println();
-
-		System.out.println(Commands.BACKUP);
-		System.out.println("\tback up a file with a given replication degree");
-		System.out.println();
-
-		System.out.println(Commands.DELETE);
-		System.out.println("\tdelete a file that was previously replicated");
-		System.out.println();
-
-		System.out.println(Commands.FREE);
-		System.out
-				.println("\tfree some disk space that is being used to store copies of chunks backed up by remote peers");
-		System.out.println();
-
-		System.out.println(Commands.HELP + ", " + Commands.HELP_ALT);
-		System.out.println("\tsee this list");
-		System.out.println();
-
-		System.out.println(Commands.QUIT + ", " + Commands.QUIT_ALT);
-		System.out.println("\tquit this application");
-		System.out.println();
-
-		System.out.println(Commands.RESTORE);
-		System.out.println("\trestore a file that was previously replicated");
-		System.out.println();
 	}
 
 }
