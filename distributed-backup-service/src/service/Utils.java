@@ -7,6 +7,12 @@ public class Utils {
 	public static final int CR = 0xD;
 	public static final int LF = 0xA;
 
+	public static final void printError(String msg) {
+		System.err.println();
+		System.err.println("ERROR: " + msg);
+		System.err.println();
+	}
+
 	public static String sha256(String bitString) {
 		try {
 			MessageDigest sha = MessageDigest.getInstance("SHA-256");
