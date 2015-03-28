@@ -2,6 +2,8 @@
 
 ## Server
 
+Start the RMI registry: ```rmiregistry &```
+
 Usage: ```java Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>```
 
 Example: ```java service.Peer 224.0.0.0 8000 224.0.0.0 8001 224.0.0.0 8002```

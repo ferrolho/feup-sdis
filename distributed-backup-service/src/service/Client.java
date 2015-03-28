@@ -71,14 +71,6 @@ public class Client {
 				System.out.println("restore a file");
 				break;
 
-			case "shaTest":
-				String teste = commandTokens[1];
-
-				System.out.println("encrypting " + teste);
-				System.out.println(Utils.sha256(teste));
-
-				break;
-
 			default:
 				System.out.println("Unknown command.");
 				break;

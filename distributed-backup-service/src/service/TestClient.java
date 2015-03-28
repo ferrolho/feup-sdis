@@ -1,8 +1,12 @@
 package service;
 
 import java.io.File;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-public class TestClient implements RMIService {
+public class TestClient {
 
 	private static String command;
 	private static File file;
@@ -12,7 +16,40 @@ public class TestClient implements RMIService {
 		if (!validArgs(args))
 			return;
 
-		System.out.println("GOOD");
+		try {
+			String hostname = "localhost";
+			String remoteObjectName = "test";
+
+			Registry registry = LocateRegistry.getRegistry(hostname);
+
+			RMIService server = (RMIService) registry.lookup(remoteObjectName);
+
+			switch (command) {
+			case Commands.BACKUP:
+				server.backup(file, replicationDegree);
+				break;
+
+			case Commands.DELETE:
+				server.delete(file);
+				break;
+
+			case Commands.FREE:
+				server.free(kbyte);
+				break;
+
+			case Commands.RESTORE:
+				server.restore(file);
+				break;
+
+			default:
+				break;
+			}
+		} catch (RemoteException e) {
+			System.err.println("Client exception: " + e.toString());
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static boolean validArgs(String[] args) {
@@ -137,30 +174,6 @@ public class TestClient implements RMIService {
 		}
 
 		return true;
-	}
-
-	@Override
-	public void backup(String file, int replicationDegree) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void restore(String file) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void delete(String file) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void free(int kbytes) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

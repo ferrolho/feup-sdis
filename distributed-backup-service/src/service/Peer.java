@@ -1,12 +1,19 @@
 package service;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
-public class Peer {
+public class Peer implements RMIService {
+
+	private static String remoteObjectName = "test";
 
 	private static InetAddress mcAddress;
 	private static int mcPort;
@@ -20,6 +27,16 @@ public class Peer {
 	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
+
+		Peer peer = new Peer();
+		RMIService rmiService = (RMIService) UnicastRemoteObject.exportObject(
+				peer, 0);
+
+		// Bind the remote object's stub in the registry
+		Registry registry = LocateRegistry.getRegistry();
+		registry.rebind(remoteObjectName, rmiService);
+
+		System.out.println("- Server ready -");
 
 		// multicast control channel
 		MulticastSocket mcSocket = new MulticastSocket();
@@ -89,6 +106,29 @@ public class Peer {
 
 			return true;
 		}
+	}
+
+	@Override
+	public void backup(File file, int replicationDegree) throws RemoteException {
+		System.out.println("backing up " + file.getName() + " "
+				+ replicationDegree);
+
+		System.out.println("fileID: " + Utils.getFileID(file));
+	}
+
+	@Override
+	public void delete(File file) throws RemoteException {
+		System.out.println("deleting " + file.getName());
+	}
+
+	@Override
+	public void free(int kbyte) throws RemoteException {
+		System.out.println("freeing " + kbyte + "kbyte");
+	}
+
+	@Override
+	public void restore(File file) throws RemoteException {
+		System.out.println("restoring " + file.getName());
 	}
 
 }
