@@ -11,7 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class Peer implements RMIService {
+public class Peer implements Protocol, RMIService {
 
 	private static String remoteObjectName = "test";
 
@@ -109,11 +109,57 @@ public class Peer implements RMIService {
 	}
 
 	@Override
-	public void backup(File file, int replicationDegree) throws RemoteException {
-		System.out.println("backing up " + file.getName() + " "
-				+ replicationDegree);
+	public void putChunk(Chunk chunk) {
+		String msg = "PUTCHUNK " + Protocol.VERSION;
 
-		System.out.println("fileID: " + Utils.getFileID(file));
+		msg += " " + chunk.getFileID();
+		msg += " " + chunk.getChunkNo();
+		msg += " " + chunk.getReplicationDegree();
+		msg += " " + Protocol.CRLF;
+
+		msg += Protocol.CRLF;
+
+		msg += chunk.getData();
+
+		System.out.println(msg);
+	}
+
+	@Override
+	public void confirmChunk() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void getChunk() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void sendChunk() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteChunk() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void removeChunk() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void backup(File file, int replicationDegree) throws RemoteException {
+		Chunk chunk = new Chunk(Utils.getFileID(file), 0, replicationDegree,
+				Utils.getFileData(file));
+
+		putChunk(chunk);
 	}
 
 	@Override

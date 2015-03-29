@@ -10,9 +10,6 @@ import java.security.MessageDigest;
 
 public class Utils {
 
-	public static final int CR = 0xD;
-	public static final int LF = 0xA;
-
 	public static final void printError(String msg) {
 		System.err.println();
 		System.err.println("ERROR: " + msg);
@@ -40,6 +37,21 @@ public class Utils {
 		}
 
 		return owner;
+	}
+
+	public static final String getFileData(File file) {
+		String data = "";
+
+		try {
+			Path path = Paths.get(file.getName());
+			byte[] bytes = Files.readAllBytes(path);
+
+			data = new String(bytes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return data;
 	}
 
 	private static final String sha256(String str) {
