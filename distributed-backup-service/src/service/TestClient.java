@@ -1,7 +1,7 @@
 package service;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -9,22 +9,25 @@ import java.rmi.registry.Registry;
 
 public class TestClient {
 
+	private static String hostname, remoteObjectName;
+
 	private static String command;
 	private static File file;
 	private static int replicationDegree, kbyte;
 
-	public static void main(String[] args) {
-		byte[] bytes = "PUTCHUNK 1.0 ".getBytes(StandardCharsets.UTF_8);
-		for (byte b : bytes)
-			System.out.print(Integer.toHexString(b));
-		System.out.println();
-
+	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
 
+		/*
+		 * byte[] bytes = "PUTCHUNK 1.0 ".getBytes(StandardCharsets.UTF_8); for
+		 * (byte b : bytes) System.out.print(Integer.toHexString(b));
+		 * System.out.println();
+		 */
+
 		try {
-			String hostname = "localhost";
-			String remoteObjectName = "test";
+			hostname = "localhost";
+			remoteObjectName = "test";
 
 			Registry registry = LocateRegistry.getRegistry(hostname);
 

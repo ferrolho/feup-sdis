@@ -15,12 +15,6 @@ public class Commands {
 	public static final String FREE_USAGE = Commands.FREE + " <kbyte>";
 	public static final int FREE_NUM_ARGS = 2;
 
-	public static final String HELP = "help";
-	public static final String HELP_ALT = "h";
-
-	public static final String QUIT = "quit";
-	public static final String QUIT_ALT = "q";
-
 	public static final String RESTORE = "restore";
 	public static final String RESTORE_USAGE = Commands.RESTORE + " <file>";
 	public static final int RESTORE_NUM_ARGS = 2;

@@ -7,12 +7,12 @@ public enum MessageType {
 
 	private final String value;
 
-	private MessageType(String value) {
+	private MessageType(final String value) {
 		this.value = value;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return value;
 	}
 

@@ -12,7 +12,7 @@ public interface Protocol {
 
 	void putChunk(Chunk chunk);
 
-	void confirmChunk();
+	void storeChunk();
 
 	// 3.3 Chunk restore protocol
 

@@ -1,26 +1,30 @@
 package service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class Peer implements Protocol, RMIService {
 
 	private static String remoteObjectName = "test";
 
+	private static MulticastSocket mcSocket;
 	private static InetAddress mcAddress;
 	private static int mcPort;
 
+	private static MulticastSocket mdbSocket;
 	private static InetAddress mdbAddress;
 	private static int mdbPort;
 
+	private static MulticastSocket mdrSocket;
 	private static InetAddress mdrAddress;
 	private static int mdrPort;
 
@@ -28,47 +32,110 @@ public class Peer implements Protocol, RMIService {
 		if (!validArgs(args))
 			return;
 
-		Peer peer = new Peer();
-		RMIService rmiService = (RMIService) UnicastRemoteObject.exportObject(
-				peer, 0);
-
-		// Bind the remote object's stub in the registry
-		Registry registry = LocateRegistry.getRegistry();
-		registry.rebind(remoteObjectName, rmiService);
+		initRMI();
 
 		System.out.println("- Server ready -");
 
 		// multicast control channel
-		MulticastSocket mcSocket = new MulticastSocket();
+		mcSocket = new MulticastSocket(mcPort);
+		mcSocket.joinGroup(mcAddress);
 		mcSocket.setTimeToLive(1);
 
 		// multicast data backup channel
-		MulticastSocket mdbSocket = new MulticastSocket();
+		mdbSocket = new MulticastSocket(mdbPort);
+		mdbSocket.joinGroup(mdbAddress);
 		mdbSocket.setTimeToLive(1);
 
 		// multicast data restore channel
-		MulticastSocket mdrSocket = new MulticastSocket();
+		mdrSocket = new MulticastSocket(mdrPort);
+		mdrSocket.joinGroup(mdrAddress);
 		mdrSocket.setTimeToLive(1);
 
-		String test;
-		DatagramPacket packet;
+		boolean done = false;
+		while (!done) {
+			byte[] buf = new byte[256];
+			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
-		test = "mc test";
-		packet = new DatagramPacket(test.getBytes(), test.getBytes().length,
-				mcAddress, mcPort);
-		mcSocket.send(packet);
+			try {
+				// receive request
+				mdbSocket.receive(packet);
+				String request = new String(packet.getData(), 0,
+						packet.getLength());
 
-		test = "mdb test";
-		packet = new DatagramPacket(test.getBytes(), test.getBytes().length,
-				mdbAddress, mdbPort);
-		mdbSocket.send(packet);
+				// process request
+				String[] requestTokens = request.split("[" + Protocol.CRLF
+						+ "]+");
 
-		test = "mdr test";
-		packet = new DatagramPacket(test.getBytes(), test.getBytes().length,
-				mdrAddress, mdrPort);
-		mdrSocket.send(packet);
+				String header = requestTokens[0];
+				String[] headerTokens = header.split("[ ]+");
 
-		// repl was here
+				MessageType messageType = MessageType.valueOf(headerTokens[0]);
+
+				switch (messageType) {
+
+				// 3.2 Chunk backup subprotocol
+
+				case PUTCHUNK:
+					String body = requestTokens[1];
+
+					Chunk chunk = new Chunk(headerTokens[2],
+							Integer.parseInt(headerTokens[3]),
+							Integer.parseInt(headerTokens[4]), body);
+
+					byte[] bytes = body.getBytes();
+
+					FileOutputStream out = new FileOutputStream(
+							chunk.getFileID());
+					out.write(bytes);
+					out.close();
+
+					String msg = MessageType.STORED + " " + Protocol.VERSION;
+
+					msg += " " + chunk.getFileID();
+					msg += " " + chunk.getChunkNo();
+					msg += " " + Protocol.CRLF;
+					msg += Protocol.CRLF;
+
+					packet = new DatagramPacket(msg.getBytes(),
+							msg.getBytes().length, mcAddress, mcPort);
+
+					try {
+						mcSocket.send(packet);
+						System.out.println(msg);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					break;
+
+				case STORED:
+					break;
+
+				// 3.3 Chunk restore protocol
+
+				case GETCHUNK:
+					break;
+
+				case CHUNK:
+					break;
+
+				// 3.4 File deletion subprotocol
+
+				case DELETE:
+					break;
+
+				// 3.5 Space reclaiming subprotocol
+
+				case REMOVED:
+					break;
+
+				default:
+					break;
+				}
+			} catch (SocketTimeoutException e) {
+				// System.out.println(e);
+			}
+		}
 
 		mcSocket.close();
 		mdbSocket.close();
@@ -108,10 +175,25 @@ public class Peer implements Protocol, RMIService {
 		}
 	}
 
+	private static void initRMI() {
+		Peer peer = new Peer();
+
+		try {
+			RMIService rmiService = (RMIService) UnicastRemoteObject
+					.exportObject(peer, 0);
+
+			LocateRegistry.getRegistry().rebind(remoteObjectName, rmiService);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void putChunk(Chunk chunk) {
-		String msg = "PUTCHUNK " + Protocol.VERSION;
+		String msg;
 
+		// header
+		msg = MessageType.PUTCHUNK + " " + Protocol.VERSION;
 		msg += " " + chunk.getFileID();
 		msg += " " + chunk.getChunkNo();
 		msg += " " + chunk.getReplicationDegree();
@@ -119,13 +201,22 @@ public class Peer implements Protocol, RMIService {
 
 		msg += Protocol.CRLF;
 
+		// body
 		msg += chunk.getData();
 
-		System.out.println(msg);
+		DatagramPacket packet = new DatagramPacket(msg.getBytes(),
+				msg.getBytes().length, mdbAddress, mdbPort);
+
+		try {
+			mdbSocket.send(packet);
+			System.out.println(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void confirmChunk() {
+	public void storeChunk() {
 		// TODO Auto-generated method stub
 	}
 
@@ -150,7 +241,8 @@ public class Peer implements Protocol, RMIService {
 	}
 
 	@Override
-	public void backup(File file, int replicationDegree) throws RemoteException {
+	public void backup(File file, int replicationDegree) {
+		// TODO improve this method to split files
 		Chunk chunk = new Chunk(Utils.getFileID(file), 0, replicationDegree,
 				Utils.getFileData(file));
 
