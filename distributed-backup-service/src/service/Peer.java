@@ -40,11 +40,13 @@ public class Peer implements Protocol, RMIService {
 		mcSocket = new MulticastSocket(mcPort);
 		mcSocket.joinGroup(mcAddress);
 		mcSocket.setTimeToLive(1);
+		mcSocket.setSoTimeout(1000);
 
 		// multicast data backup channel
 		mdbSocket = new MulticastSocket(mdbPort);
 		mdbSocket.joinGroup(mdbAddress);
 		mdbSocket.setTimeToLive(1);
+		mdbSocket.setSoTimeout(1000);
 
 		// multicast data restore channel
 		mdrSocket = new MulticastSocket(mdrPort);
@@ -56,10 +58,14 @@ public class Peer implements Protocol, RMIService {
 			byte[] buf = new byte[256];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
-			mcSocket.receive(packet);
-			String controlMsg = new String(packet.getData(), 0,
-					packet.getLength());
-			System.out.println("MC: " + controlMsg);
+			try {
+				mcSocket.receive(packet);
+				String msg = new String(packet.getData(), 0, packet.getLength());
+
+				System.out.println("MC: " + msg);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 
 			try {
 				// receive request
@@ -106,7 +112,6 @@ public class Peer implements Protocol, RMIService {
 
 					try {
 						mcSocket.send(packet);
-						System.out.println(msg);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
