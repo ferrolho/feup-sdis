@@ -55,7 +55,7 @@ public class Peer implements Protocol, RMIService {
 
 		boolean done = false;
 		while (!done) {
-			byte[] buf = new byte[256];
+			byte[] buf = new byte[64000];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
 			try {
@@ -63,7 +63,7 @@ public class Peer implements Protocol, RMIService {
 				String msg = new String(packet.getData(), 0, packet.getLength());
 
 				System.out.println("MC: " + msg);
-			} catch (Exception e) {
+			} catch (SocketTimeoutException e) {
 				// TODO: handle exception
 			}
 

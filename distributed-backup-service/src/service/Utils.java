@@ -1,6 +1,7 @@
 package service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +18,8 @@ public class Utils {
 	}
 
 	public static final String getFileID(File file) {
-		String str = file.getAbsolutePath() + file.lastModified() + getFileOwner(file);
+		String str = file.getAbsolutePath() + file.lastModified()
+				+ getFileOwner(file);
 
 		return sha256(str);
 	}
@@ -40,18 +42,21 @@ public class Utils {
 	}
 
 	public static final String getFileData(File file) {
-		String data = "";
+		String dataStr = "";
 
 		try {
-			Path path = Paths.get(file.getName());
-			byte[] bytes = Files.readAllBytes(path);
+			byte[] data = new byte[(int) file.length()];
 
-			data = new String(bytes);
-		} catch (IOException e) {
+			FileInputStream inputStream = new FileInputStream(file);
+			inputStream.read(data);
+			inputStream.close();
+
+			dataStr = new String(data);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return data;
+		return dataStr;
 	}
 
 	private static final String sha256(String str) {
