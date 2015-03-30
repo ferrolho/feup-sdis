@@ -127,31 +127,26 @@ public class Peer implements Protocol, RMIService {
 	@Override
 	public void confirmChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void getChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void sendChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void deleteChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void removeChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

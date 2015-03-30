@@ -4,8 +4,8 @@ public interface Protocol {
 
 	public static final String VERSION = "1.0";
 
-	public static final String CR = "0xD";
-	public static final String LF = "0xA";
+	public static final String CR = "\r";
+	public static final String LF = "\n";
 	public static final String CRLF = CR + LF;
 
 	// 3.2 Chunk backup subprotocol

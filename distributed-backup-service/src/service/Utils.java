@@ -17,7 +17,7 @@ public class Utils {
 	}
 
 	public static final String getFileID(File file) {
-		String str = file.getName() + file.lastModified() + getFileOwner(file);
+		String str = file.getAbsolutePath() + file.lastModified() + getFileOwner(file);
 
 		return sha256(str);
 	}

@@ -1,6 +1,7 @@
 package service;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,6 +14,11 @@ public class TestClient {
 	private static int replicationDegree, kbyte;
 
 	public static void main(String[] args) {
+		byte[] bytes = "PUTCHUNK 1.0 ".getBytes(StandardCharsets.UTF_8);
+		for (byte b : bytes)
+			System.out.print(Integer.toHexString(b));
+		System.out.println();
+
 		if (!validArgs(args))
 			return;
 
