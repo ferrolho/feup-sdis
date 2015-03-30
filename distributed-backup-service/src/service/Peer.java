@@ -72,6 +72,7 @@ public class Peer implements Protocol, RMIService {
 				mdbSocket.receive(packet);
 				String request = new String(packet.getData(), 0,
 						packet.getLength());
+				System.out.println("MDB: " + request);
 
 				// process request
 				String[] requestTokens = request.split("[" + Protocol.CRLF
@@ -219,7 +220,6 @@ public class Peer implements Protocol, RMIService {
 
 		try {
 			mdbSocket.send(packet);
-			System.out.println(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
