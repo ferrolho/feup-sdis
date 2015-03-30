@@ -38,20 +38,24 @@ public class Peer implements Protocol, RMIService {
 
 		// multicast control channel
 		mcSocket = new MulticastSocket(mcPort);
-		mcSocket.joinGroup(mcAddress);
-		mcSocket.setTimeToLive(1);
+		mcSocket.setLoopbackMode(true);
 		mcSocket.setSoTimeout(1000);
+		mcSocket.setTimeToLive(1);
+		mcSocket.joinGroup(mcAddress);
 
 		// multicast data backup channel
 		mdbSocket = new MulticastSocket(mdbPort);
-		mdbSocket.joinGroup(mdbAddress);
-		mdbSocket.setTimeToLive(1);
+		mdbSocket.setLoopbackMode(true);
 		mdbSocket.setSoTimeout(1000);
+		mdbSocket.setTimeToLive(1);
+		mdbSocket.joinGroup(mdbAddress);
 
 		// multicast data restore channel
 		mdrSocket = new MulticastSocket(mdrPort);
-		mdrSocket.joinGroup(mdrAddress);
+		mdrSocket.setLoopbackMode(true);
+		mdbSocket.setSoTimeout(1000);
 		mdrSocket.setTimeToLive(1);
+		mdrSocket.joinGroup(mdrAddress);
 
 		boolean done = false;
 		while (!done) {
