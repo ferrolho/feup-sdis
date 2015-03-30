@@ -56,6 +56,11 @@ public class Peer implements Protocol, RMIService {
 			byte[] buf = new byte[256];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
+			mcSocket.receive(packet);
+			String controlMsg = new String(packet.getData(), 0,
+					packet.getLength());
+			System.out.println("MC: " + controlMsg);
+
 			try {
 				// receive request
 				mdbSocket.receive(packet);

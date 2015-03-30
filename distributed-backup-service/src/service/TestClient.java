@@ -19,12 +19,6 @@ public class TestClient {
 		if (!validArgs(args))
 			return;
 
-		/*
-		 * byte[] bytes = "PUTCHUNK 1.0 ".getBytes(StandardCharsets.UTF_8); for
-		 * (byte b : bytes) System.out.print(Integer.toHexString(b));
-		 * System.out.println();
-		 */
-
 		try {
 			hostname = "localhost";
 			remoteObjectName = "test";
