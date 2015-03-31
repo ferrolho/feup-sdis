@@ -15,6 +15,8 @@ public class MDBListener extends SocketListener {
 	public void handler(DatagramPacket packet) {
 		System.out.println("MDB LISTENER HANDLER");
 
+		System.out.println("TESTE RECEIVED: " + packet.getLength());
+
 		new Handler(packet).start();
 	}
 
