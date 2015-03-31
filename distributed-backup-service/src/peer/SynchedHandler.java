@@ -108,8 +108,6 @@ public class SynchedHandler implements Protocol {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length,
 				mdbListener.address, mdbListener.port);
 
-		System.out.println("TESTE SENDING: " + packet.getLength());
-
 		try {
 			mdbListener.socket.send(packet);
 		} catch (IOException e) {

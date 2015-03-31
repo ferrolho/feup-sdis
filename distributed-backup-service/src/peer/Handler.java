@@ -11,6 +11,7 @@ import java.util.Arrays;
 import service.Chunk;
 import service.MessageType;
 import service.Protocol;
+import service.Utils;
 
 public class Handler extends Thread {
 
@@ -80,7 +81,7 @@ public class Handler extends Thread {
 			out.write(chunk.getData());
 			out.close();
 
-			// Thread.sleep(Utils.randInt(0, 400));
+			Thread.sleep(Utils.randInt(0, 400));
 
 			Peer.synchedHandler.storeChunk(chunk);
 		} catch (Exception e) {
