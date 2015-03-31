@@ -23,13 +23,16 @@ public class Handler extends Thread {
 
 	public Handler(DatagramPacket packet) {
 		this.packet = packet;
-	}
 
-	public void run() {
 		if (!extractHeader())
 			return;
 
 		extractBody();
+	}
+
+	public void run() {
+		if (header == null)
+			return;
 
 		MessageType messageType = MessageType.valueOf(headerTokens[0]);
 
@@ -86,14 +89,7 @@ public class Handler extends Thread {
 	}
 
 	private boolean extractHeader() {
-		if (packet == null)
-			System.out.println("NULL");
-		else
-			System.out.println("NOT null");
-
-		System.out.println(packet.getLength());
 		ByteArrayInputStream stream = new ByteArrayInputStream(packet.getData());
-		System.out.println("OI3");
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(stream));
 
