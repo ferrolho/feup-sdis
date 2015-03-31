@@ -11,7 +11,6 @@ import java.util.Arrays;
 import service.Chunk;
 import service.MessageType;
 import service.Protocol;
-import service.Utils;
 
 public class Handler extends Thread {
 
@@ -39,7 +38,7 @@ public class Handler extends Thread {
 		// 3.2 Chunk backup subprotocol
 
 		case PUTCHUNK:
-			putchunkHandler();
+			putChunkHandler();
 			break;
 
 		case STORED:
@@ -68,7 +67,7 @@ public class Handler extends Thread {
 		}
 	}
 
-	private void putchunkHandler() {
+	private void putChunkHandler() {
 		Chunk chunk = new Chunk(headerTokens[2],
 				Integer.parseInt(headerTokens[3]),
 				Integer.parseInt(headerTokens[4]), body);
@@ -78,7 +77,7 @@ public class Handler extends Thread {
 			out.write(chunk.getData());
 			out.close();
 
-			Thread.sleep(Utils.randInt(0, 400));
+			// Thread.sleep(Utils.randInt(0, 400));
 
 			Peer.synchedHandler.storeChunk(chunk);
 		} catch (Exception e) {
@@ -87,7 +86,14 @@ public class Handler extends Thread {
 	}
 
 	private boolean extractHeader() {
+		if (packet == null)
+			System.out.println("NULL");
+		else
+			System.out.println("NOT null");
+
+		System.out.println(packet.getLength());
 		ByteArrayInputStream stream = new ByteArrayInputStream(packet.getData());
+		System.out.println("OI3");
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(stream));
 

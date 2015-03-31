@@ -77,15 +77,15 @@ public class SynchedHandler implements Protocol {
 	public void sendPacketToChannel(byte[] buf, Channel channel) {
 		switch (channel) {
 		case MC:
-			sendControlPacket(buf);
+			sendPacketToMC(buf);
 			break;
 
 		case MDB:
-			sendDataBackupPacket(buf);
+			sendPacketToMDB(buf);
 			break;
 
 		case MDR:
-			sendDataRestorePacket(buf);
+			sendPacketToMDR(buf);
 			break;
 
 		default:
@@ -93,7 +93,7 @@ public class SynchedHandler implements Protocol {
 		}
 	}
 
-	private synchronized void sendControlPacket(byte[] buf) {
+	private synchronized void sendPacketToMC(byte[] buf) {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length,
 				mcListener.address, mcListener.port);
 
@@ -104,18 +104,18 @@ public class SynchedHandler implements Protocol {
 		}
 	}
 
-	private synchronized void sendDataBackupPacket(byte[] buf) {
+	private synchronized void sendPacketToMDB(byte[] buf) {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length,
 				mdbListener.address, mdbListener.port);
 
 		try {
-			mdbListener.socket.send(packet);
+			mdrListener.socket.send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private synchronized void sendDataRestorePacket(byte[] buf) {
+	private synchronized void sendPacketToMDR(byte[] buf) {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length,
 				mdrListener.address, mdrListener.port);
 
