@@ -19,10 +19,10 @@ public class TestClient {
 		if (!validArgs(args))
 			return;
 
-		try {
-			hostname = "localhost";
-			remoteObjectName = "test";
+		hostname = "localhost";
+		remoteObjectName = "test";
 
+		try {
 			Registry registry = LocateRegistry.getRegistry(hostname);
 
 			RMIService server = (RMIService) registry.lookup(remoteObjectName);

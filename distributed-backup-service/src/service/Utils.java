@@ -2,6 +2,7 @@ package service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -42,28 +43,32 @@ public class Utils {
 		return owner;
 	}
 
-	public static final byte[] getFileData(File file) {
+	public static final byte[] getFileData(File file)
+			throws FileNotFoundException {
+		FileInputStream inputStream = new FileInputStream(file);
+
 		byte[] data = new byte[(int) file.length()];
 
 		try {
-			FileInputStream inputStream = new FileInputStream(file);
 			inputStream.read(data);
 			inputStream.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		return data;
 	}
 
-	public static final String getFileDataStr(File file) {
+	public static final String getFileDataStr(File file)
+			throws FileNotFoundException {
+		FileInputStream inputStream = new FileInputStream(file);
+
 		byte[] data = new byte[(int) file.length()];
 
 		try {
-			FileInputStream inputStream = new FileInputStream(file);
 			inputStream.read(data);
 			inputStream.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
@@ -73,7 +78,9 @@ public class Utils {
 	private static final String sha256(String str) {
 		try {
 			MessageDigest sha = MessageDigest.getInstance("SHA-256");
+
 			byte[] hash = sha.digest(str.getBytes(StandardCharsets.UTF_8));
+
 			StringBuffer hexStringBuffer = new StringBuffer();
 
 			for (int i = 0; i < hash.length; i++) {

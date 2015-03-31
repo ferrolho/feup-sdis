@@ -7,25 +7,25 @@ import java.net.MulticastSocket;
 
 public class MCThread extends Thread {
 
-	public MulticastSocket mcSocket;
-	private InetAddress mcAddress;
-	private int mcPort;
+	public MulticastSocket socket;
+
+	private InetAddress address;
+	private int port;
 
 	public MCThread(InetAddress mcAddress, int mcPort) {
-		this.mcAddress = mcAddress;
-		this.mcPort = mcPort;
+		this.address = mcAddress;
+		this.port = mcPort;
 	}
 
 	public void run() {
 		try {
 			// multicast control channel
-			mcSocket = new MulticastSocket(mcPort);
+			socket = new MulticastSocket(port);
 
-			mcSocket.setLoopbackMode(true);
-			// mcSocket.setSoTimeout(1000);
-			mcSocket.setTimeToLive(1);
+			socket.setLoopbackMode(true);
+			socket.setTimeToLive(1);
 
-			mcSocket.joinGroup(mcAddress);
+			socket.joinGroup(address);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -33,15 +33,20 @@ public class MCThread extends Thread {
 		byte[] buf = new byte[64000];
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
-		try {
-			mcSocket.receive(packet);
-			String msg = new String(packet.getData(), 0, packet.getLength());
+		boolean done = false;
+		while (!done) {
+			try {
+				socket.receive(packet);
+				String msg = new String(packet.getData(), 0, packet.getLength());
 
-			System.out.println("MC: " + msg);
-		} catch (IOException e) {
-			e.printStackTrace();
+				System.out.println("MC: " + msg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
+		if (socket != null)
+			socket.close();
 	}
 
 }

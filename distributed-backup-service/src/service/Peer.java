@@ -1,14 +1,12 @@
 package service;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
@@ -21,9 +19,9 @@ public class Peer implements Protocol, RMIService {
 	private static int mcPort;
 	private static MCThread mcThread;
 
-	private static MulticastSocket mdbSocket;
 	private static InetAddress mdbAddress;
 	private static int mdbPort;
+	private static MDBThread mdbThread;
 
 	private static MulticastSocket mdrSocket;
 	private static InetAddress mdrAddress;
@@ -38,112 +36,17 @@ public class Peer implements Protocol, RMIService {
 		mcThread = new MCThread(mcAddress, mcPort);
 		mcThread.start();
 
-		// multicast data backup channel
-		mdbSocket = new MulticastSocket(mdbPort);
-		mdbSocket.setLoopbackMode(true);
-		mdbSocket.setSoTimeout(1000);
-		mdbSocket.setTimeToLive(1);
-		mdbSocket.joinGroup(mdbAddress);
+		mdbThread = new MDBThread(mdbAddress, mdbPort, mcThread);
+		mdbThread.start();
 
 		// multicast data restore channel
 		mdrSocket = new MulticastSocket(mdrPort);
 		mdrSocket.setLoopbackMode(true);
-		mdbSocket.setSoTimeout(1000);
 		mdrSocket.setTimeToLive(1);
 		mdrSocket.joinGroup(mdrAddress);
 
 		System.out.println("- Server ready -");
 
-		boolean done = false;
-		while (!done) {
-			byte[] buf = new byte[64000];
-			DatagramPacket packet = new DatagramPacket(buf, buf.length);
-
-			try {
-				// receive request
-				mdbSocket.receive(packet);
-				String request = new String(packet.getData(), 0,
-						packet.getLength());
-
-				// process request
-				String[] requestTokens = request.split("[" + Protocol.CRLF
-						+ "]+", 2);
-
-				String header = requestTokens[0];
-				String[] headerTokens = header.split("[ ]+");
-
-				MessageType messageType = MessageType.valueOf(headerTokens[0]);
-
-				System.out.println("MDB: " + header);
-
-				switch (messageType) {
-
-				// 3.2 Chunk backup subprotocol
-
-				case PUTCHUNK:
-					String body = requestTokens[1];
-
-					Chunk chunk = new Chunk(headerTokens[2],
-							Integer.parseInt(headerTokens[3]),
-							Integer.parseInt(headerTokens[4]), body);
-
-					byte[] bytes = body.getBytes(StandardCharsets.ISO_8859_1);
-
-					FileOutputStream out = new FileOutputStream(
-							chunk.getFileID());
-					out.write(bytes);
-					out.close();
-
-					// send control message
-					String msg;
-					msg = MessageType.STORED + " " + Protocol.VERSION;
-					msg += " " + chunk.getFileID();
-					msg += " " + chunk.getChunkNo();
-					msg += " " + Protocol.CRLF;
-					msg += Protocol.CRLF;
-
-					packet = new DatagramPacket(msg.getBytes(),
-							msg.getBytes().length, mcAddress, mcPort);
-
-					try {
-						mcThread.mcSocket.send(packet);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
-					break;
-
-				case STORED:
-					break;
-
-				// 3.3 Chunk restore protocol
-
-				case GETCHUNK:
-					break;
-
-				case CHUNK:
-					break;
-
-				// 3.4 File deletion subprotocol
-
-				case DELETE:
-					break;
-
-				// 3.5 Space reclaiming subprotocol
-
-				case REMOVED:
-					break;
-
-				default:
-					break;
-				}
-			} catch (SocketTimeoutException e) {
-				// System.out.println(e);
-			}
-		}
-
-		mcThread.mcSocket.close();
-		mdbSocket.close();
 		mdrSocket.close();
 	}
 
@@ -189,7 +92,7 @@ public class Peer implements Protocol, RMIService {
 
 			LocateRegistry.getRegistry().rebind(remoteObjectName, rmiService);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			Utils.printError("Could not bind to rmiregistry");
 		}
 	}
 
@@ -213,7 +116,7 @@ public class Peer implements Protocol, RMIService {
 				msg.getBytes().length, mdbAddress, mdbPort);
 
 		try {
-			mdbSocket.send(packet);
+			mdbThread.socket.send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -246,11 +149,16 @@ public class Peer implements Protocol, RMIService {
 
 	@Override
 	public void backup(File file, int replicationDegree) {
-		// TODO improve this method to split files
-		Chunk chunk = new Chunk(Utils.getFileID(file), 0, replicationDegree,
-				Utils.getFileDataStr(file));
+		try {
+			Chunk chunk = new Chunk(Utils.getFileID(file), 0,
+					replicationDegree, Utils.getFileDataStr(file));
 
-		putChunk(chunk);
+			// TODO improve this method to split files
+
+			putChunk(chunk);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
