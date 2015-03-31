@@ -20,6 +20,8 @@ public class MDBListener extends SocketListener {
 
 	@Override
 	public void handler(DatagramPacket packet) {
+		System.out.println("MDB LISTENER HANDLER");
+
 		String request = new String(packet.getData(), 0, packet.getLength());
 
 		// process request
@@ -47,9 +49,7 @@ public class MDBListener extends SocketListener {
 
 			try {
 				FileOutputStream out = new FileOutputStream(chunk.getFileID());
-
 				out.write(bytes);
-
 				out.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -65,10 +65,7 @@ public class MDBListener extends SocketListener {
 			msg += " " + Protocol.CRLF;
 			msg += Protocol.CRLF;
 
-			packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length,
-					address, port);
-
-			Peer.synchedHandler.sendPacketToChannel(packet, Channel.MC);
+			Peer.synchedHandler.sendPacketToChannel(msg.getBytes(), Channel.MC);
 
 			break;
 

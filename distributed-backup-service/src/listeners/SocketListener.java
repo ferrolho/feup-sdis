@@ -9,8 +9,8 @@ public abstract class SocketListener extends Thread {
 
 	public MulticastSocket socket;
 
-	protected InetAddress address;
-	protected int port;
+	public InetAddress address;
+	public int port;
 
 	public SocketListener(InetAddress address, int port) {
 		this.address = address;

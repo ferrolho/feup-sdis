@@ -3,7 +3,6 @@ package peer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -83,16 +82,12 @@ public class Peer implements Protocol, RMIService {
 		msg += " " + chunk.getChunkNo();
 		msg += " " + chunk.getReplicationDegree();
 		msg += " " + Protocol.CRLF;
-
 		msg += Protocol.CRLF;
 
 		// body
 		msg += chunk.getDataStr();
 
-		DatagramPacket packet = new DatagramPacket(msg.getBytes(),
-				msg.getBytes().length, mdbAddress, mdbPort);
-
-		Peer.synchedHandler.sendPacketToChannel(packet, Channel.MDB);
+		Peer.synchedHandler.sendPacketToChannel(msg.getBytes(), Channel.MDB);
 	}
 
 	@Override

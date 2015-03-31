@@ -11,8 +11,7 @@ public class MDRListener extends SocketListener {
 
 	@Override
 	protected void handler(DatagramPacket packet) {
-		// TODO Auto-generated method stub
-
+		System.out.println("MDR LISTENER HANDLER");
 	}
 
 }

@@ -11,6 +11,8 @@ public class MCListener extends SocketListener {
 
 	@Override
 	public void handler(DatagramPacket packet) {
+		System.out.println("MC LISTENER HANDLER");
+
 		String msg = new String(packet.getData(), 0, packet.getLength());
 
 		System.out.println("MC: " + msg);

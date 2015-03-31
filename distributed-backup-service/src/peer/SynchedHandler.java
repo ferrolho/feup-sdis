@@ -21,18 +21,18 @@ public class SynchedHandler {
 		this.mdrListener = mdrListener;
 	}
 
-	public void sendPacketToChannel(DatagramPacket packet, Channel channel) {
+	public void sendPacketToChannel(byte[] buf, Channel channel) {
 		switch (channel) {
 		case MC:
-			sendControlPacket(packet);
+			sendControlPacket(buf);
 			break;
 
 		case MDB:
-			sendDataBackupPacket(packet);
+			sendDataBackupPacket(buf);
 			break;
 
 		case MDR:
-			sendDataRestorePacket(packet);
+			sendDataRestorePacket(buf);
 			break;
 
 		default:
@@ -40,7 +40,10 @@ public class SynchedHandler {
 		}
 	}
 
-	private synchronized void sendControlPacket(DatagramPacket packet) {
+	private synchronized void sendControlPacket(byte[] buf) {
+		DatagramPacket packet = new DatagramPacket(buf, buf.length,
+				mcListener.address, mcListener.port);
+
 		try {
 			mcListener.socket.send(packet);
 		} catch (IOException e) {
@@ -48,7 +51,10 @@ public class SynchedHandler {
 		}
 	}
 
-	private synchronized void sendDataBackupPacket(DatagramPacket packet) {
+	private synchronized void sendDataBackupPacket(byte[] buf) {
+		DatagramPacket packet = new DatagramPacket(buf, buf.length,
+				mdbListener.address, mdbListener.port);
+
 		try {
 			mdbListener.socket.send(packet);
 		} catch (IOException e) {
@@ -56,7 +62,10 @@ public class SynchedHandler {
 		}
 	}
 
-	private synchronized void sendDataRestorePacket(DatagramPacket packet) {
+	private synchronized void sendDataRestorePacket(byte[] buf) {
+		DatagramPacket packet = new DatagramPacket(buf, buf.length,
+				mdrListener.address, mdrListener.port);
+
 		try {
 			mdrListener.socket.send(packet);
 		} catch (IOException e) {
