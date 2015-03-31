@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
@@ -98,7 +99,7 @@ public class Peer implements Protocol, RMIService {
 							Integer.parseInt(headerTokens[3]),
 							Integer.parseInt(headerTokens[4]), body);
 
-					byte[] bytes = body.getBytes();
+					byte[] bytes = body.getBytes(StandardCharsets.ISO_8859_1);
 
 					FileOutputStream out = new FileOutputStream(
 							chunk.getFileID());
@@ -258,7 +259,7 @@ public class Peer implements Protocol, RMIService {
 	public void backup(File file, int replicationDegree) {
 		// TODO improve this method to split files
 		Chunk chunk = new Chunk(Utils.getFileID(file), 0, replicationDegree,
-				Utils.getFileData(file));
+				Utils.getFileDataStr(file));
 
 		putChunk(chunk);
 	}

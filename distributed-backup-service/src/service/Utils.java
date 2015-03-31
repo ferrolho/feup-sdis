@@ -3,6 +3,7 @@ package service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,20 +42,34 @@ public class Utils {
 		return owner;
 	}
 
-	public static final String getFileData(File file) {
-		String dataStr = "";
+	public static final byte[] getFileData(File file) {
+		byte[] data = new byte[(int) file.length()];
 
 		try {
-			byte[] data = new byte[(int) file.length()];
-
 			FileInputStream inputStream = new FileInputStream(file);
 			inputStream.read(data);
 			inputStream.close();
-
-			dataStr = new String(data);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		return data;
+	}
+
+	public static final String getFileDataStr(File file) {
+		String dataStr = "";
+
+		byte[] data = new byte[(int) file.length()];
+
+		try {
+			FileInputStream inputStream = new FileInputStream(file);
+			inputStream.read(data);
+			inputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		dataStr = new String(data, StandardCharsets.ISO_8859_1);
 
 		return dataStr;
 	}
@@ -62,7 +77,7 @@ public class Utils {
 	private static final String sha256(String str) {
 		try {
 			MessageDigest sha = MessageDigest.getInstance("SHA-256");
-			byte[] hash = sha.digest(str.getBytes("UTF-8"));
+			byte[] hash = sha.digest(str.getBytes(StandardCharsets.UTF_8));
 			StringBuffer hexStringBuffer = new StringBuffer();
 
 			for (int i = 0; i < hash.length; i++) {

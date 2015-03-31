@@ -6,14 +6,17 @@ public class Chunk {
 	private int chunkNo;
 
 	private int replicationDegree;
-	private String data;
+	private byte[] data;
+	private String dataStr;
 
-	public Chunk(String fileID, int chunkNo, int replicationDegree, String data) {
+	public Chunk(String fileID, int chunkNo, int replicationDegree,
+			String dataStr) {
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 
 		this.replicationDegree = replicationDegree;
-		this.data = data;
+		// this.data = data;
+		this.dataStr = dataStr;
 	}
 
 	public String getFileID() {
@@ -28,8 +31,12 @@ public class Chunk {
 		return replicationDegree;
 	}
 
-	public String getData() {
+	public byte[] getData() {
 		return data;
+	}
+
+	public String getDataStr() {
+		return dataStr;
 	}
 
 }
