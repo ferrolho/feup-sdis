@@ -17,9 +17,9 @@ public class Peer implements Protocol, RMIService {
 
 	private static String remoteObjectName = "test";
 
-	private static MulticastSocket mcSocket;
 	private static InetAddress mcAddress;
 	private static int mcPort;
+	private static MCThread mcThread;
 
 	private static MulticastSocket mdbSocket;
 	private static InetAddress mdbAddress;
@@ -35,14 +35,8 @@ public class Peer implements Protocol, RMIService {
 
 		initRMI();
 
-		System.out.println("- Server ready -");
-
-		// multicast control channel
-		mcSocket = new MulticastSocket(mcPort);
-		mcSocket.setLoopbackMode(true);
-		mcSocket.setSoTimeout(1000);
-		mcSocket.setTimeToLive(1);
-		mcSocket.joinGroup(mcAddress);
+		mcThread = new MCThread(mcAddress, mcPort);
+		mcThread.start();
 
 		// multicast data backup channel
 		mdbSocket = new MulticastSocket(mdbPort);
@@ -58,26 +52,18 @@ public class Peer implements Protocol, RMIService {
 		mdrSocket.setTimeToLive(1);
 		mdrSocket.joinGroup(mdrAddress);
 
+		System.out.println("- Server ready -");
+
 		boolean done = false;
 		while (!done) {
 			byte[] buf = new byte[64000];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
 			try {
-				mcSocket.receive(packet);
-				String msg = new String(packet.getData(), 0, packet.getLength());
-
-				System.out.println("MC: " + msg);
-			} catch (SocketTimeoutException e) {
-				// TODO: handle exception
-			}
-
-			try {
 				// receive request
 				mdbSocket.receive(packet);
 				String request = new String(packet.getData(), 0,
 						packet.getLength());
-				System.out.println("MDB: " + request);
 
 				// process request
 				String[] requestTokens = request.split("[" + Protocol.CRLF
@@ -87,6 +73,8 @@ public class Peer implements Protocol, RMIService {
 				String[] headerTokens = header.split("[ ]+");
 
 				MessageType messageType = MessageType.valueOf(headerTokens[0]);
+
+				System.out.println("MDB: " + header);
 
 				switch (messageType) {
 
@@ -118,7 +106,7 @@ public class Peer implements Protocol, RMIService {
 							msg.getBytes().length, mcAddress, mcPort);
 
 					try {
-						mcSocket.send(packet);
+						mcThread.mcSocket.send(packet);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -154,7 +142,7 @@ public class Peer implements Protocol, RMIService {
 			}
 		}
 
-		mcSocket.close();
+		mcThread.mcSocket.close();
 		mdbSocket.close();
 		mdrSocket.close();
 	}
