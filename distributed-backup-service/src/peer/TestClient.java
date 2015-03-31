@@ -13,7 +13,8 @@ import service.Utils;
 
 public class TestClient {
 
-	private static String hostname, remoteObjectName;
+	private static final String hostname = "localhost";
+	private static final String remoteObjectName = "test";
 
 	private static String command;
 	private static File file;
@@ -23,29 +24,25 @@ public class TestClient {
 		if (!validArgs(args))
 			return;
 
-		hostname = "localhost";
-		remoteObjectName = "test";
-
 		try {
 			Registry registry = LocateRegistry.getRegistry(hostname);
-
-			RMIService server = (RMIService) registry.lookup(remoteObjectName);
+			RMIService peer = (RMIService) registry.lookup(remoteObjectName);
 
 			switch (command) {
 			case Commands.BACKUP:
-				server.backup(file, replicationDegree);
+				peer.backup(file, replicationDegree);
 				break;
 
 			case Commands.DELETE:
-				server.delete(file);
+				peer.delete(file);
 				break;
 
 			case Commands.FREE:
-				server.free(kbyte);
+				peer.free(kbyte);
 				break;
 
 			case Commands.RESTORE:
-				server.restore(file);
+				peer.restore(file);
 				break;
 
 			default:

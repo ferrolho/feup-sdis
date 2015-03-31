@@ -9,17 +9,14 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
-import listeners.Channel;
 import listeners.MCListener;
 import listeners.MDBListener;
 import listeners.MDRListener;
 import service.Chunk;
-import service.MessageType;
-import service.Protocol;
 import service.RMIService;
 import service.Utils;
 
-public class Peer implements Protocol, RMIService {
+public class Peer implements RMIService {
 
 	private static final String remoteObjectName = "test";
 
@@ -73,45 +70,6 @@ public class Peer implements Protocol, RMIService {
 	}
 
 	@Override
-	public void putChunk(Chunk chunk) {
-		String header = MessageType.PUTCHUNK + " " + Protocol.VERSION;
-		header += " " + chunk.getFileID();
-		header += " " + chunk.getChunkNo();
-		header += " " + chunk.getReplicationDegree();
-		header += " " + Protocol.CRLF;
-		header += Protocol.CRLF;
-
-		byte[] buf = Utils.concatByteArrays(header.getBytes(), chunk.getData());
-
-		Peer.synchedHandler.sendPacketToChannel(buf, Channel.MDB);
-	}
-
-	@Override
-	public void storeChunk() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void getChunk() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void sendChunk() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void deleteChunk() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void removeChunk() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void backup(File file, int replicationDegree) {
 		try {
 			Chunk chunk = new Chunk(Utils.getFileID(file), 0,
@@ -119,7 +77,7 @@ public class Peer implements Protocol, RMIService {
 
 			// TODO improve this method to split files
 
-			putChunk(chunk);
+			synchedHandler.putChunk(chunk);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
