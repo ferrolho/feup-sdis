@@ -50,7 +50,7 @@ public abstract class SocketListener extends Thread {
 		}
 	}
 
-	protected abstract void handler(DatagramPacket packet);
+	protected abstract void handler(DatagramPacket packet) throws IOException;
 
 	private void closeSocket() {
 		if (socket != null)

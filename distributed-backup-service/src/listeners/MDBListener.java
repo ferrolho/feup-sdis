@@ -1,11 +1,14 @@
 package listeners;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import peer.Peer;
 import service.Chunk;
@@ -19,17 +22,22 @@ public class MDBListener extends SocketListener {
 	}
 
 	@Override
-	public void handler(DatagramPacket packet) {
+	public void handler(DatagramPacket packet) throws IOException {
 		System.out.println("MDB LISTENER HANDLER");
 
-		System.out.println("TEST: " + packet.getData());
+		ByteArrayInputStream stream = new ByteArrayInputStream(packet.getData());
+		BufferedReader reader = new BufferedReader(
+				new InputStreamReader(stream));
 
-		String request = new String(packet.getData(), 0, packet.getLength());
+		String header = reader.readLine();
+
+		int bodyStartIndex = header.getBytes().length + 2
+				* Protocol.CRLF.getBytes().length;
+		byte[] body = Arrays.copyOfRange(packet.getData(), bodyStartIndex,
+				packet.getLength());
 
 		// process request
-		String[] requestTokens = request.split("[" + Protocol.CRLF + "]+", 2);
 
-		String header = requestTokens[0];
 		String[] headerTokens = header.split("[ ]+");
 
 		MessageType messageType = MessageType.valueOf(headerTokens[0]);
@@ -41,18 +49,13 @@ public class MDBListener extends SocketListener {
 		// 3.2 Chunk backup subprotocol
 
 		case PUTCHUNK:
-			String bodyStr = requestTokens[1];
-			byte[] body = null;
-
 			Chunk chunk = new Chunk(headerTokens[2],
 					Integer.parseInt(headerTokens[3]),
-					Integer.parseInt(headerTokens[4]), body, bodyStr);
-
-			byte[] bytes = bodyStr.getBytes(StandardCharsets.ISO_8859_1);
+					Integer.parseInt(headerTokens[4]), body, new String(body));
 
 			try {
 				FileOutputStream out = new FileOutputStream(chunk.getFileID());
-				out.write(bytes);
+				out.write(body);
 				out.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
