@@ -7,6 +7,8 @@ import peer.TestHandler;
 
 public class MDBListener extends SocketListener {
 
+	TestHandler testHandler;
+
 	public MDBListener(InetAddress address, int port) {
 		super(address, port);
 	}
@@ -16,7 +18,8 @@ public class MDBListener extends SocketListener {
 		System.out.println("MDB LISTENER HANDLER");
 
 		// new Handler(packet).start();
-		new TestHandler(packet).start();
+		testHandler = new TestHandler(packet);
+		testHandler.start();
 	}
 
 }
