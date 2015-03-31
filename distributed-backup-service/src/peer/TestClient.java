@@ -1,4 +1,4 @@
-package service;
+package peer;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,10 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
+import service.Commands;
+import service.RMIService;
+import service.Utils;
 
 public class TestClient {
 

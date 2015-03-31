@@ -1,14 +1,17 @@
-package service;
+package peer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 
+import listeners.MCListener;
+import listeners.MDBListener;
+
 public class SynchedHandler {
 
-	public MCThread mcThread;
-	public MDBThread mdbThread;
+	public MCListener mcThread;
+	public MDBListener mdbThread;
 
-	public SynchedHandler(MCThread mcThread, MDBThread mdbThread) {
+	public SynchedHandler(MCListener mcThread, MDBListener mdbThread) {
 		this.mcThread = mcThread;
 		this.mdbThread = mdbThread;
 	}

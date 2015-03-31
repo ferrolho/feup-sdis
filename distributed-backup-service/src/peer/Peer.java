@@ -1,4 +1,4 @@
-package service;
+package peer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,17 +11,25 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
+import service.Chunk;
+import service.MessageType;
+import service.Protocol;
+import service.RMIService;
+import service.Utils;
+import listeners.MCListener;
+import listeners.MDBListener;
+
 public class Peer implements Protocol, RMIService {
 
 	private static String remoteObjectName = "test";
 
 	private static InetAddress mcAddress;
 	private static int mcPort;
-	private static MCThread mcThread;
+	private static MCListener mcThread;
 
 	private static InetAddress mdbAddress;
 	private static int mdbPort;
-	private static MDBThread mdbThread;
+	private static MDBListener mdbThread;
 
 	private static MulticastSocket mdrSocket;
 	private static InetAddress mdrAddress;
@@ -35,10 +43,10 @@ public class Peer implements Protocol, RMIService {
 
 		initRMI();
 
-		mcThread = new MCThread(mcAddress, mcPort);
+		mcThread = new MCListener(mcAddress, mcPort);
 		mcThread.start();
 
-		mdbThread = new MDBThread(mdbAddress, mdbPort);
+		mdbThread = new MDBListener(mdbAddress, mdbPort);
 		mdbThread.start();
 
 		// multicast data restore channel
