@@ -22,6 +22,8 @@ public class MDBListener extends SocketListener {
 	public void handler(DatagramPacket packet) {
 		System.out.println("MDB LISTENER HANDLER");
 
+		System.out.println("TEST: " + packet.getData());
+
 		String request = new String(packet.getData(), 0, packet.getLength());
 
 		// process request
@@ -39,13 +41,14 @@ public class MDBListener extends SocketListener {
 		// 3.2 Chunk backup subprotocol
 
 		case PUTCHUNK:
-			String body = requestTokens[1];
+			String bodyStr = requestTokens[1];
+			byte[] body = null;
 
 			Chunk chunk = new Chunk(headerTokens[2],
 					Integer.parseInt(headerTokens[3]),
-					Integer.parseInt(headerTokens[4]), body);
+					Integer.parseInt(headerTokens[4]), body, bodyStr);
 
-			byte[] bytes = body.getBytes(StandardCharsets.ISO_8859_1);
+			byte[] bytes = bodyStr.getBytes(StandardCharsets.ISO_8859_1);
 
 			try {
 				FileOutputStream out = new FileOutputStream(chunk.getFileID());

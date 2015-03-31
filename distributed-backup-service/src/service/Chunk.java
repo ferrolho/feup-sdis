@@ -10,12 +10,12 @@ public class Chunk {
 	private String dataStr;
 
 	public Chunk(String fileID, int chunkNo, int replicationDegree,
-			String dataStr) {
+			byte[] data, String dataStr) {
 		this.fileID = fileID;
 		this.chunkNo = chunkNo;
 
 		this.replicationDegree = replicationDegree;
-		// this.data = data;
+		this.data = data;
 		this.dataStr = dataStr;
 	}
 
