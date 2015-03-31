@@ -5,97 +5,62 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
+import listeners.Channel;
+import listeners.MCListener;
+import listeners.MDBListener;
+import listeners.MDRListener;
 import service.Chunk;
 import service.MessageType;
 import service.Protocol;
 import service.RMIService;
 import service.Utils;
-import listeners.MCListener;
-import listeners.MDBListener;
 
 public class Peer implements Protocol, RMIService {
 
-	private static String remoteObjectName = "test";
+	private static final String remoteObjectName = "test";
+
+	private static MCListener mcListener;
+	private static MDBListener mdbListener;
+	private static MDRListener mdrListener;
+
+	public static SynchedHandler synchedHandler;
 
 	private static InetAddress mcAddress;
 	private static int mcPort;
-	private static MCListener mcThread;
 
 	private static InetAddress mdbAddress;
 	private static int mdbPort;
-	private static MDBListener mdbThread;
 
-	private static MulticastSocket mdrSocket;
 	private static InetAddress mdrAddress;
 	private static int mdrPort;
-
-	public static SynchedHandler synchedHandler;
 
 	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
 
-		initRMI();
+		startRMI();
 
-		mcThread = new MCListener(mcAddress, mcPort);
-		mcThread.start();
+		mcListener = new MCListener(mcAddress, mcPort);
+		mcListener.start();
 
-		mdbThread = new MDBListener(mdbAddress, mdbPort);
-		mdbThread.start();
+		mdbListener = new MDBListener(mdbAddress, mdbPort);
+		mdbListener.start();
 
-		// multicast data restore channel
-		mdrSocket = new MulticastSocket(mdrPort);
-		mdrSocket.setLoopbackMode(true);
-		mdrSocket.setTimeToLive(1);
-		mdrSocket.joinGroup(mdrAddress);
+		mdrListener = new MDRListener(mdrAddress, mdrPort);
+		mdrListener.start();
 
-		synchedHandler = new SynchedHandler(mcThread, mdbThread);
+		synchedHandler = new SynchedHandler(mcListener, mdbListener,
+				mdrListener);
 
-		System.out.println("- Server ready -");
-
-		mdrSocket.close();
+		System.out.println("- SERVER READY -");
 	}
 
-	private static boolean validArgs(String[] args) throws UnknownHostException {
-		if (args.length != 0 && args.length != 6) {
-			System.out.println("Usage:");
-			System.out.println("\tjava Server");
-			System.out
-					.println("\tjava Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>");
-
-			return false;
-		} else if (args.length == 0) {
-			mcAddress = InetAddress.getByName("224.0.0.0");
-			mcPort = 8000;
-
-			mdbAddress = InetAddress.getByName("224.0.0.0");
-			mdbPort = 8001;
-
-			mdrAddress = InetAddress.getByName("224.0.0.0");
-			mdrPort = 8002;
-
-			return true;
-		} else {
-			mcAddress = InetAddress.getByName(args[0]);
-			mcPort = Integer.parseInt(args[1]);
-
-			mdbAddress = InetAddress.getByName(args[2]);
-			mdbPort = Integer.parseInt(args[3]);
-
-			mdrAddress = InetAddress.getByName(args[4]);
-			mdrPort = Integer.parseInt(args[5]);
-
-			return true;
-		}
-	}
-
-	private static void initRMI() {
+	private static void startRMI() {
 		Peer peer = new Peer();
 
 		try {
@@ -127,11 +92,7 @@ public class Peer implements Protocol, RMIService {
 		DatagramPacket packet = new DatagramPacket(msg.getBytes(),
 				msg.getBytes().length, mdbAddress, mdbPort);
 
-		try {
-			mdbThread.socket.send(packet);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Peer.synchedHandler.sendPacketToChannel(packet, Channel.MDB);
 	}
 
 	@Override
@@ -186,6 +147,39 @@ public class Peer implements Protocol, RMIService {
 	@Override
 	public void restore(File file) throws RemoteException {
 		System.out.println("restoring " + file.getName());
+	}
+
+	private static boolean validArgs(String[] args) throws UnknownHostException {
+		if (args.length != 0 && args.length != 6) {
+			System.out.println("Usage:");
+			System.out.println("\tjava Server");
+			System.out
+					.println("\tjava Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>");
+
+			return false;
+		} else if (args.length == 0) {
+			mcAddress = InetAddress.getByName("224.0.0.0");
+			mcPort = 8000;
+
+			mdbAddress = InetAddress.getByName("224.0.0.0");
+			mdbPort = 8001;
+
+			mdrAddress = InetAddress.getByName("224.0.0.0");
+			mdrPort = 8002;
+
+			return true;
+		} else {
+			mcAddress = InetAddress.getByName(args[0]);
+			mcPort = Integer.parseInt(args[1]);
+
+			mdbAddress = InetAddress.getByName(args[2]);
+			mdbPort = Integer.parseInt(args[3]);
+
+			mdrAddress = InetAddress.getByName(args[4]);
+			mdrPort = Integer.parseInt(args[5]);
+
+			return true;
+		}
 	}
 
 }

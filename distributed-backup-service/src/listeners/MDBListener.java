@@ -68,7 +68,7 @@ public class MDBListener extends SocketListener {
 			packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length,
 					address, port);
 
-			Peer.synchedHandler.sendControlMessage(packet);
+			Peer.synchedHandler.sendPacketToChannel(packet, Channel.MC);
 
 			break;
 
