@@ -106,8 +106,9 @@ public class Peer implements Protocol, RMIService {
 					out.write(bytes);
 					out.close();
 
-					String msg = MessageType.STORED + " " + Protocol.VERSION;
-
+					// send control message
+					String msg;
+					msg = MessageType.STORED + " " + Protocol.VERSION;
 					msg += " " + chunk.getFileID();
 					msg += " " + chunk.getChunkNo();
 					msg += " " + Protocol.CRLF;
@@ -218,7 +219,7 @@ public class Peer implements Protocol, RMIService {
 		msg += Protocol.CRLF;
 
 		// body
-		msg += chunk.getData();
+		msg += chunk.getDataStr();
 
 		DatagramPacket packet = new DatagramPacket(msg.getBytes(),
 				msg.getBytes().length, mdbAddress, mdbPort);

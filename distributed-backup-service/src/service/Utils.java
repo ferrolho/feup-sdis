@@ -57,8 +57,6 @@ public class Utils {
 	}
 
 	public static final String getFileDataStr(File file) {
-		String dataStr = "";
-
 		byte[] data = new byte[(int) file.length()];
 
 		try {
@@ -69,9 +67,7 @@ public class Utils {
 			e.printStackTrace();
 		}
 
-		dataStr = new String(data, StandardCharsets.ISO_8859_1);
-
-		return dataStr;
+		return new String(data, StandardCharsets.ISO_8859_1);
 	}
 
 	private static final String sha256(String str) {
