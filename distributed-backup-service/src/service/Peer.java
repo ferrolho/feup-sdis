@@ -27,6 +27,8 @@ public class Peer implements Protocol, RMIService {
 	private static InetAddress mdrAddress;
 	private static int mdrPort;
 
+	public static SynchedHandler synchedHandler;
+
 	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
@@ -36,7 +38,7 @@ public class Peer implements Protocol, RMIService {
 		mcThread = new MCThread(mcAddress, mcPort);
 		mcThread.start();
 
-		mdbThread = new MDBThread(mdbAddress, mdbPort, mcThread);
+		mdbThread = new MDBThread(mdbAddress, mdbPort);
 		mdbThread.start();
 
 		// multicast data restore channel
@@ -44,6 +46,8 @@ public class Peer implements Protocol, RMIService {
 		mdrSocket.setLoopbackMode(true);
 		mdrSocket.setTimeToLive(1);
 		mdrSocket.joinGroup(mdrAddress);
+
+		synchedHandler = new SynchedHandler(mcThread, mdbThread);
 
 		System.out.println("- Server ready -");
 

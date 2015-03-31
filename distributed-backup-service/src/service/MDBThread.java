@@ -15,14 +15,9 @@ public class MDBThread extends Thread {
 	private InetAddress address;
 	private int port;
 
-	// TODO remove this
-	MCThread mcThread;
-
-	public MDBThread(InetAddress address, int port, MCThread mcThread) {
+	public MDBThread(InetAddress address, int port) {
 		this.address = address;
 		this.port = port;
-
-		this.mcThread = mcThread;
 	}
 
 	public void run() {
@@ -100,11 +95,7 @@ public class MDBThread extends Thread {
 				packet = new DatagramPacket(msg.getBytes(),
 						msg.getBytes().length, address, port);
 
-				try {
-					mcThread.socket.send(packet);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				Peer.synchedHandler.sendControlMessage(packet);
 
 				break;
 
