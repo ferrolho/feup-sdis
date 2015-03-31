@@ -3,7 +3,7 @@ package listeners;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
-import peer.Handler;
+import peer.TestHandler;
 
 public class MDBListener extends SocketListener {
 
@@ -15,7 +15,8 @@ public class MDBListener extends SocketListener {
 	public void handler(DatagramPacket packet) {
 		System.out.println("MDB LISTENER HANDLER");
 
-		new Handler(packet).start();
+		// new Handler(packet).start();
+		new TestHandler(packet).start();
 	}
 
 }
