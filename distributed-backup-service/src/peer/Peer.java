@@ -74,15 +74,14 @@ public class Peer implements Protocol, RMIService {
 
 	@Override
 	public void putChunk(Chunk chunk) {
-		String headerStr = MessageType.PUTCHUNK + " " + Protocol.VERSION;
-		headerStr += " " + chunk.getFileID();
-		headerStr += " " + chunk.getChunkNo();
-		headerStr += " " + chunk.getReplicationDegree();
-		headerStr += " " + Protocol.CRLF;
-		headerStr += Protocol.CRLF;
+		String header = MessageType.PUTCHUNK + " " + Protocol.VERSION;
+		header += " " + chunk.getFileID();
+		header += " " + chunk.getChunkNo();
+		header += " " + chunk.getReplicationDegree();
+		header += " " + Protocol.CRLF;
+		header += Protocol.CRLF;
 
-		byte[] buf = Utils.concatByteArrays(headerStr.getBytes(),
-				chunk.getData());
+		byte[] buf = Utils.concatByteArrays(header.getBytes(), chunk.getData());
 
 		Peer.synchedHandler.sendPacketToChannel(buf, Channel.MDB);
 	}
@@ -116,8 +115,7 @@ public class Peer implements Protocol, RMIService {
 	public void backup(File file, int replicationDegree) {
 		try {
 			Chunk chunk = new Chunk(Utils.getFileID(file), 0,
-					replicationDegree, Utils.getFileData(file),
-					Utils.getFileDataStr(file));
+					replicationDegree, Utils.getFileData(file));
 
 			// TODO improve this method to split files
 

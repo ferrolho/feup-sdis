@@ -71,22 +71,6 @@ public class Utils {
 		return data;
 	}
 
-	public static final String getFileDataStr(File file)
-			throws FileNotFoundException {
-		FileInputStream inputStream = new FileInputStream(file);
-
-		byte[] data = new byte[(int) file.length()];
-
-		try {
-			inputStream.read(data);
-			inputStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return new String(data, StandardCharsets.ISO_8859_1);
-	}
-
 	private static final String sha256(String str) {
 		try {
 			MessageDigest sha = MessageDigest.getInstance("SHA-256");

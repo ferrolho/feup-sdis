@@ -30,19 +30,16 @@ public class MDBListener extends SocketListener {
 				new InputStreamReader(stream));
 
 		String header = reader.readLine();
+		String[] headerTokens = header.split("[ ]+");
 
 		int bodyStartIndex = header.getBytes().length + 2
 				* Protocol.CRLF.getBytes().length;
 		byte[] body = Arrays.copyOfRange(packet.getData(), bodyStartIndex,
 				packet.getLength());
 
-		// process request
-
-		String[] headerTokens = header.split("[ ]+");
+		System.out.println("MDB: " + header);
 
 		MessageType messageType = MessageType.valueOf(headerTokens[0]);
-
-		System.out.println("MDB: " + header);
 
 		switch (messageType) {
 
@@ -51,11 +48,11 @@ public class MDBListener extends SocketListener {
 		case PUTCHUNK:
 			Chunk chunk = new Chunk(headerTokens[2],
 					Integer.parseInt(headerTokens[3]),
-					Integer.parseInt(headerTokens[4]), body, new String(body));
+					Integer.parseInt(headerTokens[4]), body);
 
 			try {
 				FileOutputStream out = new FileOutputStream(chunk.getFileID());
-				out.write(body);
+				out.write(chunk.getData());
 				out.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -64,8 +61,7 @@ public class MDBListener extends SocketListener {
 			}
 
 			// send control message
-			String msg;
-			msg = MessageType.STORED + " " + Protocol.VERSION;
+			String msg = MessageType.STORED + " " + Protocol.VERSION;
 			msg += " " + chunk.getFileID();
 			msg += " " + chunk.getChunkNo();
 			msg += " " + Protocol.CRLF;
