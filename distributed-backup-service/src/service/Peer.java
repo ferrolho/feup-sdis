@@ -81,7 +81,7 @@ public class Peer implements Protocol, RMIService {
 
 				// process request
 				String[] requestTokens = request.split("[" + Protocol.CRLF
-						+ "]+");
+						+ "]+", 2);
 
 				String header = requestTokens[0];
 				String[] headerTokens = header.split("[ ]+");
