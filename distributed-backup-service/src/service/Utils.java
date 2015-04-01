@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class Utils {
 
-	public static Random random;
+	public static Random random = new Random();
 
 	public static final void printError(String msg) {
 		System.err.println();
