@@ -1,4 +1,4 @@
-package peer;
+package trigger;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,124 +7,126 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import service.Commands;
 import service.RMIService;
 import service.Utils;
 
 public class Trigger {
 
-	private static final String hostname = "localhost";
-	private static final String remoteObjectName = "rmi-peer";
+	private static final String HOST = "localhost";
 
+	private static String remoteObjectName;
 	private static String command;
 	private static File file;
 	private static int replicationDegree, kbyte;
+
+	private static RMIService peer;
 
 	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
 
-		try {
-			Registry registry = LocateRegistry.getRegistry(hostname);
-			RMIService peer = (RMIService) registry.lookup(remoteObjectName);
+		switch (command) {
+		case TriggerCommands.BACKUP:
+			peer.backup(file, replicationDegree);
+			break;
 
-			switch (command) {
-			case Commands.BACKUP:
-				peer.backup(file, replicationDegree);
-				break;
+		case TriggerCommands.RESTORE:
+			peer.restore(file);
+			break;
 
-			case Commands.DELETE:
-				peer.delete(file);
-				break;
+		case TriggerCommands.DELETE:
+			peer.delete(file);
+			break;
 
-			case Commands.FREE:
-				peer.free(kbyte);
-				break;
+		case TriggerCommands.SPACE:
+			peer.free(kbyte);
+			break;
 
-			case Commands.RESTORE:
-				peer.restore(file);
-				break;
-
-			default:
-				break;
-			}
-		} catch (RemoteException e) {
-			System.err.println("Client exception: " + e.toString());
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			e.printStackTrace();
+		default:
+			break;
 		}
 	}
 
 	private static boolean validArgs(String[] args) {
 		if (args.length < 1) {
-			Commands.printUsage();
+			TriggerCommands.printUsage(Trigger.class.getName());
 
 			return false;
 		}
 
-		command = args[0];
+		remoteObjectName = args[0];
+		command = args[1];
+
+		try {
+			Registry registry = LocateRegistry.getRegistry(HOST);
+
+			peer = (RMIService) registry.lookup(remoteObjectName);
+		} catch (RemoteException | NotBoundException e) {
+			Utils.printError("Invalid RMI object name");
+
+			return false;
+		}
 
 		switch (command) {
-		case Commands.BACKUP:
-			if (args.length != Commands.BACKUP_NUM_ARGS) {
+		case TriggerCommands.BACKUP:
+			if (args.length != TriggerCommands.BACKUP_NUM_ARGS) {
 				Utils.printError("Wrong number of arguments");
 
 				System.out.println("Usage:");
-				System.out.println("\t" + Commands.BACKUP_USAGE);
+				System.out.println("\t" + TriggerCommands.BACKUP_USAGE);
 
 				return false;
 			}
 
-			if (!validFile(args[1]))
+			if (!validFilePath(args[2]))
 				return false;
 
-			if (!validReplicationDegree(args[2]))
+			if (!validReplicationDegree(args[3]))
 				return false;
 
 			break;
 
-		case Commands.DELETE:
-			if (args.length != Commands.DELETE_NUM_ARGS) {
+		case TriggerCommands.RESTORE:
+			if (args.length != TriggerCommands.RESTORE_NUM_ARGS) {
 				Utils.printError("Wrong number of arguments");
 
 				System.out.println("Usage:");
-				System.out.println("\t" + Commands.DELETE_USAGE);
+				System.out.println("\t" + TriggerCommands.RESTORE_USAGE);
 
 				return false;
 			}
 
-			if (!validFile(args[1]))
+			if (!validFilePath(args[2]))
 				return false;
 
 			break;
 
-		case Commands.FREE:
-			if (args.length != Commands.FREE_NUM_ARGS) {
+		case TriggerCommands.DELETE:
+			if (args.length != TriggerCommands.DELETE_NUM_ARGS) {
 				Utils.printError("Wrong number of arguments");
 
 				System.out.println("Usage:");
-				System.out.println("\t" + Commands.FREE_USAGE);
+				System.out.println("\t" + TriggerCommands.DELETE_USAGE);
 
 				return false;
 			}
 
-			if (!validKbyte(args[1]))
+			if (!validFilePath(args[2]))
 				return false;
 
 			break;
 
-		case Commands.RESTORE:
-			if (args.length != Commands.RESTORE_NUM_ARGS) {
+		case TriggerCommands.SPACE:
+			if (args.length != TriggerCommands.SPACE_NUM_ARGS) {
 				Utils.printError("Wrong number of arguments");
 
 				System.out.println("Usage:");
-				System.out.println("\t" + Commands.RESTORE_USAGE);
+				System.out.println("\t" + TriggerCommands.SPACE_USAGE);
 
 				return false;
 			}
 
-			if (!validFile(args[1]))
+			if (!validAmountOfSpace(args[2]))
 				return false;
 
 			break;
@@ -132,7 +134,7 @@ public class Trigger {
 		default:
 			Utils.printError("Unknown command");
 
-			Commands.printUsage();
+			TriggerCommands.printUsage(Trigger.class.getName());
 
 			return false;
 		}
@@ -140,7 +142,7 @@ public class Trigger {
 		return true;
 	}
 
-	private static boolean validFile(String fileName) {
+	private static boolean validFilePath(String fileName) {
 		file = new File(fileName);
 
 		if (!file.exists() || !file.isFile()) {
@@ -166,7 +168,7 @@ public class Trigger {
 		return true;
 	}
 
-	private static boolean validKbyte(String kbyteStr) {
+	private static boolean validAmountOfSpace(String kbyteStr) {
 		try {
 			kbyte = Integer.parseInt(kbyteStr);
 		} catch (NumberFormatException e) {
