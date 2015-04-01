@@ -24,16 +24,13 @@ public class Handler implements Runnable {
 
 	public Handler(DatagramPacket packet) {
 		this.packet = packet;
+	}
 
+	public void run() {
 		if (!extractHeader())
 			return;
 
 		extractBody();
-	}
-
-	public void run() {
-		if (header == null)
-			return;
 
 		MessageType messageType = MessageType.valueOf(headerTokens[0]);
 

@@ -23,11 +23,12 @@ public abstract class SocketListener implements Runnable {
 		openSocket();
 
 		byte[] buf = new byte[PACKET_MAX_SIZE];
-		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
 		boolean done = false;
 		while (!done) {
 			try {
+				DatagramPacket packet = new DatagramPacket(buf, buf.length);
+
 				socket.receive(packet);
 
 				handler(packet);
