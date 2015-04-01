@@ -22,7 +22,7 @@ public class Utils {
 		System.err.println();
 	}
 
-	public static byte[] concatByteArrays(byte[] a, byte[] b) {
+	public static byte[] concatBytes(byte[] a, byte[] b) {
 		int aLen = a.length;
 		int bLen = b.length;
 

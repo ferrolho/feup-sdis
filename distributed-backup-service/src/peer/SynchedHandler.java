@@ -3,14 +3,13 @@ package peer;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
+import listeners.MCListener;
+import listeners.MDBListener;
+import listeners.MDRListener;
 import service.Chunk;
 import service.MessageType;
 import service.Protocol;
 import service.Utils;
-import listeners.Channel;
-import listeners.MCListener;
-import listeners.MDBListener;
-import listeners.MDRListener;
 
 public class SynchedHandler implements Protocol {
 
@@ -34,9 +33,7 @@ public class SynchedHandler implements Protocol {
 		header += " " + Protocol.CRLF;
 		header += Protocol.CRLF;
 
-		byte[] buf = Utils.concatByteArrays(header.getBytes(), chunk.getData());
-
-		sendPacketToChannel(buf, Channel.MDB);
+		sendPacketToMDB(Utils.concatBytes(header.getBytes(), chunk.getData()));
 	}
 
 	@Override
@@ -47,7 +44,7 @@ public class SynchedHandler implements Protocol {
 		header += " " + Protocol.CRLF;
 		header += Protocol.CRLF;
 
-		sendPacketToChannel(header.getBytes(), Channel.MC);
+		sendPacketToMC(header.getBytes());
 	}
 
 	@Override
@@ -72,25 +69,6 @@ public class SynchedHandler implements Protocol {
 	public void removeChunk() {
 		// TODO Auto-generated method stub
 
-	}
-
-	public void sendPacketToChannel(byte[] buf, Channel channel) {
-		switch (channel) {
-		case MC:
-			sendPacketToMC(buf);
-			break;
-
-		case MDB:
-			sendPacketToMDB(buf);
-			break;
-
-		case MDR:
-			sendPacketToMDR(buf);
-			break;
-
-		default:
-			break;
-		}
 	}
 
 	private synchronized void sendPacketToMC(byte[] buf) {

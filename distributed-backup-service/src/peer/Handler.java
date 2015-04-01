@@ -74,6 +74,7 @@ public class Handler implements Runnable {
 				Integer.parseInt(headerTokens[4]), body);
 
 		try {
+			// save chunk to disk
 			FileOutputStream out = new FileOutputStream(chunk.getFileID());
 			out.write(chunk.getData());
 			out.close();
@@ -81,6 +82,7 @@ public class Handler implements Runnable {
 			// random delay between 0 and 400ms
 			Thread.sleep(Utils.random.nextInt(400));
 
+			// send stored chunk confirmation
 			Peer.synchedHandler.storeChunk(chunk);
 		} catch (Exception e) {
 			e.printStackTrace();
