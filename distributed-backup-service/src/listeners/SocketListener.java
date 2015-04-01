@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+import peer.Peer;
+
 public abstract class SocketListener implements Runnable {
 
 	public static final int PACKET_MAX_SIZE = 64000;
@@ -31,7 +33,9 @@ public abstract class SocketListener implements Runnable {
 
 				socket.receive(packet);
 
-				handler(packet);
+				// ignore packets sent by self
+				if (!packet.getAddress().equals(Peer.getIP()))
+					handler(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -44,7 +48,6 @@ public abstract class SocketListener implements Runnable {
 		try {
 			socket = new MulticastSocket(port);
 
-			socket.setLoopbackMode(true);
 			socket.setTimeToLive(1);
 
 			socket.joinGroup(address);

@@ -20,6 +20,8 @@ public class Peer implements RMIService {
 
 	private static final String remoteObjectName = "rmi-peer";
 
+	private static InetAddress IP;
+
 	private static MCListener mcListener;
 	private static MDBListener mdbListener;
 	private static MDRListener mdrListener;
@@ -31,6 +33,8 @@ public class Peer implements RMIService {
 			return;
 
 		startRMI();
+
+		IP = InetAddress.getByName(Utils.getIPv4());
 
 		new Thread(mcListener).start();
 		new Thread(mdbListener).start();
@@ -120,6 +124,10 @@ public class Peer implements RMIService {
 		mdrListener = new MDRListener(mdrAddress, mdrPort);
 
 		return true;
+	}
+
+	public static InetAddress getIP() {
+		return IP;
 	}
 
 }

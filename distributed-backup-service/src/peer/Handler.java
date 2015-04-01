@@ -113,7 +113,7 @@ public class Handler implements Runnable {
 
 		headerTokens = header.split("[ ]+");
 
-		System.out.println("HANDLER: " + header);
+		System.out.println(header);
 
 		return true;
 	}

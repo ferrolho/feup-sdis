@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileOwnerAttributeView;
 import java.security.MessageDigest;
+import java.util.Enumeration;
 import java.util.Random;
 
 public class Utils {
@@ -32,6 +36,35 @@ public class Utils {
 		System.arraycopy(b, 0, c, aLen, bLen);
 
 		return c;
+	}
+
+	public static String getIPv4() {
+		System.setProperty("java.net.preferIPv4Stack", "true");
+
+		String ip = null;
+
+		try {
+			Enumeration<NetworkInterface> interfaces = NetworkInterface
+					.getNetworkInterfaces();
+
+			while (interfaces.hasMoreElements()) {
+				NetworkInterface iface = interfaces.nextElement();
+
+				// filters out 127.0.0.1 and inactive interfaces
+				if (iface.isLoopback() || !iface.isUp())
+					continue;
+
+				Enumeration<InetAddress> addresses = iface.getInetAddresses();
+				while (addresses.hasMoreElements()) {
+					InetAddress addr = addresses.nextElement();
+					ip = addr.getHostAddress();
+				}
+			}
+		} catch (SocketException e) {
+			throw new RuntimeException(e);
+		}
+
+		return ip;
 	}
 
 	public static final String getFileID(File file) {
