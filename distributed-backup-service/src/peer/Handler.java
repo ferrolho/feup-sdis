@@ -78,7 +78,8 @@ public class Handler implements Runnable {
 			out.write(chunk.getData());
 			out.close();
 
-			Thread.sleep(Utils.randInt(0, 400));
+			// random delay between 0 and 400ms
+			Thread.sleep(Utils.random.nextInt(400));
 
 			Peer.synchedHandler.storeChunk(chunk);
 		} catch (Exception e) {

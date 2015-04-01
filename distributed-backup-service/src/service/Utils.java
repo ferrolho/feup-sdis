@@ -14,19 +14,12 @@ import java.util.Random;
 
 public class Utils {
 
-	private static Random random;
+	public static Random random;
 
 	public static final void printError(String msg) {
 		System.err.println();
 		System.err.println("ERROR: " + msg);
 		System.err.println();
-	}
-
-	public static int randInt(int min, int max) {
-		if (random == null)
-			random = new Random();
-
-		return min + random.nextInt(max - min + 1);
 	}
 
 	public static byte[] concatByteArrays(byte[] a, byte[] b) {

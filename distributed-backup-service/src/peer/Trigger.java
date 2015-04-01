@@ -11,7 +11,7 @@ import service.Commands;
 import service.RMIService;
 import service.Utils;
 
-public class TestClient {
+public class Trigger {
 
 	private static final String hostname = "localhost";
 	private static final String remoteObjectName = "rmi-peer";
