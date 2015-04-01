@@ -24,13 +24,16 @@ public class Handler implements Runnable {
 
 	public Handler(DatagramPacket packet) {
 		this.packet = packet;
+
+		header = null;
+		headerTokens = null;
+
+		body = null;
 	}
 
 	public void run() {
 		if (!extractHeader())
 			return;
-
-		extractBody();
 
 		MessageType messageType = MessageType.valueOf(headerTokens[0]);
 
@@ -43,6 +46,7 @@ public class Handler implements Runnable {
 			break;
 
 		case STORED:
+			storedHandler();
 			break;
 
 		// 3.3 Chunk restore protocol
@@ -69,6 +73,8 @@ public class Handler implements Runnable {
 	}
 
 	private void putChunkHandler() {
+		extractBody();
+
 		Chunk chunk = new Chunk(headerTokens[2],
 				Integer.parseInt(headerTokens[3]),
 				Integer.parseInt(headerTokens[4]), body);
@@ -87,6 +93,10 @@ public class Handler implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void storedHandler() {
+		System.out.println("STORED HANDLR");
 	}
 
 	private boolean extractHeader() {
