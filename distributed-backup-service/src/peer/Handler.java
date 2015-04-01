@@ -13,7 +13,7 @@ import service.MessageType;
 import service.Protocol;
 import service.Utils;
 
-public class Handler extends Thread {
+public class Handler implements Runnable {
 
 	private DatagramPacket packet;
 

@@ -5,7 +5,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
-public abstract class SocketListener extends Thread {
+public abstract class SocketListener implements Runnable {
+
+	public static final int PACKET_MAX_SIZE = 64000;
 
 	public MulticastSocket socket;
 
@@ -20,7 +22,7 @@ public abstract class SocketListener extends Thread {
 	public void run() {
 		openSocket();
 
-		byte[] buf = new byte[64000];
+		byte[] buf = new byte[PACKET_MAX_SIZE];
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
 		boolean done = false;

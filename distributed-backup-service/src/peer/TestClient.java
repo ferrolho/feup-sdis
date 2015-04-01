@@ -14,7 +14,7 @@ import service.Utils;
 public class TestClient {
 
 	private static final String hostname = "localhost";
-	private static final String remoteObjectName = "test";
+	private static final String remoteObjectName = "rmi-peer";
 
 	private static String command;
 	private static File file;

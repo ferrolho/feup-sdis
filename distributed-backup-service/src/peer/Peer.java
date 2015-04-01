@@ -18,7 +18,7 @@ import service.Utils;
 
 public class Peer implements RMIService {
 
-	private static final String remoteObjectName = "test";
+	private static final String remoteObjectName = "rmi-peer";
 
 	private static MCListener mcListener;
 	private static MDBListener mdbListener;
@@ -42,13 +42,13 @@ public class Peer implements RMIService {
 		startRMI();
 
 		mcListener = new MCListener(mcAddress, mcPort);
-		mcListener.start();
+		new Thread(mcListener).start();
 
 		mdbListener = new MDBListener(mdbAddress, mdbPort);
-		mdbListener.start();
+		new Thread(mdbListener).start();
 
 		mdrListener = new MDRListener(mdrAddress, mdrPort);
-		mdrListener.start();
+		new Thread(mdrListener).start();
 
 		synchedHandler = new SynchedHandler(mcListener, mdbListener,
 				mdrListener);
