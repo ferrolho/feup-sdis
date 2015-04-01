@@ -34,7 +34,7 @@ public class Peer implements RMIService {
 
 		startRMI();
 
-		IP = InetAddress.getByName(Utils.getIPv4());
+		IP = Utils.getIPv4();
 
 		new Thread(mcListener).start();
 		new Thread(mdbListener).start();

@@ -38,10 +38,10 @@ public class Utils {
 		return c;
 	}
 
-	public static String getIPv4() {
+	public static InetAddress getIPv4() {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 
-		String ip = null;
+		InetAddress ip = null;
 
 		try {
 			Enumeration<NetworkInterface> interfaces = NetworkInterface
@@ -55,10 +55,9 @@ public class Utils {
 					continue;
 
 				Enumeration<InetAddress> addresses = iface.getInetAddresses();
-				while (addresses.hasMoreElements()) {
-					InetAddress addr = addresses.nextElement();
-					ip = addr.getHostAddress();
-				}
+
+				while (addresses.hasMoreElements())
+					ip = addresses.nextElement();
 			}
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
