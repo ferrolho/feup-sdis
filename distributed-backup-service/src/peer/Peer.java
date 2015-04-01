@@ -26,28 +26,14 @@ public class Peer implements RMIService {
 
 	public static SynchedHandler synchedHandler;
 
-	private static InetAddress mcAddress;
-	private static int mcPort;
-
-	private static InetAddress mdbAddress;
-	private static int mdbPort;
-
-	private static InetAddress mdrAddress;
-	private static int mdrPort;
-
 	public static void main(String[] args) throws IOException {
 		if (!validArgs(args))
 			return;
 
 		startRMI();
 
-		mcListener = new MCListener(mcAddress, mcPort);
 		new Thread(mcListener).start();
-
-		mdbListener = new MDBListener(mdbAddress, mdbPort);
 		new Thread(mdbListener).start();
-
-		mdrListener = new MDRListener(mdrAddress, mdrPort);
 		new Thread(mdrListener).start();
 
 		synchedHandler = new SynchedHandler(mcListener, mdbListener,
@@ -99,6 +85,9 @@ public class Peer implements RMIService {
 	}
 
 	private static boolean validArgs(String[] args) throws UnknownHostException {
+		InetAddress mcAddress, mdbAddress, mdrAddress;
+		int mcPort, mdbPort, mdrPort;
+
 		if (args.length != 0 && args.length != 6) {
 			System.out.println("Usage:");
 			System.out.println("\tjava Server");
@@ -115,8 +104,6 @@ public class Peer implements RMIService {
 
 			mdrAddress = InetAddress.getByName("224.0.0.0");
 			mdrPort = 8002;
-
-			return true;
 		} else {
 			mcAddress = InetAddress.getByName(args[0]);
 			mcPort = Integer.parseInt(args[1]);
@@ -126,9 +113,13 @@ public class Peer implements RMIService {
 
 			mdrAddress = InetAddress.getByName(args[4]);
 			mdrPort = Integer.parseInt(args[5]);
-
-			return true;
 		}
+
+		mcListener = new MCListener(mcAddress, mcPort);
+		mdbListener = new MDBListener(mdbAddress, mdbPort);
+		mdrListener = new MDRListener(mdrAddress, mdrPort);
+
+		return true;
 	}
 
 }
