@@ -62,7 +62,7 @@ public class Peer implements RMIService {
 
 	@Override
 	public void backup(File file, int replicationDegree) {
-		new Thread(new BackupInitiator(file, replicationDegree, mcListener)).start();
+		new Thread(new BackupInitiator(file, replicationDegree)).start();
 	}
 
 	@Override
@@ -124,6 +124,10 @@ public class Peer implements RMIService {
 
 	public static PeerID getId() {
 		return id;
+	}
+
+	public static MCListener getMcListener() {
+		return mcListener;
 	}
 
 }

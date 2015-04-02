@@ -106,8 +106,6 @@ public class Handler implements Runnable {
 	}
 
 	private void storedHandler() {
-		System.out.println("STORED HANDLR");
-
 		PeerID senderID = new PeerID(packet.getAddress(), packet.getPort());
 
 		if (!confirmedPeers.get(headerTokens[2]).contains(senderID))
@@ -127,8 +125,6 @@ public class Handler implements Runnable {
 		}
 
 		headerTokens = header.split("[ ]+");
-
-		System.out.println(header);
 
 		return true;
 	}

@@ -4,25 +4,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import listeners.MCListener;
 import service.Chunk;
 import service.Utils;
 
 public class BackupInitiator implements Runnable {
 
+	private static final long INITIAL_WAITING_TIME = 500;
 	private static final int MAX_ATTEMPTS = 5;
 
 	private File file;
 	private int replicationDegree;
 
-	private MCListener mcListener;
-
-	public BackupInitiator(File file, int replicationDegree,
-			MCListener mcListener) {
+	public BackupInitiator(File file, int replicationDegree) {
 		this.file = file;
 		this.replicationDegree = replicationDegree;
-
-		this.mcListener = mcListener;
 	}
 
 	@Override
@@ -40,10 +35,12 @@ public class BackupInitiator implements Runnable {
 		}
 
 		ArrayList<PeerID> confirmedPeers = new ArrayList<PeerID>();
-		mcListener.confirmedPeers.put(chunk.getFileID(), confirmedPeers);
 
+		Peer.getMcListener().confirmedPeers.put(chunk.getFileID(),
+				confirmedPeers);
+
+		long waitingTime = INITIAL_WAITING_TIME;
 		int attempt = 0;
-		long waitingTime = 500;
 
 		boolean done = false;
 		while (!done) {
@@ -59,8 +56,8 @@ public class BackupInitiator implements Runnable {
 				e.printStackTrace();
 			}
 
-			System.out.println(confirmedPeers.size()
-					+ " peers have stored the chunk");
+			System.out.println(confirmedPeers.size() + " of "
+					+ replicationDegree + " peers stored the chunk");
 			System.out.println();
 
 			if (confirmedPeers.size() < replicationDegree) {
