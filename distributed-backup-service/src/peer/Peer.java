@@ -1,7 +1,6 @@
 package peer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -13,7 +12,6 @@ import java.rmi.server.UnicastRemoteObject;
 import listeners.MCListener;
 import listeners.MDBListener;
 import listeners.MDRListener;
-import service.Chunk;
 import service.RMIService;
 import service.Utils;
 
@@ -64,16 +62,7 @@ public class Peer implements RMIService {
 
 	@Override
 	public void backup(File file, int replicationDegree) {
-		try {
-			Chunk chunk = new Chunk(Utils.getFileID(file), 0,
-					replicationDegree, Utils.getFileData(file));
-
-			// TODO improve this method to split files
-
-			synchedHandler.putChunk(chunk);
-		} catch (FileNotFoundException e) {
-			Utils.printError("file not found");
-		}
+		new Thread(new BackupInitiator(file, replicationDegree, mcListener)).start();
 	}
 
 	@Override

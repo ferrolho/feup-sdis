@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import service.Chunk;
 import service.MessageType;
@@ -22,13 +24,18 @@ public class Handler implements Runnable {
 
 	private byte[] body;
 
-	public Handler(DatagramPacket packet) {
+	private HashMap<String, ArrayList<PeerID>> confirmedPeers;
+
+	public Handler(DatagramPacket packet,
+			HashMap<String, ArrayList<PeerID>> confirmedPeers) {
 		this.packet = packet;
 
 		header = null;
 		headerTokens = null;
 
 		body = null;
+
+		this.confirmedPeers = confirmedPeers;
 	}
 
 	public void run() {
@@ -100,6 +107,11 @@ public class Handler implements Runnable {
 
 	private void storedHandler() {
 		System.out.println("STORED HANDLR");
+
+		PeerID senderID = new PeerID(packet.getAddress(), packet.getPort());
+
+		if (!confirmedPeers.get(headerTokens[2]).contains(senderID))
+			confirmedPeers.get(headerTokens[2]).add(senderID);
 	}
 
 	private boolean extractHeader() {
