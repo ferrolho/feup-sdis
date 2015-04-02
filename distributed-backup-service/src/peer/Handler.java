@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import service.Chunk;
+import service.ChunkID;
+import service.HeaderField;
 import service.MessageType;
 import service.Protocol;
 import service.Utils;
@@ -24,10 +25,10 @@ public class Handler implements Runnable {
 
 	private byte[] body;
 
-	private HashMap<String, ArrayList<PeerID>> confirmedPeers;
+	private volatile HashMap<ChunkID, ArrayList<PeerID>> confirmedPeers;
 
 	public Handler(DatagramPacket packet,
-			HashMap<String, ArrayList<PeerID>> confirmedPeers) {
+			HashMap<ChunkID, ArrayList<PeerID>> confirmedPeers) {
 		this.packet = packet;
 
 		header = null;
@@ -82,34 +83,46 @@ public class Handler implements Runnable {
 	private void putChunkHandler() {
 		extractBody();
 
-		Chunk chunk = new Chunk(headerTokens[2],
-				Integer.parseInt(headerTokens[3]),
-				Integer.parseInt(headerTokens[4]), body);
+		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
+				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
 		try {
 			// do not write to disk a chunk that already exists
-			if (!Utils.fileExists(chunk.getFileID())) {
+			if (!Utils.fileExists(chunkID.getFileID())) {
 				// save chunk to disk
-				FileOutputStream out = new FileOutputStream(chunk.getFileID());
-				out.write(chunk.getData());
+				FileOutputStream out = new FileOutputStream(chunkID.toString());
+				out.write(body);
 				out.close();
+
+				// update database
+				Peer.getChunkDB().addChunk(chunkID);
+				Peer.saveChunkDB();
 			}
 
 			// random delay between 0 and 400ms
 			Thread.sleep(Utils.random.nextInt(400));
 
 			// send stored chunk confirmation
-			Peer.synchedHandler.storeChunk(chunk);
+			Peer.synchedHandler.sendSTORED(chunkID);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void storedHandler() {
+		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
+				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
+
 		PeerID senderID = new PeerID(packet.getAddress(), packet.getPort());
 
-		if (!confirmedPeers.get(headerTokens[2]).contains(senderID))
-			confirmedPeers.get(headerTokens[2]).add(senderID);
+		Peer.getChunkDB().addChunkMirror(chunkID, senderID);
+
+		System.out.println(Peer.getChunkDB());
+
+		// ArrayList<PeerID> receivedSTOREDs = confirmedPeers.get(fileID);
+		//
+		// if (!receivedSTOREDs.contains(senderID))
+		// receivedSTOREDs.add(senderID);
 	}
 
 	private boolean extractHeader() {
@@ -119,6 +132,7 @@ public class Handler implements Runnable {
 
 		try {
 			header = reader.readLine();
+			System.out.println(header);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;

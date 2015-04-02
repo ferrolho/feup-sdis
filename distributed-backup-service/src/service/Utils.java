@@ -18,12 +18,6 @@ public class Utils {
 
 	public static Random random = new Random();
 
-	public static final void printError(String msg) {
-		System.err.println();
-		System.err.println("ERROR: " + msg);
-		System.err.println();
-	}
-
 	public static byte[] concatBytes(byte[] a, byte[] b) {
 		int aLen = a.length;
 		int bLen = b.length;

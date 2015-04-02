@@ -1,7 +1,12 @@
 package peer;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
@@ -14,25 +19,31 @@ import listeners.MDBListener;
 import listeners.MDRListener;
 import service.RMIService;
 import service.Utils;
+import utils.Log;
 
 public class Peer implements RMIService {
 
+	private static final String DB_NAME = "db.data";
+
 	private static final String remoteObjectName = "rmi-peer";
+
+	private static volatile ChunkDB chunkDB;
 
 	private static MulticastSocket socket;
 	private static PeerID id;
 
-	private static MCListener mcListener;
-	private static MDBListener mdbListener;
-	private static MDRListener mdrListener;
+	private static volatile MCListener mcListener;
+	private static volatile MDBListener mdbListener;
+	private static volatile MDRListener mdrListener;
 
 	public static SynchedHandler synchedHandler;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws ClassNotFoundException,
+			IOException {
 		if (!validArgs(args))
 			return;
 
-		startRMI();
+		loadChunkDB();
 
 		socket = new MulticastSocket();
 		id = new PeerID(Utils.getIPv4(), socket.getLocalPort());
@@ -41,10 +52,45 @@ public class Peer implements RMIService {
 		new Thread(mdbListener).start();
 		new Thread(mdrListener).start();
 
-		synchedHandler = new SynchedHandler(mcListener, mdbListener,
-				mdrListener);
+		synchedHandler = new SynchedHandler();
+
+		startRMI();
 
 		System.out.println("- SERVER READY -");
+	}
+
+	private static void loadChunkDB() throws ClassNotFoundException,
+			IOException {
+		try {
+			FileInputStream fileInputStream = new FileInputStream(DB_NAME);
+
+			ObjectInputStream objectInputStream = new ObjectInputStream(
+					fileInputStream);
+
+			chunkDB = (ChunkDB) objectInputStream.readObject();
+
+			objectInputStream.close();
+		} catch (FileNotFoundException e) {
+			Log.error("Database not found");
+
+			chunkDB = new ChunkDB();
+
+			saveChunkDB();
+
+			Log.info("A new empty database has been created");
+		}
+
+	}
+
+	public static void saveChunkDB() throws FileNotFoundException, IOException {
+		FileOutputStream fileOutputStream = new FileOutputStream(DB_NAME);
+
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+				fileOutputStream);
+
+		objectOutputStream.writeObject(chunkDB);
+
+		objectOutputStream.close();
 	}
 
 	private static void startRMI() {
@@ -56,7 +102,7 @@ public class Peer implements RMIService {
 
 			LocateRegistry.getRegistry().rebind(remoteObjectName, rmiService);
 		} catch (RemoteException e) {
-			Utils.printError("Could not bind to rmiregistry");
+			Log.error("Could not bind to rmiregistry");
 		}
 	}
 
@@ -118,6 +164,10 @@ public class Peer implements RMIService {
 		return true;
 	}
 
+	public static ChunkDB getChunkDB() {
+		return chunkDB;
+	}
+
 	public static MulticastSocket getSocket() {
 		return socket;
 	}
@@ -128,6 +178,14 @@ public class Peer implements RMIService {
 
 	public static MCListener getMcListener() {
 		return mcListener;
+	}
+
+	public static MDBListener getMdbListener() {
+		return mdbListener;
+	}
+
+	public static MDRListener getMdrListener() {
+		return mdrListener;
 	}
 
 }

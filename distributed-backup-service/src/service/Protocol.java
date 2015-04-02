@@ -10,22 +10,22 @@ public interface Protocol {
 
 	// 3.2 Chunk backup subprotocol
 
-	void putChunk(Chunk chunk);
+	void sendPUTCHUNK(Chunk chunk);
 
-	void storeChunk(Chunk chunk);
+	void sendSTORED(ChunkID chunkID);
 
 	// 3.3 Chunk restore protocol
 
-	void getChunk();
+	void sendGETCHUNK();
 
-	void sendChunk();
+	void sendCHUNK();
 
 	// 3.4 File deletion subprotocol
 
-	void deleteChunk();
+	void sendDELETE();
 
 	// 3.5 Space reclaiming subprotocol
 
-	void removeChunk();
+	void sendREMOVED();
 
 }

@@ -2,26 +2,22 @@ package service;
 
 public class Chunk {
 
-	private String fileID;
-	private int chunkNo;
+	private ChunkID chunkID;
 
 	private int replicationDegree;
+
 	private byte[] data;
 
 	public Chunk(String fileID, int chunkNo, int replicationDegree, byte[] data) {
-		this.fileID = fileID;
-		this.chunkNo = chunkNo;
+		chunkID = new ChunkID(fileID, chunkNo);
 
 		this.replicationDegree = replicationDegree;
+
 		this.data = data;
 	}
 
-	public String getFileID() {
-		return fileID;
-	}
-
-	public int getChunkNo() {
-		return chunkNo;
+	public ChunkID getChunkID() {
+		return chunkID;
 	}
 
 	public int getReplicationDegree() {

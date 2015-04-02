@@ -1,8 +1,11 @@
 package peer;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
-public class PeerID {
+public class PeerID implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private InetAddress ip;
 	private int port;
@@ -14,6 +17,11 @@ public class PeerID {
 
 	public InetAddress getIP() {
 		return ip;
+	}
+
+	@Override
+	public String toString() {
+		return ip + ":" + port;
 	}
 
 	@Override

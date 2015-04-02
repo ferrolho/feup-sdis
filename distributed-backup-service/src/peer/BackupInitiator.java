@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import service.Chunk;
 import service.Utils;
+import utils.Log;
 
 public class BackupInitiator implements Runnable {
 
@@ -30,23 +31,24 @@ public class BackupInitiator implements Runnable {
 
 			// TODO improve this method to split files
 		} catch (FileNotFoundException e) {
-			Utils.printError("file not found");
+			Log.error("file not found");
 			return;
 		}
 
-		ArrayList<PeerID> confirmedPeers = new ArrayList<PeerID>();
+		ArrayList<PeerID> receivedSTOREDs = new ArrayList<PeerID>();
 
-		Peer.getMcListener().confirmedPeers.put(chunk.getFileID(),
-				confirmedPeers);
+		Peer.getMcListener().confirmedPeers.put(chunk.getChunkID(),
+				receivedSTOREDs);
+		System.out.println(Peer.getMcListener().confirmedPeers.toString());
 
 		long waitingTime = INITIAL_WAITING_TIME;
 		int attempt = 0;
 
 		boolean done = false;
 		while (!done) {
-			confirmedPeers.clear();
+			receivedSTOREDs.clear();
 
-			Peer.synchedHandler.putChunk(chunk);
+			Peer.synchedHandler.sendPUTCHUNK(chunk);
 
 			try {
 				System.out.println("Waiting for STOREDs for " + waitingTime
@@ -56,11 +58,11 @@ public class BackupInitiator implements Runnable {
 				e.printStackTrace();
 			}
 
-			System.out.println(confirmedPeers.size() + " of "
+			System.out.println(receivedSTOREDs.size() + " of "
 					+ replicationDegree + " peers stored the chunk");
 			System.out.println();
 
-			if (confirmedPeers.size() < replicationDegree) {
+			if (receivedSTOREDs.size() < replicationDegree) {
 				attempt++;
 
 				if (attempt > MAX_ATTEMPTS)
@@ -70,5 +72,8 @@ public class BackupInitiator implements Runnable {
 			} else
 				done = true;
 		}
+
+		Peer.getMcListener().confirmedPeers.remove(chunk.getChunkID()
+				.getFileID());
 	}
 }

@@ -8,7 +8,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 import service.RMIService;
-import service.Utils;
+import utils.Log;
 
 public class Trigger {
 
@@ -62,7 +62,7 @@ public class Trigger {
 
 			peer = (RMIService) registry.lookup(remoteObjectName);
 		} catch (RemoteException | NotBoundException e) {
-			Utils.printError("Invalid RMI object name");
+			Log.error("Invalid RMI object name");
 
 			return false;
 		}
@@ -70,7 +70,7 @@ public class Trigger {
 		switch (command) {
 		case TriggerCommands.BACKUP:
 			if (args.length != TriggerCommands.BACKUP_NUM_ARGS) {
-				Utils.printError("Wrong number of arguments");
+				Log.error("Wrong number of arguments");
 
 				System.out.println("Usage:");
 				System.out.println("\t" + TriggerCommands.BACKUP_USAGE);
@@ -88,7 +88,7 @@ public class Trigger {
 
 		case TriggerCommands.RESTORE:
 			if (args.length != TriggerCommands.RESTORE_NUM_ARGS) {
-				Utils.printError("Wrong number of arguments");
+				Log.error("Wrong number of arguments");
 
 				System.out.println("Usage:");
 				System.out.println("\t" + TriggerCommands.RESTORE_USAGE);
@@ -103,7 +103,7 @@ public class Trigger {
 
 		case TriggerCommands.DELETE:
 			if (args.length != TriggerCommands.DELETE_NUM_ARGS) {
-				Utils.printError("Wrong number of arguments");
+				Log.error("Wrong number of arguments");
 
 				System.out.println("Usage:");
 				System.out.println("\t" + TriggerCommands.DELETE_USAGE);
@@ -118,7 +118,7 @@ public class Trigger {
 
 		case TriggerCommands.SPACE:
 			if (args.length != TriggerCommands.SPACE_NUM_ARGS) {
-				Utils.printError("Wrong number of arguments");
+				Log.error("Wrong number of arguments");
 
 				System.out.println("Usage:");
 				System.out.println("\t" + TriggerCommands.SPACE_USAGE);
@@ -132,7 +132,7 @@ public class Trigger {
 			break;
 
 		default:
-			Utils.printError("Unknown command");
+			Log.error("Unknown command");
 
 			TriggerCommands.printUsage(Trigger.class.getName());
 
@@ -146,12 +146,11 @@ public class Trigger {
 		file = new File(fileName);
 
 		if (!file.exists()) {
-			Utils.printError(file.getAbsolutePath() + " does not exist");
+			Log.error(file.getAbsolutePath() + " does not exist");
 
 			return false;
 		} else if (!file.isFile()) {
-			Utils.printError(file.getAbsolutePath()
-					+ " is not a file, it is a folder");
+			Log.error(file.getAbsolutePath() + " is not a file, it is a folder");
 
 			return false;
 		}
@@ -163,7 +162,7 @@ public class Trigger {
 		try {
 			replicationDegree = Integer.parseInt(replicationDegreeStr);
 		} catch (NumberFormatException e) {
-			Utils.printError("Replication degree must be a valid integer");
+			Log.error("Replication degree must be a valid integer");
 
 			e.printStackTrace();
 
@@ -177,7 +176,7 @@ public class Trigger {
 		try {
 			kbyte = Integer.parseInt(kbyteStr);
 		} catch (NumberFormatException e) {
-			Utils.printError("The space to be freed must be a valid integer");
+			Log.error("The space to be freed must be a valid integer");
 
 			e.printStackTrace();
 

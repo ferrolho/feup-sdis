@@ -7,19 +7,22 @@ import java.util.HashMap;
 
 import peer.Handler;
 import peer.PeerID;
+import service.ChunkID;
 
 public class MCListener extends SocketListener {
 
-	public HashMap<String, ArrayList<PeerID>> confirmedPeers;
+	public volatile HashMap<ChunkID, ArrayList<PeerID>> confirmedPeers;
 
 	public MCListener(InetAddress address, int port) {
 		super(address, port);
 
-		confirmedPeers = new HashMap<String, ArrayList<PeerID>>();
+		confirmedPeers = new HashMap<ChunkID, ArrayList<PeerID>>();
 	}
 
 	@Override
 	public void handler(DatagramPacket packet) {
+		System.out.println("MC HANDLR");
 		new Thread(new Handler(packet, confirmedPeers)).start();
 	}
+
 }
