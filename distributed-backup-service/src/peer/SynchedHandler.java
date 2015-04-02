@@ -76,7 +76,7 @@ public class SynchedHandler implements Protocol {
 				mcListener.address, mcListener.port);
 
 		try {
-			mcListener.socket.send(packet);
+			Peer.socket.send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -87,7 +87,7 @@ public class SynchedHandler implements Protocol {
 				mdbListener.address, mdbListener.port);
 
 		try {
-			mdbListener.socket.send(packet);
+			Peer.socket.send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -98,7 +98,7 @@ public class SynchedHandler implements Protocol {
 				mdrListener.address, mdrListener.port);
 
 		try {
-			mdrListener.socket.send(packet);
+			Peer.socket.send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

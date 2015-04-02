@@ -145,8 +145,13 @@ public class Trigger {
 	private static boolean validFilePath(String fileName) {
 		file = new File(fileName);
 
-		if (!file.exists() || !file.isFile()) {
-			Utils.printError(file.getAbsolutePath() + " is not a valid file");
+		if (!file.exists()) {
+			Utils.printError(file.getAbsolutePath() + " does not exist");
+
+			return false;
+		} else if (!file.isFile()) {
+			Utils.printError(file.getAbsolutePath()
+					+ " is not a file, it is a folder");
 
 			return false;
 		}

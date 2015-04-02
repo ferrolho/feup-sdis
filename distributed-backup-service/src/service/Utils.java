@@ -8,13 +8,11 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileOwnerAttributeView;
 import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.Random;
+
+import peer.Peer;
 
 public class Utils {
 
@@ -68,26 +66,9 @@ public class Utils {
 
 	public static final String getFileID(File file) {
 		String str = file.getAbsolutePath() + file.lastModified()
-				+ getFileOwner(file);
+				+ Peer.getIP();
 
 		return sha256(str);
-	}
-
-	private static final String getFileOwner(File file) {
-		String owner = "";
-
-		try {
-			Path path = Paths.get(file.getName());
-
-			FileOwnerAttributeView view = Files.getFileAttributeView(path,
-					FileOwnerAttributeView.class);
-
-			owner = view.getOwner().getName();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return owner;
 	}
 
 	public static final byte[] getFileData(File file)

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -21,6 +22,7 @@ public class Peer implements RMIService {
 	private static final String remoteObjectName = "rmi-peer";
 
 	private static InetAddress IP;
+	public static MulticastSocket socket;
 
 	private static MCListener mcListener;
 	private static MDBListener mdbListener;
@@ -35,6 +37,9 @@ public class Peer implements RMIService {
 		startRMI();
 
 		IP = Utils.getIPv4();
+		socket = new MulticastSocket();
+		// System.out.println(socket.getInetAddress() + " :: " +
+		// socket.getPort());
 
 		new Thread(mcListener).start();
 		new Thread(mdbListener).start();
@@ -69,7 +74,7 @@ public class Peer implements RMIService {
 
 			synchedHandler.putChunk(chunk);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			Utils.printError("file not found");
 		}
 	}
 
