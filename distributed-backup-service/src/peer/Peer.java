@@ -21,8 +21,8 @@ public class Peer implements RMIService {
 
 	private static final String remoteObjectName = "rmi-peer";
 
-	private static InetAddress IP;
-	public static MulticastSocket socket;
+	private static MulticastSocket socket;
+	private static PeerID id;
 
 	private static MCListener mcListener;
 	private static MDBListener mdbListener;
@@ -36,10 +36,8 @@ public class Peer implements RMIService {
 
 		startRMI();
 
-		IP = Utils.getIPv4();
 		socket = new MulticastSocket();
-		// System.out.println(socket.getInetAddress() + " :: " +
-		// socket.getPort());
+		id = new PeerID(Utils.getIPv4(), socket.getLocalPort());
 
 		new Thread(mcListener).start();
 		new Thread(mdbListener).start();
@@ -131,8 +129,12 @@ public class Peer implements RMIService {
 		return true;
 	}
 
-	public static InetAddress getIP() {
-		return IP;
+	public static MulticastSocket getSocket() {
+		return socket;
+	}
+
+	public static PeerID getId() {
+		return id;
 	}
 
 }

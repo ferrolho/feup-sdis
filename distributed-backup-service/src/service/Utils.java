@@ -66,7 +66,7 @@ public class Utils {
 
 	public static final String getFileID(File file) {
 		String str = file.getAbsolutePath() + file.lastModified()
-				+ Peer.getIP();
+				+ Peer.getId().getIP();
 
 		return sha256(str);
 	}

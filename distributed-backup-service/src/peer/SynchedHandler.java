@@ -50,25 +50,21 @@ public class SynchedHandler implements Protocol {
 	@Override
 	public void getChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void sendChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void deleteChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void removeChunk() {
 		// TODO Auto-generated method stub
-
 	}
 
 	private synchronized void sendPacketToMC(byte[] buf) {
@@ -76,7 +72,7 @@ public class SynchedHandler implements Protocol {
 				mcListener.address, mcListener.port);
 
 		try {
-			Peer.socket.send(packet);
+			Peer.getSocket().send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -87,7 +83,7 @@ public class SynchedHandler implements Protocol {
 				mdbListener.address, mdbListener.port);
 
 		try {
-			Peer.socket.send(packet);
+			Peer.getSocket().send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -98,7 +94,7 @@ public class SynchedHandler implements Protocol {
 				mdrListener.address, mdrListener.port);
 
 		try {
-			Peer.socket.send(packet);
+			Peer.getSocket().send(packet);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

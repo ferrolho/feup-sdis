@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 import peer.Peer;
+import peer.PeerID;
 
 public abstract class SocketListener implements Runnable {
 
@@ -33,8 +34,11 @@ public abstract class SocketListener implements Runnable {
 
 				socket.receive(packet);
 
+				PeerID senderID = new PeerID(packet.getAddress(),
+						packet.getPort());
+
 				// ignore packets sent by self
-				if (!packet.getAddress().equals(Peer.getIP()))
+				if (!senderID.equals(Peer.getId()))
 					handler(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
