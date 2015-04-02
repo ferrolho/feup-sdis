@@ -36,6 +36,12 @@ public class Utils {
 		return c;
 	}
 
+	public static boolean fileExists(String fileName) {
+		File file = new File(fileName);
+
+		return file.exists() && file.isFile();
+	}
+
 	public static InetAddress getIPv4() {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 

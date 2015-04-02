@@ -12,6 +12,10 @@ public class PeerID {
 		this.port = port;
 	}
 
+	public InetAddress getIP() {
+		return ip;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -35,10 +39,6 @@ public class PeerID {
 			return false;
 
 		return true;
-	}
-
-	public InetAddress getIP() {
-		return ip;
 	}
 
 }

@@ -80,10 +80,13 @@ public class Handler implements Runnable {
 				Integer.parseInt(headerTokens[4]), body);
 
 		try {
-			// save chunk to disk
-			FileOutputStream out = new FileOutputStream(chunk.getFileID());
-			out.write(chunk.getData());
-			out.close();
+			// do not write to disk a chunk that already exists
+			if (!Utils.fileExists(chunk.getFileID())) {
+				// save chunk to disk
+				FileOutputStream out = new FileOutputStream(chunk.getFileID());
+				out.write(chunk.getData());
+				out.close();
+			}
 
 			// random delay between 0 and 400ms
 			Thread.sleep(Utils.random.nextInt(400));
