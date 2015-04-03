@@ -79,24 +79,30 @@ public class Handler implements Runnable {
 		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
 				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
+		int replicationDeg = Integer
+				.parseInt(headerTokens[HeaderField.REPLICATION_DEG]);
+
 		try {
-			// do not write to disk a chunk that already exists
-			if (!FileUtils.fileExists(chunkID.toString())) {
-				// save chunk to disk
-				FileOutputStream out = new FileOutputStream(chunkID.toString());
-				out.write(body);
-				out.close();
+			if (FileUtils.fileExists(chunkID.toString()))
+				Peer.synchedHandler.sendSTORED(chunkID);
+			else {
+				// random delay between 0 and 400ms
+				Thread.sleep(Utils.random.nextInt(400));
 
-				// update database
-				Peer.getChunkDB().addChunk(chunkID);
-				Peer.saveChunkDB();
+				if (Peer.getMcListener().getNumStoredConfirmsFor(chunkID) < replicationDeg) {
+					// save chunk to disk
+					FileOutputStream out = new FileOutputStream(
+							chunkID.toString());
+					out.write(body);
+					out.close();
+
+					// update database
+					Peer.getChunkDB().addChunk(chunkID);
+					Peer.saveChunkDB();
+
+					Peer.synchedHandler.sendSTORED(chunkID);
+				}
 			}
-
-			// random delay between 0 and 400ms
-			Thread.sleep(Utils.random.nextInt(400));
-
-			// send stored chunk confirmation
-			Peer.synchedHandler.sendSTORED(chunkID);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
