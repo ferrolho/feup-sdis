@@ -54,8 +54,10 @@ public class Utils {
 
 				Enumeration<InetAddress> addresses = iface.getInetAddresses();
 
-				while (addresses.hasMoreElements())
+				if (addresses.hasMoreElements()) {
 					ip = addresses.nextElement();
+					break;
+				}
 			}
 		} catch (SocketException e) {
 			throw new RuntimeException(e);
