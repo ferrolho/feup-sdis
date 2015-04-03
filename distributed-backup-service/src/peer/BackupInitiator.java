@@ -2,7 +2,6 @@ package peer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 
 import service.Chunk;
 import service.Utils;
@@ -35,18 +34,14 @@ public class BackupInitiator implements Runnable {
 			return;
 		}
 
-		ArrayList<PeerID> receivedSTOREDs = new ArrayList<PeerID>();
-
-		Peer.getMcListener().confirmedPeers.put(chunk.getChunkID(),
-				receivedSTOREDs);
-		System.out.println(Peer.getMcListener().confirmedPeers.toString());
+		Peer.getMcListener().startSavingStoredConfirmsFor(chunk.getID());
 
 		long waitingTime = INITIAL_WAITING_TIME;
 		int attempt = 0;
 
 		boolean done = false;
 		while (!done) {
-			receivedSTOREDs.clear();
+			Peer.getMcListener().clearSavedStoredConfirmsFor(chunk.getID());
 
 			Peer.synchedHandler.sendPUTCHUNK(chunk);
 
@@ -58,11 +53,12 @@ public class BackupInitiator implements Runnable {
 				e.printStackTrace();
 			}
 
-			System.out.println(receivedSTOREDs.size() + " of "
-					+ replicationDegree + " peers stored the chunk");
+			System.out.println(Peer.getMcListener().getNumStoredConfirmsFor(
+					chunk.getID())
+					+ " of " + replicationDegree + " peers stored the chunk");
 			System.out.println();
 
-			if (receivedSTOREDs.size() < replicationDegree) {
+			if (Peer.getMcListener().getNumStoredConfirmsFor(chunk.getID()) < replicationDegree) {
 				attempt++;
 
 				if (attempt > MAX_ATTEMPTS)
@@ -73,7 +69,6 @@ public class BackupInitiator implements Runnable {
 				done = true;
 		}
 
-		Peer.getMcListener().confirmedPeers.remove(chunk.getChunkID()
-				.getFileID());
+		Peer.getMcListener().stopSavingStoredConfirmsFor(chunk.getID());
 	}
 }

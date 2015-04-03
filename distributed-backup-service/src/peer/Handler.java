@@ -6,9 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import service.ChunkID;
 import service.HeaderField;
@@ -25,18 +23,13 @@ public class Handler implements Runnable {
 
 	private byte[] body;
 
-	private volatile HashMap<ChunkID, ArrayList<PeerID>> confirmedPeers;
-
-	public Handler(DatagramPacket packet,
-			HashMap<ChunkID, ArrayList<PeerID>> confirmedPeers) {
+	public Handler(DatagramPacket packet) {
 		this.packet = packet;
 
 		header = null;
 		headerTokens = null;
 
 		body = null;
-
-		this.confirmedPeers = confirmedPeers;
 	}
 
 	public void run() {
@@ -88,7 +81,7 @@ public class Handler implements Runnable {
 
 		try {
 			// do not write to disk a chunk that already exists
-			if (!Utils.fileExists(chunkID.getFileID())) {
+			if (!Utils.fileExists(chunkID.toString())) {
 				// save chunk to disk
 				FileOutputStream out = new FileOutputStream(chunkID.toString());
 				out.write(body);
@@ -119,10 +112,7 @@ public class Handler implements Runnable {
 
 		System.out.println(Peer.getChunkDB());
 
-		// ArrayList<PeerID> receivedSTOREDs = confirmedPeers.get(fileID);
-		//
-		// if (!receivedSTOREDs.contains(senderID))
-		// receivedSTOREDs.add(senderID);
+		Peer.getMcListener().processStoredConfirm(chunkID, senderID);
 	}
 
 	private boolean extractHeader() {

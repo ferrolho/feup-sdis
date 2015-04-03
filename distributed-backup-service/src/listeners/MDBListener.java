@@ -14,7 +14,7 @@ public class MDBListener extends SocketListener {
 	@Override
 	public void handler(DatagramPacket packet) {
 		System.out.println("MDB HANDLR");
-		new Thread(new Handler(packet, null)).start();
+		new Thread(new Handler(packet)).start();
 	}
 
 }

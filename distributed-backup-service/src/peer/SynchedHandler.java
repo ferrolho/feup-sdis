@@ -14,8 +14,8 @@ public class SynchedHandler implements Protocol {
 	@Override
 	public void sendPUTCHUNK(Chunk chunk) {
 		String header = MessageType.PUTCHUNK + " " + Protocol.VERSION;
-		header += " " + chunk.getChunkID().getFileID();
-		header += " " + chunk.getChunkID().getChunkNo();
+		header += " " + chunk.getID().getFileID();
+		header += " " + chunk.getID().getChunkNo();
 		header += " " + chunk.getReplicationDegree();
 		header += " " + Protocol.CRLF;
 		header += Protocol.CRLF;
