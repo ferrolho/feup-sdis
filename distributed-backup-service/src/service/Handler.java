@@ -86,6 +86,8 @@ public class Handler implements Runnable {
 			if (FileUtils.fileExists(chunkID.toString()))
 				Peer.synchedHandler.sendSTORED(chunkID);
 			else {
+				Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);
+
 				// random delay between 0 and 400ms
 				Thread.sleep(Utils.random.nextInt(400));
 
@@ -102,6 +104,8 @@ public class Handler implements Runnable {
 
 					Peer.synchedHandler.sendSTORED(chunkID);
 				}
+
+				Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
