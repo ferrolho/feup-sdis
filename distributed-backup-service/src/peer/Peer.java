@@ -57,7 +57,8 @@ public class Peer implements RMIService {
 
 		synchedHandler = new CommandForwarder();
 
-		startRMI();
+		if (remoteObjectName != null)
+			startRMI();
 
 		System.out.println("- SERVER READY -");
 	}
@@ -133,14 +134,20 @@ public class Peer implements RMIService {
 		InetAddress mcAddress, mdbAddress, mdrAddress;
 		int mcPort, mdbPort, mdrPort;
 
-		if (args.length != 1 && args.length != 7) {
-			System.out.println("Usage:");
+		if (args.length != 0 && args.length != 1 && args.length != 6
+				&& args.length != 7) {
+			System.out.println("Usage: (w/o trigger)");
+			System.out.println("\tjava Server");
+			System.out
+					.println("\tjava Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>");
+			System.out.println();
+			System.out.println("Usage: (w/ trigger)");
 			System.out.println("\tjava Server <RMI obj. name>");
 			System.out
 					.println("\tjava Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort> <RMI obj. name>");
 
 			return false;
-		} else if (args.length == 1) {
+		} else if (args.length == 0 || args.length == 1) {
 			mcAddress = InetAddress.getByName("224.0.0.0");
 			mcPort = 8000;
 
@@ -150,7 +157,8 @@ public class Peer implements RMIService {
 			mdrAddress = InetAddress.getByName("224.0.0.0");
 			mdrPort = 8002;
 
-			remoteObjectName = args[0];
+			if (args.length == 1)
+				remoteObjectName = args[0];
 		} else {
 			mcAddress = InetAddress.getByName(args[0]);
 			mcPort = Integer.parseInt(args[1]);
@@ -161,7 +169,8 @@ public class Peer implements RMIService {
 			mdrAddress = InetAddress.getByName(args[4]);
 			mdrPort = Integer.parseInt(args[5]);
 
-			remoteObjectName = args[6];
+			if (args.length == 7)
+				remoteObjectName = args[6];
 		}
 
 		mcListener = new MCListener(mcAddress, mcPort);
