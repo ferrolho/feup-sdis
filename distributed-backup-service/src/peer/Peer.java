@@ -150,7 +150,7 @@ public class Peer implements RMIService {
 			mdrAddress = InetAddress.getByName("224.0.0.0");
 			mdrPort = 8002;
 
-			remoteObjectName = args[1];
+			remoteObjectName = args[0];
 		} else {
 			mcAddress = InetAddress.getByName(args[0]);
 			mcPort = Integer.parseInt(args[1]);
