@@ -1,11 +1,11 @@
 package utils;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Enumeration;
 import java.util.Random;
 
 public class Utils {
@@ -24,32 +24,23 @@ public class Utils {
 		return c;
 	}
 
-	public static InetAddress getIPv4() {
-		System.setProperty("java.net.preferIPv4Stack", "true");
+	public static InetAddress getIPv4() throws IOException {
+		MulticastSocket socket = new MulticastSocket();
+		socket.setTimeToLive(0);
 
-		InetAddress ip = null;
+		InetAddress addr = InetAddress.getByName("225.0.0.0");
+		socket.joinGroup(addr);
 
-		try {
-			Enumeration<NetworkInterface> interfaces = NetworkInterface
-					.getNetworkInterfaces();
+		byte[] bytes = new byte[0];
+		DatagramPacket packet = new DatagramPacket(bytes, bytes.length, addr,
+				socket.getLocalPort());
 
-			while (interfaces.hasMoreElements()) {
-				NetworkInterface iface = interfaces.nextElement();
+		socket.send(packet);
+		socket.receive(packet);
 
-				// filters out 127.0.0.1 and inactive interfaces
-				if (iface.isLoopback() || !iface.isUp())
-					continue;
+		socket.close();
 
-				Enumeration<InetAddress> addresses = iface.getInetAddresses();
-
-				while (addresses.hasMoreElements())
-					ip = addresses.nextElement();
-			}
-		} catch (SocketException e) {
-			throw new RuntimeException(e);
-		}
-
-		return ip;
+		return packet.getAddress();
 	}
 
 	public static final String sha256(String str) {
