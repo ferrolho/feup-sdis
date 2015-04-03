@@ -5,9 +5,9 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import peer.Handler;
+import chunk.ChunkID;
 import peer.PeerID;
-import service.ChunkID;
+import service.Handler;
 
 public class MCListener extends SocketListener {
 

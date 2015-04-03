@@ -1,5 +1,7 @@
 package peer;
 
+import initiators.BackupInitiator;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,6 +19,7 @@ import java.rmi.server.UnicastRemoteObject;
 import listeners.MCListener;
 import listeners.MDBListener;
 import listeners.MDRListener;
+import service.CommandForwarder;
 import service.RMIService;
 import utils.Log;
 import utils.Utils;
@@ -36,7 +39,7 @@ public class Peer implements RMIService {
 	private static volatile MDBListener mdbListener;
 	private static volatile MDRListener mdrListener;
 
-	public static SynchedHandler synchedHandler;
+	public static CommandForwarder synchedHandler;
 
 	public static void main(String[] args) throws ClassNotFoundException,
 			IOException {
@@ -52,7 +55,7 @@ public class Peer implements RMIService {
 		new Thread(mdbListener).start();
 		new Thread(mdrListener).start();
 
-		synchedHandler = new SynchedHandler();
+		synchedHandler = new CommandForwarder();
 
 		startRMI();
 

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import service.ChunkID;
+import chunk.ChunkID;
 
 public class ChunkDB implements Serializable {
 

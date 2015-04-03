@@ -1,15 +1,14 @@
-package peer;
+package service;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 
-import service.Chunk;
-import service.ChunkID;
-import service.MessageType;
-import service.Protocol;
+import peer.Peer;
+import chunk.Chunk;
+import chunk.ChunkID;
 import utils.Utils;
 
-public class SynchedHandler implements Protocol {
+public class CommandForwarder implements Protocol {
 
 	@Override
 	public void sendPUTCHUNK(Chunk chunk) {

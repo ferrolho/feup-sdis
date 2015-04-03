@@ -3,7 +3,7 @@ package listeners;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
-import peer.Handler;
+import service.Handler;
 
 public class MDBListener extends SocketListener {
 

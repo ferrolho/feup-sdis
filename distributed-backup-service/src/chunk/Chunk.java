@@ -1,4 +1,4 @@
-package service;
+package chunk;
 
 public class Chunk {
 

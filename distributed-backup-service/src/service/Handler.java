@@ -1,4 +1,4 @@
-package peer;
+package service;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -8,10 +8,9 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.util.Arrays;
 
-import service.ChunkID;
-import service.HeaderField;
-import service.MessageType;
-import service.Protocol;
+import peer.Peer;
+import peer.PeerID;
+import chunk.ChunkID;
 import utils.FileUtils;
 import utils.Utils;
 

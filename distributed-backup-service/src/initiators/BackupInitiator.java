@@ -1,9 +1,10 @@
-package peer;
+package initiators;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import service.Chunk;
+import peer.Peer;
+import chunk.Chunk;
 import utils.FileUtils;
 import utils.Log;
 

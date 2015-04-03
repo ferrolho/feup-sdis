@@ -1,4 +1,4 @@
-package service;
+package chunk;
 
 import java.io.Serializable;
 
