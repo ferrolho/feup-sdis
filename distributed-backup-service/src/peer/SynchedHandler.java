@@ -7,7 +7,7 @@ import service.Chunk;
 import service.ChunkID;
 import service.MessageType;
 import service.Protocol;
-import service.Utils;
+import utils.Utils;
 
 public class SynchedHandler implements Protocol {
 

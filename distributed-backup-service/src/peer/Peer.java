@@ -18,8 +18,8 @@ import listeners.MCListener;
 import listeners.MDBListener;
 import listeners.MDRListener;
 import service.RMIService;
-import service.Utils;
 import utils.Log;
+import utils.Utils;
 
 public class Peer implements RMIService {
 

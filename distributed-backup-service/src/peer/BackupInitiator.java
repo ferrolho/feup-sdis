@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import service.Chunk;
-import service.Utils;
+import utils.FileUtils;
 import utils.Log;
 
 public class BackupInitiator implements Runnable {
@@ -25,8 +25,8 @@ public class BackupInitiator implements Runnable {
 		Chunk chunk = null;
 
 		try {
-			chunk = new Chunk(Utils.getFileID(file), 0, replicationDegree,
-					Utils.getFileData(file));
+			chunk = new Chunk(FileUtils.getFileID(file), 0, replicationDegree,
+					FileUtils.getFileData(file));
 
 			// TODO improve this method to split files
 		} catch (FileNotFoundException e) {

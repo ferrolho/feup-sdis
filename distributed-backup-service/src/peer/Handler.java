@@ -12,7 +12,8 @@ import service.ChunkID;
 import service.HeaderField;
 import service.MessageType;
 import service.Protocol;
-import service.Utils;
+import utils.FileUtils;
+import utils.Utils;
 
 public class Handler implements Runnable {
 
@@ -81,7 +82,7 @@ public class Handler implements Runnable {
 
 		try {
 			// do not write to disk a chunk that already exists
-			if (!Utils.fileExists(chunkID.toString())) {
+			if (!FileUtils.fileExists(chunkID.toString())) {
 				// save chunk to disk
 				FileOutputStream out = new FileOutputStream(chunkID.toString());
 				out.write(body);
