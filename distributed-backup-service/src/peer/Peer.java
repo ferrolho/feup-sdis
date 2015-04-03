@@ -28,8 +28,6 @@ public class Peer implements RMIService {
 
 	private static final String DB_NAME = "db.data";
 
-	private static final String remoteObjectName = "rmi-peer";
-
 	private static volatile ChunkDB chunkDB;
 
 	private static MulticastSocket socket;
@@ -40,6 +38,8 @@ public class Peer implements RMIService {
 	private static volatile MDRListener mdrListener;
 
 	public static CommandForwarder synchedHandler;
+
+	private static String remoteObjectName;
 
 	public static void main(String[] args) throws ClassNotFoundException,
 			IOException {
@@ -133,14 +133,14 @@ public class Peer implements RMIService {
 		InetAddress mcAddress, mdbAddress, mdrAddress;
 		int mcPort, mdbPort, mdrPort;
 
-		if (args.length != 0 && args.length != 6) {
+		if (args.length != 1 && args.length != 7) {
 			System.out.println("Usage:");
-			System.out.println("\tjava Server");
+			System.out.println("\tjava Server <RMI obj. name>");
 			System.out
-					.println("\tjava Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>");
+					.println("\tjava Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort> <RMI obj. name>");
 
 			return false;
-		} else if (args.length == 0) {
+		} else if (args.length == 1) {
 			mcAddress = InetAddress.getByName("224.0.0.0");
 			mcPort = 8000;
 
@@ -149,6 +149,8 @@ public class Peer implements RMIService {
 
 			mdrAddress = InetAddress.getByName("224.0.0.0");
 			mdrPort = 8002;
+
+			remoteObjectName = args[1];
 		} else {
 			mcAddress = InetAddress.getByName(args[0]);
 			mcPort = Integer.parseInt(args[1]);
@@ -158,6 +160,8 @@ public class Peer implements RMIService {
 
 			mdrAddress = InetAddress.getByName(args[4]);
 			mdrPort = Integer.parseInt(args[5]);
+
+			remoteObjectName = args[6];
 		}
 
 		mcListener = new MCListener(mcAddress, mcPort);
