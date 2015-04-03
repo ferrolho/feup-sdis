@@ -84,7 +84,7 @@ public class Handler implements Runnable {
 
 		try {
 			if (FileUtils.fileExists(chunkID.toString()))
-				Peer.synchedHandler.sendSTORED(chunkID);
+				Peer.commandForwarder.sendSTORED(chunkID);
 			else {
 				Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);
 
@@ -102,7 +102,7 @@ public class Handler implements Runnable {
 					Peer.getChunkDB().addChunk(chunkID);
 					Peer.saveChunkDB();
 
-					Peer.synchedHandler.sendSTORED(chunkID);
+					Peer.commandForwarder.sendSTORED(chunkID);
 				}
 
 				Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);

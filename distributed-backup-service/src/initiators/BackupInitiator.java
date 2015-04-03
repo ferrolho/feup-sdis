@@ -44,7 +44,7 @@ public class BackupInitiator implements Runnable {
 		while (!done) {
 			Peer.getMcListener().clearSavedStoredConfirmsFor(chunk.getID());
 
-			Peer.synchedHandler.sendPUTCHUNK(chunk);
+			Peer.commandForwarder.sendPUTCHUNK(chunk);
 
 			try {
 				System.out.println("Waiting for STOREDs for " + waitingTime
@@ -72,4 +72,5 @@ public class BackupInitiator implements Runnable {
 
 		Peer.getMcListener().stopSavingStoredConfirmsFor(chunk.getID());
 	}
+
 }

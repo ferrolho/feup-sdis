@@ -8,10 +8,10 @@ public interface RMIService extends Remote {
 
 	void backup(File file, int replicationDegree) throws RemoteException;
 
+	void restore(File file) throws RemoteException;
+
 	void delete(File file) throws RemoteException;
 
 	void free(int kbyte) throws RemoteException;
-
-	void restore(File file) throws RemoteException;
 
 }

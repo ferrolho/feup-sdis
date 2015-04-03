@@ -1,6 +1,8 @@
 package peer;
 
 import initiators.BackupInitiator;
+import initiators.DeleteInitiator;
+import initiators.RestoreInitiator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +39,7 @@ public class Peer implements RMIService {
 	private static volatile MDBListener mdbListener;
 	private static volatile MDRListener mdrListener;
 
-	public static CommandForwarder synchedHandler;
+	public static CommandForwarder commandForwarder;
 
 	private static String remoteObjectName;
 
@@ -55,7 +57,7 @@ public class Peer implements RMIService {
 		new Thread(mdbListener).start();
 		new Thread(mdrListener).start();
 
-		synchedHandler = new CommandForwarder();
+		commandForwarder = new CommandForwarder();
 
 		if (remoteObjectName != null)
 			startRMI();
@@ -111,23 +113,23 @@ public class Peer implements RMIService {
 	}
 
 	@Override
-	public void backup(File file, int replicationDegree) {
+	public void backup(File file, int replicationDegree) throws RemoteException {
 		new Thread(new BackupInitiator(file, replicationDegree)).start();
 	}
 
 	@Override
+	public void restore(File file) throws RemoteException {
+		new Thread(new RestoreInitiator(file)).start();
+	}
+
+	@Override
 	public void delete(File file) throws RemoteException {
-		System.out.println("deleting " + file.getName());
+		new Thread(new DeleteInitiator(file)).start();
 	}
 
 	@Override
 	public void free(int kbyte) throws RemoteException {
 		System.out.println("freeing " + kbyte + "kbyte");
-	}
-
-	@Override
-	public void restore(File file) throws RemoteException {
-		System.out.println("restoring " + file.getName());
 	}
 
 	private static boolean validArgs(String[] args) throws UnknownHostException {
