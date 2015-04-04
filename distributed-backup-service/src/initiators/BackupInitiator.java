@@ -1,5 +1,6 @@
 package initiators;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import utils.FileManager;
 import utils.Log;
 import utils.Utils;
 import chunk.Chunk;
+import database.FileInfo;
 
 public class BackupInitiator implements Runnable {
 
@@ -38,12 +40,15 @@ public class BackupInitiator implements Runnable {
 		try {
 			String fileID = Utils.getFileID(file);
 			byte[] fileData = FileManager.loadFile(file);
+			ByteArrayInputStream stream = new ByteArrayInputStream(fileData);
 
 			int numChunks = fileData.length / Protocol.PACKET_MAX_SIZE + 1;
 			Log.info(file.getName() + " will be splitted into " + numChunks
 					+ " chunks.");
 
-			for (int i = 0; i < numChunks; i++) {
+			byte[] buf = new byte[Protocol.PACKET_MAX_SIZE];
+
+			for (int i = 0, offset = 0; i < numChunks; i++) {
 				byte[] chunkData;
 
 				/*
@@ -60,8 +65,11 @@ public class BackupInitiator implements Runnable {
 					if (dataEnd > fileData.length)
 						dataEnd = fileData.length;
 
-					chunkData = Arrays
-							.copyOfRange(fileData, dataStart, dataEnd);
+					int readBytes = stream.read(buf, offset,
+							Protocol.PACKET_MAX_SIZE);
+					offset += readBytes;
+
+					chunkData = Arrays.copyOfRange(buf, 0, readBytes);
 				}
 
 				Chunk chunk = new Chunk(fileID, i, replicationDegree, chunkData);
@@ -108,7 +116,8 @@ public class BackupInitiator implements Runnable {
 				Peer.getMcListener().stopSavingStoredConfirmsFor(chunk.getID());
 			}
 
-			Peer.getChunkDB().addRestorableFile(file.getName(), fileID);
+			Peer.getChunkDB().addRestorableFile(file.getName(),
+					new FileInfo(fileID, numChunks));
 		} catch (FileNotFoundException e) {
 			Log.error("file not found");
 		}

@@ -6,8 +6,10 @@ import java.io.IOException;
 import peer.Peer;
 import utils.FileManager;
 import utils.Log;
+import utils.Utils;
 import chunk.Chunk;
 import chunk.ChunkID;
+import database.FileInfo;
 
 public class RestoreInitiator implements Runnable {
 
@@ -20,25 +22,31 @@ public class RestoreInitiator implements Runnable {
 	@Override
 	public void run() {
 		if (Peer.getChunkDB().fileHasBeenBackedUp(file.getName())) {
-			String fileID = Peer.getChunkDB().getFileID(file.getName());
+			FileInfo fileInfo = Peer.getChunkDB().getFileInfo(file.getName());
 
-			ChunkID chunkID = new ChunkID(fileID, 0);
+			byte[] fileData = new byte[0];
 
-			Peer.getMdrListener().prepareToReceiveFileChunks(
-					chunkID.getFileID());
+			for (int i = 0; i < fileInfo.getNumChunks(); i++) {
+				Peer.getMdrListener().prepareToReceiveFileChunks(
+						fileInfo.getFileID());
 
-			Peer.commandForwarder.sendGETCHUNK(chunkID);
+				Peer.commandForwarder.sendGETCHUNK(new ChunkID(fileInfo
+						.getFileID(), i));
 
-			Chunk chunk = Peer.getMdrListener().consumeChunk(
-					chunkID.getFileID());
+				Chunk chunk = Peer.getMdrListener().consumeChunk(
+						fileInfo.getFileID());
+
+				fileData = Utils.concatBytes(fileData, chunk.getData());
+
+				Peer.getMdrListener()
+						.stopSavingFileChunks(fileInfo.getFileID());
+			}
 
 			try {
-				FileManager.saveRestoredFile(file.getName(), chunk.getData());
+				FileManager.saveRestoredFile(file.getName(), fileData);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-			Peer.getMdrListener().stopSavingFileChunks(chunkID.getFileID());
 		} else {
 			Log.error("No back up found. The requested file can not be restored.");
 		}

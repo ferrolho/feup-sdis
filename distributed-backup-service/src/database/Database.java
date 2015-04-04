@@ -15,7 +15,7 @@ public class Database implements Serializable {
 
 	public Database() {
 		chunkDB = new HashMap<ChunkID, ArrayList<PeerID>>();
-		restorableFiles = new HashMap<String, String>();
+		restorableFiles = new HashMap<String, FileInfo>();
 	}
 
 	@Override
@@ -82,14 +82,15 @@ public class Database implements Serializable {
 	 * Database of the files this peer requested the network to backup, and
 	 * therefore can be restored.
 	 */
-	private volatile HashMap<String, String> restorableFiles;
+	private volatile HashMap<String, FileInfo> restorableFiles;
 
-	public synchronized void addRestorableFile(String fileName, String fileID) {
-		restorableFiles.put(fileName, fileID);
+	public synchronized void addRestorableFile(String fileName,
+			FileInfo fileInfo) {
+		restorableFiles.put(fileName, fileInfo);
 
 		Peer.saveChunkDB();
 
-		Log.info("Added restorable file:\n" + fileName + " - " + fileID);
+		Log.info("Added restorable file:\n" + fileName + " - " + fileInfo);
 	}
 
 	public synchronized void removeRestorableFile(String fileName) {
@@ -104,7 +105,7 @@ public class Database implements Serializable {
 		return restorableFiles.containsKey(fileName);
 	}
 
-	public synchronized String getFileID(String fileName) {
+	public synchronized FileInfo getFileInfo(String fileName) {
 		return restorableFiles.get(fileName);
 	}
 
