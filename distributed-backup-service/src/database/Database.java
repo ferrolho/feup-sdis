@@ -70,8 +70,9 @@ public class Database implements Serializable {
 	public synchronized void addRestorableFile(String fileName, String fileID) {
 		restorableFiles.put(fileName, fileID);
 
-		System.out.println("Added restorable file: " + fileName + " - "
-				+ fileID);
+		System.out.println("Added restorable file:");
+		System.out.println(fileName + " - " + fileID);
+		System.out.println();
 	}
 
 	public synchronized boolean fileHasBeenBackedUp(String fileName) {

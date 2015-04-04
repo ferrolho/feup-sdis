@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import peer.Peer;
 import utils.FileManager;
+import utils.Log;
 import chunk.Chunk;
 import chunk.ChunkID;
 
@@ -38,6 +39,8 @@ public class RestoreInitiator implements Runnable {
 			}
 
 			Peer.getMdrListener().stopSavingFileChunks(chunkID.getFileID());
+		} else {
+			Log.error("No back up found. The requested file can not be restored.");
 		}
 	}
 
