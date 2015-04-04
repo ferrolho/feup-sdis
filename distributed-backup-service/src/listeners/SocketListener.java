@@ -7,10 +7,9 @@ import java.net.MulticastSocket;
 
 import peer.Peer;
 import peer.PeerID;
+import service.Protocol;
 
 public abstract class SocketListener implements Runnable {
-
-	public static final int PACKET_MAX_SIZE = 64000;
 
 	public MulticastSocket socket;
 
@@ -25,7 +24,7 @@ public abstract class SocketListener implements Runnable {
 	public void run() {
 		openSocket();
 
-		byte[] buf = new byte[PACKET_MAX_SIZE];
+		byte[] buf = new byte[Protocol.PACKET_MAX_SIZE];
 
 		boolean done = false;
 		while (!done) {
