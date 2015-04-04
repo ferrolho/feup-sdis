@@ -26,36 +26,21 @@ public class RestoreInitiator implements Runnable {
 
 		Peer.commandForwarder.sendGETCHUNK(chunkID);
 
-		boolean done = false;
-		while (!done) {
-			Chunk chunk = Peer.getMdrListener().consumeChunk(
-					chunkID.getFileID());
+		Chunk chunk = Peer.getMdrListener().consumeChunk(chunkID.getFileID());
 
-			if (chunk == null) {
-				waitForFeed();
-			} else {
-				try {
-					// save chunk to disk
-					FileOutputStream out = new FileOutputStream(file.getName()
-							+ ".bak");
-					out.write(chunk.getData());
-					out.close();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+		try {
+			// save chunk to disk
+			FileOutputStream out = new FileOutputStream(file.getName()
+					+ ".bckp");
+			out.write(chunk.getData());
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		Peer.getMdrListener().stopSavingFileChunks(chunkID.getFileID());
-	}
-
-	public synchronized void waitForFeed() {
-		try {
-			wait();
-		} catch (InterruptedException e) {
-		}
 	}
 
 }

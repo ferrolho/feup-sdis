@@ -55,16 +55,35 @@ public class MDRListener extends SocketListener {
 		chunks.put(fileID, new ArrayList<Chunk>());
 	}
 
+	public synchronized boolean feedingChunksOfFile(String fileID) {
+		return chunks.containsKey(fileID);
+	}
+
 	public synchronized void feedChunk(Chunk chunk) {
 		chunks.get(chunk.getID().getFileID()).add(chunk);
 
+		System.out.println("sending feed notification");
 		notifyAll();
 	}
 
 	public synchronized Chunk consumeChunk(String fileID) {
 		ArrayList<Chunk> fileChunks = chunks.get(fileID);
 
-		return fileChunks.isEmpty() ? null : fileChunks.remove(0);
+		Chunk chunk = fileChunks.isEmpty() ? null : chunks.get(fileID)
+				.remove(0);
+
+		while (chunk == null) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+
+			chunk = fileChunks.isEmpty() ? null : chunks.get(fileID).remove(0);
+		}
+
+		System.out.println("chunk consumed");
+
+		return chunk;
 	}
 
 	public synchronized void stopSavingFileChunks(String fileID) {

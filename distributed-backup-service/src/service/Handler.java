@@ -2,6 +2,8 @@ package service;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -149,13 +151,17 @@ public class Handler implements Runnable {
 				System.out
 						.println("no peer has sent the chunk yet. preparing chunk...");
 
-				// TODO read data from chunk bak
-				byte[] data = "teste :P".getBytes();
+				try {
+					byte[] data = FileUtils.getFileData(new File(chunkID
+							.toString()));
 
-				Chunk chunk = new Chunk(chunkID.getFileID(),
-						chunkID.getChunkNo(), -1, data);
+					Chunk chunk = new Chunk(chunkID.getFileID(),
+							chunkID.getChunkNo(), -1, data);
 
-				Peer.commandForwarder.sendCHUNK(chunk);
+					Peer.commandForwarder.sendCHUNK(chunk);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -165,13 +171,15 @@ public class Handler implements Runnable {
 				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
 		// if we asked for the chunk
-		extractBody();
-		Chunk chunk = new Chunk(chunkID.getFileID(), chunkID.getChunkNo(), -1,
-				body);
-		Peer.getMdrListener().feedChunk(chunk);
+		if (Peer.getMdrListener().feedingChunksOfFile(chunkID.getFileID())) {
+			extractBody();
 
-		// else
-		Peer.getMdrListener().registerCHUNK(chunkID);
+			Chunk chunk = new Chunk(chunkID.getFileID(), chunkID.getChunkNo(),
+					-1, body);
+
+			Peer.getMdrListener().feedChunk(chunk);
+		} else
+			Peer.getMdrListener().registerCHUNK(chunkID);
 	}
 
 	private boolean extractHeader() {
