@@ -5,32 +5,31 @@ import java.io.File;
 import peer.Peer;
 import utils.FileManager;
 import utils.Log;
-import utils.Utils;
 
 public class DeleteInitiator implements Runnable {
 
-	private File file;
+	private String fileName;
 
 	public DeleteInitiator(File file) {
-		this.file = file;
+		fileName = file.getName();
 	}
 
 	@Override
 	public void run() {
+		if (FileManager.fileExists(FileManager.FILES + fileName)) {
+			Log.info("Deleting " + fileName + " from FILES folder.");
 
-		if (!FileManager.fileExists(file.getName())) {
-			Log.error("file not found");
-			return;
+			// TODO actually delete file
 		}
 
-		String fileID = Utils.getFileID(file);
+		if (Peer.getChunkDB().fileHasBeenBackedUp(fileName)) {
+			Log.info(fileName
+					+ " was previously backed up by the network. Starting chunks deletion.");
 
-		boolean done = false;
-		while (!done) {
-			if (Peer.hasChunkFromFile(fileID))
-				Peer.commandForwarder.sendDELETE(fileID);
-			else
-				done = true;
+			String fileID = Peer.getChunkDB().getFileID(fileName);
+			Peer.commandForwarder.sendDELETE(fileID);
+		} else {
+			Log.error(fileName + " has no chunks backed up by the network.");
 		}
 	}
 

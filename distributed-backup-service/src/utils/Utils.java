@@ -28,8 +28,7 @@ public class Utils {
 	}
 
 	public static final String getFileID(File file) {
-		String str = file.getAbsolutePath() + file.lastModified()
-				+ Peer.getId();
+		String str = file.getName() + file.lastModified() + Peer.getId();
 
 		return sha256(str);
 	}

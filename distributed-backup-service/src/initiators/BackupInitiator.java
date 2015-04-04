@@ -24,6 +24,10 @@ public class BackupInitiator implements Runnable {
 
 	@Override
 	public void run() {
+		/*
+		 * TODO should we use this? we won't be able to change the rep.
+		 * degree...
+		 */
 		if (Peer.getChunkDB().fileHasBeenBackedUp(file.getName())) {
 			Log.error("A file with this name has alread been backed up.");
 			return;

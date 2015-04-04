@@ -70,6 +70,14 @@ public class Peer implements RMIService {
 		System.out.println("- SERVER READY -");
 	}
 
+	private static void createNewDB() {
+		chunkDB = new Database();
+
+		saveChunkDB();
+
+		Log.info("A new empty database has been created");
+	}
+
 	private static void loadChunkDB() throws ClassNotFoundException,
 			IOException {
 		try {
@@ -84,24 +92,29 @@ public class Peer implements RMIService {
 		} catch (FileNotFoundException e) {
 			Log.error("Database not found");
 
-			chunkDB = new Database();
-
-			saveChunkDB();
-
-			Log.info("A new empty database has been created");
+			createNewDB();
 		}
-
 	}
 
-	public static void saveChunkDB() throws FileNotFoundException, IOException {
-		FileOutputStream fileOutputStream = new FileOutputStream(DB_NAME);
+	public static void saveChunkDB() {
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(DB_NAME);
 
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(
-				fileOutputStream);
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+					fileOutputStream);
 
-		objectOutputStream.writeObject(chunkDB);
+			objectOutputStream.writeObject(chunkDB);
 
-		objectOutputStream.close();
+			objectOutputStream.close();
+		} catch (FileNotFoundException e) {
+			Log.error("Database not found");
+
+			createNewDB();
+
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static boolean hasChunkFromFile(String fileID) {

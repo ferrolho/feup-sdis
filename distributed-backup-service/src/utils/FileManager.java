@@ -11,6 +11,8 @@ import chunk.ChunkID;
 
 public class FileManager {
 
+	public static final String FILES = "FILES/";
+
 	private static final String CHUNKS = "CHUNKS/";
 
 	private static final String RESTORES = "RESTORES/";
@@ -60,7 +62,6 @@ public class FileManager {
 
 		// update database
 		Peer.getChunkDB().addChunk(chunkID);
-		Peer.saveChunkDB();
 	}
 
 	public static final byte[] loadChunk(ChunkID chunkID)

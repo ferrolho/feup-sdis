@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import peer.Peer;
 import peer.PeerID;
 import chunk.ChunkID;
 
@@ -39,18 +40,24 @@ public class Database implements Serializable {
 	}
 
 	public synchronized void addChunk(ChunkID chunkID) {
-		if (!hasChunk(chunkID))
+		if (!hasChunk(chunkID)) {
 			chunkDB.put(chunkID, new ArrayList<PeerID>());
+			Peer.saveChunkDB();
+		}
 	}
 
 	public synchronized void addChunkMirror(ChunkID chunkID, PeerID peerID) {
-		if (hasChunk(chunkID))
-			if (!chunkDB.get(chunkID).contains(peerID))
+		if (hasChunk(chunkID)) {
+			if (!chunkDB.get(chunkID).contains(peerID)) {
 				chunkDB.get(chunkID).add(peerID);
+				Peer.saveChunkDB();
+			}
+		}
 	}
 
 	public synchronized void removeChunk(ChunkID chunkID) {
 		chunkDB.remove(chunkID);
+		Peer.saveChunkDB();
 	}
 
 	public synchronized int getChunkMirrorsSize(ChunkID chunkID) {
@@ -69,6 +76,8 @@ public class Database implements Serializable {
 
 	public synchronized void addRestorableFile(String fileName, String fileID) {
 		restorableFiles.put(fileName, fileID);
+
+		Peer.saveChunkDB();
 
 		System.out.println("Added restorable file:");
 		System.out.println(fileName + " - " + fileID);
