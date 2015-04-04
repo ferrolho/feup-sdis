@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import peer.Peer;
 import peer.PeerID;
+import utils.Log;
 import chunk.ChunkID;
 
 public class Database implements Serializable {
@@ -88,9 +89,15 @@ public class Database implements Serializable {
 
 		Peer.saveChunkDB();
 
-		System.out.println("Added restorable file:");
-		System.out.println(fileName + " - " + fileID);
-		System.out.println();
+		Log.info("Added restorable file:\n" + fileName + " - " + fileID);
+	}
+
+	public synchronized void removeRestorableFile(String fileName) {
+		restorableFiles.remove(fileName);
+
+		Peer.saveChunkDB();
+
+		Log.info("Removed restorable file: " + fileName);
 	}
 
 	public synchronized boolean fileHasBeenBackedUp(String fileName) {
