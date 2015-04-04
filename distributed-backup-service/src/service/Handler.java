@@ -181,8 +181,8 @@ public class Handler implements Runnable {
 
 		while (!chunksToBeDeleted.isEmpty()) {
 			ChunkID chunkID = chunksToBeDeleted.remove(0);
-			
-			
+
+			FileManager.deleteChunk(chunkID);
 
 			Peer.getChunkDB().removeChunk(chunkID);
 		}
