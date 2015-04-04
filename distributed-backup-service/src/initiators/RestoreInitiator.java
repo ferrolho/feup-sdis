@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import peer.Peer;
 import utils.FileManager;
-import utils.FileUtils;
 import chunk.Chunk;
 import chunk.ChunkID;
 
@@ -19,21 +18,27 @@ public class RestoreInitiator implements Runnable {
 
 	@Override
 	public void run() {
-		ChunkID chunkID = new ChunkID(FileUtils.getFileID(file), 0);
+		if (Peer.getChunkDB().fileHasBeenBackedUp(file.getName())) {
+			String fileID = Peer.getChunkDB().getFileID(file.getName());
 
-		Peer.getMdrListener().prepareToReceiveFileChunks(chunkID.getFileID());
+			ChunkID chunkID = new ChunkID(fileID, 0);
 
-		Peer.commandForwarder.sendGETCHUNK(chunkID);
+			Peer.getMdrListener().prepareToReceiveFileChunks(
+					chunkID.getFileID());
 
-		Chunk chunk = Peer.getMdrListener().consumeChunk(chunkID.getFileID());
+			Peer.commandForwarder.sendGETCHUNK(chunkID);
 
-		try {
-			FileManager.saveRestore(file.getName(), chunk.getData());
-		} catch (IOException e) {
-			e.printStackTrace();
+			Chunk chunk = Peer.getMdrListener().consumeChunk(
+					chunkID.getFileID());
+
+			try {
+				FileManager.saveRestore(file.getName(), chunk.getData());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			Peer.getMdrListener().stopSavingFileChunks(chunkID.getFileID());
 		}
-
-		Peer.getMdrListener().stopSavingFileChunks(chunkID.getFileID());
 	}
 
 }

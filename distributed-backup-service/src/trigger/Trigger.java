@@ -96,8 +96,11 @@ public class Trigger {
 				return false;
 			}
 
-			if (!validFilePath(args[2]))
-				return false;
+			/*
+			 * No need to check if this file exists. It might well have been
+			 * deleted, and therefore the restore request.
+			 */
+			file = new File(args[2]);
 
 			break;
 

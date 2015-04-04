@@ -24,6 +24,11 @@ public class BackupInitiator implements Runnable {
 
 	@Override
 	public void run() {
+		if (Peer.getChunkDB().fileHasBeenBackedUp(file.getName())) {
+			Log.error("A file with this name has alread been backed up.");
+			return;
+		}
+
 		Chunk chunk = null;
 
 		try {
@@ -72,6 +77,9 @@ public class BackupInitiator implements Runnable {
 		}
 
 		Peer.getMcListener().stopSavingStoredConfirmsFor(chunk.getID());
+
+		Peer.getChunkDB().addRestorableFile(file.getName(),
+				chunk.getID().getFileID());
 	}
 
 }

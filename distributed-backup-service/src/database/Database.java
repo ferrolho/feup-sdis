@@ -11,12 +11,28 @@ public class Database implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// database of chunks being backed up by this peer
-	private volatile HashMap<ChunkID, ArrayList<PeerID>> chunkDB;
-
 	public Database() {
 		chunkDB = new HashMap<ChunkID, ArrayList<PeerID>>();
+		restorableFiles = new HashMap<String, String>();
 	}
+
+	@Override
+	public String toString() {
+		String db;
+
+		db = "Chunk database:\n";
+		db += chunkDB.toString() + "\n";
+		db += "\n";
+		db += "Restorable files:\n";
+		db += restorableFiles.toString() + "\n";
+
+		return db;
+	}
+
+	/*
+	 * Database of chunks being backed up by this peer
+	 */
+	private volatile HashMap<ChunkID, ArrayList<PeerID>> chunkDB;
 
 	public synchronized boolean hasChunk(ChunkID chunkID) {
 		return chunkDB.containsKey(chunkID);
@@ -40,14 +56,30 @@ public class Database implements Serializable {
 	public synchronized int getChunkMirrorsSize(ChunkID chunkID) {
 		return chunkDB.get(chunkID).size();
 	}
-	
+
 	public synchronized HashMap<ChunkID, ArrayList<PeerID>> getDB() {
 		return chunkDB;
 	}
 
-	@Override
-	public String toString() {
-		return chunkDB.toString();
+	/*
+	 * Database of the files this peer requested the network to backup, and
+	 * therefore can be restored.
+	 */
+	private volatile HashMap<String, String> restorableFiles;
+
+	public synchronized void addRestorableFile(String fileName, String fileID) {
+		restorableFiles.put(fileName, fileID);
+
+		System.out.println("Added restorable file: " + fileName + " - "
+				+ fileID);
+	}
+
+	public synchronized boolean fileHasBeenBackedUp(String fileName) {
+		return restorableFiles.containsKey(fileName);
+	}
+
+	public synchronized String getFileID(String fileName) {
+		return restorableFiles.get(fileName);
 	}
 
 }
