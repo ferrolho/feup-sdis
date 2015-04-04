@@ -4,8 +4,8 @@ import java.io.File;
 
 import peer.Peer;
 import utils.FileManager;
-import utils.FileUtils;
 import utils.Log;
+import utils.Utils;
 
 public class DeleteInitiator implements Runnable {
 
@@ -23,7 +23,7 @@ public class DeleteInitiator implements Runnable {
 			return;
 		}
 
-		String fileID = FileUtils.getFileID(file);
+		String fileID = Utils.getFileID(file);
 
 		boolean done = false;
 		while (!done) {

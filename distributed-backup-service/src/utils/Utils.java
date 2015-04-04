@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -7,6 +8,8 @@ import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
+
+import peer.Peer;
 
 public class Utils {
 
@@ -24,23 +27,11 @@ public class Utils {
 		return c;
 	}
 
-	public static InetAddress getIPv4() throws IOException {
-		MulticastSocket socket = new MulticastSocket();
-		socket.setTimeToLive(0);
+	public static final String getFileID(File file) {
+		String str = file.getAbsolutePath() + file.lastModified()
+				+ Peer.getId();
 
-		InetAddress addr = InetAddress.getByName("225.0.0.0");
-		socket.joinGroup(addr);
-
-		byte[] bytes = new byte[0];
-		DatagramPacket packet = new DatagramPacket(bytes, bytes.length, addr,
-				socket.getLocalPort());
-
-		socket.send(packet);
-		socket.receive(packet);
-
-		socket.close();
-
-		return packet.getAddress();
+		return sha256(str);
 	}
 
 	public static final String sha256(String str) {
@@ -66,6 +57,25 @@ public class Utils {
 		}
 
 		return null;
+	}
+
+	public static InetAddress getIPv4() throws IOException {
+		MulticastSocket socket = new MulticastSocket();
+		socket.setTimeToLive(0);
+
+		InetAddress addr = InetAddress.getByName("225.0.0.0");
+		socket.joinGroup(addr);
+
+		byte[] bytes = new byte[0];
+		DatagramPacket packet = new DatagramPacket(bytes, bytes.length, addr,
+				socket.getLocalPort());
+
+		socket.send(packet);
+		socket.receive(packet);
+
+		socket.close();
+
+		return packet.getAddress();
 	}
 
 }

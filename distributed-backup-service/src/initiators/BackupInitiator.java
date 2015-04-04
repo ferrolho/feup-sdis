@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 
 import peer.Peer;
 import utils.FileManager;
-import utils.FileUtils;
 import utils.Log;
+import utils.Utils;
 import chunk.Chunk;
 
 public class BackupInitiator implements Runnable {
@@ -32,7 +32,7 @@ public class BackupInitiator implements Runnable {
 		Chunk chunk = null;
 
 		try {
-			chunk = new Chunk(FileUtils.getFileID(file), 0, replicationDegree,
+			chunk = new Chunk(Utils.getFileID(file), 0, replicationDegree,
 					FileManager.loadFile(file));
 
 			// TODO improve this method to split files
