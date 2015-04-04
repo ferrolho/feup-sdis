@@ -15,7 +15,7 @@ public class MDRListener extends SocketListener {
 		super(address, port);
 
 		sentCHUNKs = new HashMap<ChunkID, Boolean>();
-
+		chunks = new HashMap<String, ArrayList<Chunk>>();
 	}
 
 	@Override

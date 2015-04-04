@@ -32,12 +32,7 @@ public class RestoreInitiator implements Runnable {
 					chunkID.getFileID());
 
 			if (chunk == null) {
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					return;
-				}
+				waitForFeed();
 			} else {
 				try {
 					// save chunk to disk
@@ -54,6 +49,13 @@ public class RestoreInitiator implements Runnable {
 		}
 
 		Peer.getMdrListener().stopSavingFileChunks(chunkID.getFileID());
+	}
+
+	public synchronized void waitForFeed() {
+		try {
+			wait();
+		} catch (InterruptedException e) {
+		}
 	}
 
 }
