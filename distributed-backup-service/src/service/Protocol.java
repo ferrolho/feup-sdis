@@ -19,9 +19,9 @@ public interface Protocol {
 
 	// 3.3 Chunk restore protocol
 
-	void sendGETCHUNK();
+	void sendGETCHUNK(ChunkID chunkID);
 
-	void sendCHUNK();
+	void sendCHUNK(Chunk chunk);
 
 	// 3.4 File deletion subprotocol
 

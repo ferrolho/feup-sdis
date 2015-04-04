@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 
 import peer.Peer;
+import utils.Utils;
 import chunk.Chunk;
 import chunk.ChunkID;
-import utils.Utils;
 
 public class CommandForwarder implements Protocol {
 
@@ -34,13 +34,25 @@ public class CommandForwarder implements Protocol {
 	}
 
 	@Override
-	public void sendGETCHUNK() {
-		// TODO Auto-generated method stub
+	public void sendGETCHUNK(ChunkID chunkID) {
+		String header = MessageType.GETCHUNK + " " + Protocol.VERSION;
+		header += " " + chunkID.getFileID();
+		header += " " + chunkID.getChunkNo();
+		header += " " + Protocol.CRLF;
+		header += Protocol.CRLF;
+
+		sendPacketToMC(header.getBytes());
 	}
 
 	@Override
-	public void sendCHUNK() {
-		// TODO Auto-generated method stub
+	public void sendCHUNK(Chunk chunk) {
+		String header = MessageType.CHUNK + " " + Protocol.VERSION;
+		header += " " + chunk.getID().getFileID();
+		header += " " + chunk.getID().getChunkNo();
+		header += " " + Protocol.CRLF;
+		header += Protocol.CRLF;
+
+		sendPacketToMDR(Utils.concatBytes(header.getBytes(), chunk.getData()));
 	}
 
 	@Override
