@@ -8,6 +8,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 import service.RMIService;
+import utils.FileManager;
 import utils.Log;
 
 public class Trigger {
@@ -143,7 +144,7 @@ public class Trigger {
 	}
 
 	private static boolean validFilePath(String fileName) {
-		file = new File(fileName);
+		file = new File(FileManager.FILES + fileName);
 
 		if (!file.exists()) {
 			Log.error(file.getAbsolutePath() + " does not exist");

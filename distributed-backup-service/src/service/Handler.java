@@ -2,9 +2,7 @@ package service;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
@@ -12,6 +10,7 @@ import java.util.Arrays;
 
 import peer.Peer;
 import peer.PeerID;
+import utils.FileManager;
 import utils.FileUtils;
 import utils.Utils;
 import chunk.Chunk;
@@ -98,15 +97,7 @@ public class Handler implements Runnable {
 				Thread.sleep(Utils.random.nextInt(400));
 
 				if (Peer.getMcListener().getNumStoredConfirmsFor(chunkID) < replicationDeg) {
-					// save chunk to disk
-					FileOutputStream out = new FileOutputStream(
-							chunkID.toString());
-					out.write(body);
-					out.close();
-
-					// update database
-					Peer.getChunkDB().addChunk(chunkID);
-					Peer.saveChunkDB();
+					FileManager.saveChunk(chunkID, body);
 
 					Peer.commandForwarder.sendSTORED(chunkID);
 				}
@@ -153,8 +144,7 @@ public class Handler implements Runnable {
 						.println("no peer has sent the chunk yet. preparing chunk...");
 
 				try {
-					byte[] data = FileUtils.getFileData(new File(chunkID
-							.toString()));
+					byte[] data = FileManager.loadChunk(chunkID);
 
 					Chunk chunk = new Chunk(chunkID.getFileID(),
 							chunkID.getChunkNo(), -1, data);

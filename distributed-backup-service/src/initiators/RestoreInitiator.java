@@ -1,11 +1,10 @@
 package initiators;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import peer.Peer;
+import utils.FileManager;
 import utils.FileUtils;
 import chunk.Chunk;
 import chunk.ChunkID;
@@ -29,13 +28,7 @@ public class RestoreInitiator implements Runnable {
 		Chunk chunk = Peer.getMdrListener().consumeChunk(chunkID.getFileID());
 
 		try {
-			// save chunk to disk
-			FileOutputStream out = new FileOutputStream(file.getName()
-					+ ".bckp");
-			out.write(chunk.getData());
-			out.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			FileManager.saveRestore(file.getName(), chunk.getData());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

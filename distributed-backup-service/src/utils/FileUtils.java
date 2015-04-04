@@ -1,9 +1,6 @@
 package utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import peer.Peer;
 
@@ -20,22 +17,6 @@ public class FileUtils {
 				+ Peer.getId().getIP();
 
 		return Utils.sha256(str);
-	}
-
-	public static final byte[] getFileData(File file)
-			throws FileNotFoundException {
-		FileInputStream inputStream = new FileInputStream(file);
-
-		byte[] data = new byte[(int) file.length()];
-
-		try {
-			inputStream.read(data);
-			inputStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return data;
 	}
 
 }
