@@ -17,9 +17,8 @@ public class DeleteInitiator implements Runnable {
 	@Override
 	public void run() {
 		if (FileManager.fileExists(FileManager.FILES + fileName)) {
-			Log.info("Deleting " + fileName + " from FILES folder.");
-
-			// TODO actually delete file
+			FileManager.deleteFile(fileName);
+			Log.info("Deleted " + fileName + " from FILES folder.");
 		}
 
 		if (Peer.getChunkDB().fileHasBeenBackedUp(fileName)) {

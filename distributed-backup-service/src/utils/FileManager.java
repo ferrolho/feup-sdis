@@ -60,6 +60,12 @@ public class FileManager {
 		out.close();
 	}
 
+	public static final void deleteFile(String fileName) {
+		File file = new File(FILES + fileName);
+
+		file.delete();
+	}
+
 	public static final void saveChunk(ChunkID chunkID, byte[] data)
 			throws IOException {
 		if (!folderExists(CHUNKS))
