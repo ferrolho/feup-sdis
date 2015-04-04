@@ -3,6 +3,7 @@ package initiators;
 import java.io.File;
 
 import peer.Peer;
+import utils.FileManager;
 import utils.FileUtils;
 import utils.Log;
 
@@ -17,7 +18,7 @@ public class DeleteInitiator implements Runnable {
 	@Override
 	public void run() {
 
-		if (!FileUtils.fileExists(file.getName())) {
+		if (!FileManager.fileExists(file.getName())) {
 			Log.error("file not found");
 			return;
 		}

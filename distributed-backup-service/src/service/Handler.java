@@ -11,7 +11,6 @@ import java.util.Arrays;
 import peer.Peer;
 import peer.PeerID;
 import utils.FileManager;
-import utils.FileUtils;
 import utils.Utils;
 import chunk.Chunk;
 import chunk.ChunkID;
@@ -88,7 +87,7 @@ public class Handler implements Runnable {
 				.parseInt(headerTokens[HeaderField.REPLICATION_DEG]);
 
 		try {
-			if (FileUtils.fileExists(chunkID.toString()))
+			if (FileManager.fileExists(chunkID.toString()))
 				Peer.commandForwarder.sendSTORED(chunkID);
 			else {
 				Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);

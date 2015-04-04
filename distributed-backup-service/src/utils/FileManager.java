@@ -11,11 +11,27 @@ import chunk.ChunkID;
 
 public class FileManager {
 
-	public static final String FILES = "FILES/";
-
 	private static final String CHUNKS = "CHUNKS/";
 
 	private static final String RESTORES = "RESTORES/";
+
+	public static boolean fileExists(String name) {
+		File file = new File(name);
+
+		return file.exists() && file.isFile();
+	}
+
+	private static boolean folderExists(String name) {
+		File file = new File(name);
+
+		return file.exists() && file.isDirectory();
+	}
+
+	private static void createFolder(String name) {
+		File file = new File(name);
+
+		file.mkdir();
+	}
 
 	public static final byte[] loadFile(File file) throws FileNotFoundException {
 		FileInputStream inputStream = new FileInputStream(file);
@@ -34,6 +50,9 @@ public class FileManager {
 
 	public static final void saveChunk(ChunkID chunkID, byte[] data)
 			throws IOException {
+		if (!folderExists(CHUNKS))
+			createFolder(CHUNKS);
+
 		// write chunk
 		FileOutputStream out = new FileOutputStream(CHUNKS + chunkID.toString());
 		out.write(data);
