@@ -82,6 +82,9 @@ public class FileManager {
 
 	public static final void saveRestore(String fileName, byte[] data)
 			throws IOException {
+		if (!folderExists(RESTORES))
+			createFolder(RESTORES);
+
 		FileOutputStream out = new FileOutputStream(RESTORES + fileName);
 		out.write(data);
 		out.close();
