@@ -25,7 +25,7 @@ public interface Protocol {
 
 	// 3.4 File deletion subprotocol
 
-	void sendDELETE();
+	void sendDELETE(String fileID);
 
 	// 3.5 Space reclaiming subprotocol
 

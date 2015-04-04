@@ -17,7 +17,11 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
+import chunk.ChunkID;
 import database.Database;
 import listeners.MCListener;
 import listeners.MDBListener;
@@ -98,6 +102,19 @@ public class Peer implements RMIService {
 		objectOutputStream.writeObject(chunkDB);
 
 		objectOutputStream.close();
+	}
+
+	public static boolean hasChunkFromFile(String fileID) {
+		Iterator<Map.Entry<ChunkID, ArrayList<PeerID>>> it = chunkDB.getDB()
+				.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<ChunkID, ArrayList<PeerID>> entry = it.next();
+
+			if (entry.getKey().getFileID().equals(fileID))
+				return true;
+		}
+
+		return false;
 	}
 
 	private static void startRMI() {

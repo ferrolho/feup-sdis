@@ -66,6 +66,7 @@ public class Handler implements Runnable {
 		// 3.4 File deletion subprotocol
 
 		case DELETE:
+			handleDELETE();
 			break;
 
 		// 3.5 Space reclaiming subprotocol
@@ -180,6 +181,21 @@ public class Handler implements Runnable {
 			Peer.getMdrListener().feedChunk(chunk);
 		} else
 			Peer.getMdrListener().registerCHUNK(chunkID);
+	}
+
+	// TODO implement delete handler (thinking in a global method to delete by
+	// fileID)
+	private void handleDELETE() {
+		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID], 0);
+
+		Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
+
+		try {
+			Peer.getChunkDB().removeChunk(chunkID);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private boolean extractHeader() {
