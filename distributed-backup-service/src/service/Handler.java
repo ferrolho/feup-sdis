@@ -10,9 +10,10 @@ import java.util.Arrays;
 
 import peer.Peer;
 import peer.PeerID;
-import chunk.ChunkID;
 import utils.FileUtils;
 import utils.Utils;
+import chunk.Chunk;
+import chunk.ChunkID;
 
 public class Handler implements Runnable {
 
@@ -43,25 +44,27 @@ public class Handler implements Runnable {
 		// 3.2 Chunk backup subprotocol
 
 		case PUTCHUNK:
-			putChunkHandler();
+			handlePUTCHUNK();
 			break;
 
 		case STORED:
-			storedHandler();
+			handleSTORED();
 			break;
 
 		// 3.3 Chunk restore protocol
 
 		case GETCHUNK:
+			handleGETCHUNK();
 			break;
 
 		case CHUNK:
+			handleCHUNK();
 			break;
 
 		// 3.4 File deletion subprotocol
 
 		case DELETE:
-			deleteFileHandler();
+			handleDELETE();
 			break;
 
 		// 3.5 Space reclaiming subprotocol
@@ -74,7 +77,7 @@ public class Handler implements Runnable {
 		}
 	}
 
-	private void putChunkHandler() {
+	private void handlePUTCHUNK() {
 		extractBody();
 
 		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
@@ -113,7 +116,7 @@ public class Handler implements Runnable {
 		}
 	}
 
-	private void storedHandler() {
+	private void handleSTORED() {
 		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
 				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
@@ -126,19 +129,65 @@ public class Handler implements Runnable {
 		Peer.getMcListener().processStoredConfirm(chunkID, senderID);
 	}
 
-	// TODO implement delete handler (thinking in a global method to delete by fileID)
-	private void deleteFileHandler() {
+	private void handleGETCHUNK() {
+		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
+				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
+
+		if (Peer.getChunkDB().hasChunk(chunkID)) {
+			Peer.getMdrListener().startSavingCHUNKsFor(chunkID);
+
+			try {
+				Thread.sleep(Utils.random.nextInt(400));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return;
+			}
+
+			boolean chunkAlreadySent = Peer.getMdrListener()
+					.stopSavingCHUNKsFor(chunkID);
+
+			if (!chunkAlreadySent) {
+				System.out
+						.println("no peer has sent the chunk yet. preparing chunk...");
+
+				// TODO read data from chunk bak
+				byte[] data = "teste :P".getBytes();
+
+				Chunk chunk = new Chunk(chunkID.getFileID(),
+						chunkID.getChunkNo(), -1, data);
+
+				Peer.commandForwarder.sendCHUNK(chunk);
+			}
+		}
+	}
+
+	private void handleCHUNK() {
+		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
+				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
+
+		// if we asked for the chunk
+		extractBody();
+		Chunk chunk = new Chunk(chunkID.getFileID(), chunkID.getChunkNo(), -1,
+				body);
+		Peer.getMdrListener().feedChunk(chunk);
+
+		// else
+		Peer.getMdrListener().registerCHUNK(chunkID);
+	}
+
+	// TODO implement delete handler (thinking in a global method to delete by
+	// fileID)
+	private void handleDELETE() {
 		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID], 0);
-		
+
 		Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
-		
+
 		try {
 			Peer.getChunkDB().removeChunk(chunkID);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
 	private boolean extractHeader() {

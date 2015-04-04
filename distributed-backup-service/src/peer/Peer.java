@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import chunk.ChunkID;
+import database.Database;
 import listeners.MCListener;
 import listeners.MDBListener;
 import listeners.MDRListener;
@@ -34,7 +35,7 @@ public class Peer implements RMIService {
 
 	private static final String DB_NAME = "db.data";
 
-	private static volatile ChunkDB chunkDB;
+	private static volatile Database chunkDB;
 
 	private static MulticastSocket socket;
 	private static PeerID id;
@@ -77,13 +78,13 @@ public class Peer implements RMIService {
 			ObjectInputStream objectInputStream = new ObjectInputStream(
 					fileInputStream);
 
-			chunkDB = (ChunkDB) objectInputStream.readObject();
+			chunkDB = (Database) objectInputStream.readObject();
 
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
 			Log.error("Database not found");
 
-			chunkDB = new ChunkDB();
+			chunkDB = new Database();
 
 			saveChunkDB();
 
@@ -112,7 +113,7 @@ public class Peer implements RMIService {
 			if (entry.getKey().equals(fileID))
 				return true;
 		}
-		
+
 		return false;
 	}
 
@@ -199,7 +200,7 @@ public class Peer implements RMIService {
 		return true;
 	}
 
-	public static ChunkDB getChunkDB() {
+	public static Database getChunkDB() {
 		return chunkDB;
 	}
 

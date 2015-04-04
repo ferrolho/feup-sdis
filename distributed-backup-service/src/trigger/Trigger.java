@@ -48,7 +48,7 @@ public class Trigger {
 	}
 
 	private static boolean validArgs(String[] args) {
-		if (args.length < 1) {
+		if (args.length < 2) {
 			TriggerCommands.printUsage(Trigger.class.getName());
 
 			return false;
