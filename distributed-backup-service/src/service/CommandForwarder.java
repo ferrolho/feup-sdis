@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 
 import peer.Peer;
+import utils.Utils;
 import chunk.Chunk;
 import chunk.ChunkID;
-import utils.Utils;
 
 public class CommandForwarder implements Protocol {
 
@@ -44,8 +44,13 @@ public class CommandForwarder implements Protocol {
 	}
 
 	@Override
-	public void sendDELETE() {
-		// TODO Auto-generated method stub
+	public void sendDELETE(String fileID) {
+		String header = MessageType.DELETE + " " + Protocol.VERSION;
+		header += " " + fileID;
+		header += " " + Protocol.CRLF;
+		header += Protocol.CRLF;
+		
+		sendPacketToMC(header.getBytes());
 	}
 
 	@Override

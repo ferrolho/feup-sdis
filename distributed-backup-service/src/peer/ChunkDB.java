@@ -38,6 +38,10 @@ public class ChunkDB implements Serializable {
 	public synchronized int getChunkMirrorsSize(ChunkID chunkID) {
 		return db.get(chunkID).size();
 	}
+	
+	public synchronized HashMap<ChunkID, ArrayList<PeerID>> getDB() {
+		return db;
+	}
 
 	@Override
 	public String toString() {
