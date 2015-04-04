@@ -50,6 +50,16 @@ public class FileManager {
 		return data;
 	}
 
+	public static final void saveRestoredFile(String fileName, byte[] data)
+			throws IOException {
+		if (!folderExists(RESTORES))
+			createFolder(RESTORES);
+
+		FileOutputStream out = new FileOutputStream(RESTORES + fileName);
+		out.write(data);
+		out.close();
+	}
+
 	public static final void saveChunk(ChunkID chunkID, byte[] data)
 			throws IOException {
 		if (!folderExists(CHUNKS))
@@ -81,14 +91,10 @@ public class FileManager {
 		return data;
 	}
 
-	public static final void saveRestore(String fileName, byte[] data)
-			throws IOException {
-		if (!folderExists(RESTORES))
-			createFolder(RESTORES);
+	public static final void deleteChunk(ChunkID chunkID) {
+		File file = new File(CHUNKS + chunkID);
 
-		FileOutputStream out = new FileOutputStream(RESTORES + fileName);
-		out.write(data);
-		out.close();
+		file.delete();
 	}
 
 }

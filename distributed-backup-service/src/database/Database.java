@@ -42,6 +42,7 @@ public class Database implements Serializable {
 	public synchronized void addChunk(ChunkID chunkID) {
 		if (!hasChunk(chunkID)) {
 			chunkDB.put(chunkID, new ArrayList<PeerID>());
+
 			Peer.saveChunkDB();
 		}
 	}
@@ -50,6 +51,7 @@ public class Database implements Serializable {
 		if (hasChunk(chunkID)) {
 			if (!chunkDB.get(chunkID).contains(peerID)) {
 				chunkDB.get(chunkID).add(peerID);
+
 				Peer.saveChunkDB();
 			}
 		}
@@ -57,6 +59,7 @@ public class Database implements Serializable {
 
 	public synchronized void removeChunk(ChunkID chunkID) {
 		chunkDB.remove(chunkID);
+
 		Peer.saveChunkDB();
 	}
 
@@ -64,8 +67,14 @@ public class Database implements Serializable {
 		return chunkDB.get(chunkID).size();
 	}
 
-	public synchronized HashMap<ChunkID, ArrayList<PeerID>> getDB() {
-		return chunkDB;
+	public synchronized ArrayList<ChunkID> getChunkIDsOfFile(String fileID) {
+		ArrayList<ChunkID> chunkIDs = new ArrayList<ChunkID>();
+
+		for (ChunkID chunkID : chunkDB.keySet())
+			if (chunkID.getFileID().equals(fileID))
+				chunkIDs.add(chunkID);
+
+		return chunkIDs;
 	}
 
 	/*

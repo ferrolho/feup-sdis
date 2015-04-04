@@ -33,7 +33,7 @@ public class RestoreInitiator implements Runnable {
 					chunkID.getFileID());
 
 			try {
-				FileManager.saveRestore(file.getName(), chunk.getData());
+				FileManager.saveRestoredFile(file.getName(), chunk.getData());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -61,7 +61,7 @@ public class CommandForwarder implements Protocol {
 		header += " " + fileID;
 		header += " " + Protocol.CRLF;
 		header += Protocol.CRLF;
-		
+
 		sendPacketToMC(header.getBytes());
 	}
 

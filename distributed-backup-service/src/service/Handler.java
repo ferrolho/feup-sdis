@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import peer.Peer;
@@ -172,19 +173,19 @@ public class Handler implements Runnable {
 			Peer.getMdrListener().registerCHUNK(chunkID);
 	}
 
-	// TODO implement delete handler (thinking in a global method to delete by
-	// fileID)
 	private void handleDELETE() {
-		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID], 0);
+		String fileID = headerTokens[HeaderField.FILE_ID];
 
-		Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
+		ArrayList<ChunkID> chunksToBeDeleted = Peer.getChunkDB()
+				.getChunkIDsOfFile(fileID);
 
-		try {
+		while (!chunksToBeDeleted.isEmpty()) {
+			ChunkID chunkID = chunksToBeDeleted.remove(0);
+			
+			
+
 			Peer.getChunkDB().removeChunk(chunkID);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-
 	}
 
 	private boolean extractHeader() {

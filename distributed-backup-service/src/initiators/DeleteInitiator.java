@@ -27,6 +27,7 @@ public class DeleteInitiator implements Runnable {
 					+ " was previously backed up by the network. Starting chunks deletion.");
 
 			String fileID = Peer.getChunkDB().getFileID(fileName);
+
 			Peer.commandForwarder.sendDELETE(fileID);
 		} else {
 			Log.error(fileName + " has no chunks backed up by the network.");
