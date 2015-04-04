@@ -142,12 +142,15 @@ public class Handler implements Runnable {
 				return;
 			}
 
-			boolean noPeerAnsweredYet = Peer.getMdrListener()
+			boolean chunkAlreadySent = Peer.getMdrListener()
 					.stopSavingCHUNKsFor(chunkID);
 
-			if (noPeerAnsweredYet) {
+			if (!chunkAlreadySent) {
+				System.out
+						.println("no peer has sent the chunk yet. preparing chunk...");
+
 				// TODO read data from chunk bak
-				byte[] data = new byte[0];
+				byte[] data = "teste :P".getBytes();
 
 				Chunk chunk = new Chunk(chunkID.getFileID(),
 						chunkID.getChunkNo(), -1, data);
