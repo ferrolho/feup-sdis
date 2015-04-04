@@ -110,7 +110,7 @@ public class Peer implements RMIService {
 		while (it.hasNext()) {
 			Map.Entry<ChunkID, ArrayList<PeerID>> entry = it.next();
 
-			if (entry.getKey().equals(fileID))
+			if (entry.getKey().getFileID().equals(fileID))
 				return true;
 		}
 
