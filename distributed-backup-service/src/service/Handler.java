@@ -1,5 +1,7 @@
 package service;
 
+import initiators.BackupChunkInitiator;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -98,7 +100,7 @@ public class Handler implements Runnable {
 				Thread.sleep(Utils.random.nextInt(400));
 
 				if (Peer.getMcListener().getNumStoredConfirmsFor(chunkID) < replicationDeg) {
-					FileManager.saveChunk(chunkID, body);
+					FileManager.saveChunk(chunkID, replicationDeg, body);
 
 					Peer.getCommandForwarder().sendSTORED(chunkID);
 				}
@@ -151,7 +153,7 @@ public class Handler implements Runnable {
 						.println("no peer has sent the chunk yet. preparing chunk...");
 
 				try {
-					byte[] data = FileManager.loadChunk(chunkID);
+					byte[] data = FileManager.loadChunkData(chunkID);
 
 					Chunk chunk = new Chunk(chunkID.getFileID(),
 							chunkID.getChunkNo(), -1, data);
@@ -198,7 +200,33 @@ public class Handler implements Runnable {
 	}
 
 	private void handleREMOVED() {
+		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
+				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
+		Peer.getDatabase().removeChunkMirror(chunkID);
+
+		int currentRepDeg = Peer.getDatabase().getChunkMirrorsSize(chunkID);
+		int desiredRepDeg = Peer.getDatabase().getChunkReplicationDegree(
+				chunkID);
+
+		if (currentRepDeg < desiredRepDeg) {
+			try {
+				Thread.sleep(Utils.random.nextInt(400));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			try {
+				byte[] data = FileManager.loadChunkData(chunkID);
+
+				Chunk chunk = new Chunk(chunkID.getFileID(),
+						chunkID.getChunkNo(), desiredRepDeg, data);
+
+				new Thread(new BackupChunkInitiator(chunk));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private boolean extractHeader() {

@@ -66,8 +66,8 @@ public class FileManager {
 		file.delete();
 	}
 
-	public static final void saveChunk(ChunkID chunkID, byte[] data)
-			throws IOException {
+	public static final void saveChunk(ChunkID chunkID, int replicationDegree,
+			byte[] data) throws IOException {
 		if (!folderExists(CHUNKS))
 			createFolder(CHUNKS);
 
@@ -77,10 +77,10 @@ public class FileManager {
 		out.close();
 
 		// update database
-		Peer.getDatabase().addChunk(chunkID);
+		Peer.getDatabase().addChunk(chunkID, replicationDegree);
 	}
 
-	public static final byte[] loadChunk(ChunkID chunkID)
+	public static final byte[] loadChunkData(ChunkID chunkID)
 			throws FileNotFoundException {
 		File file = new File(CHUNKS + chunkID);
 		FileInputStream inputStream = new FileInputStream(file);

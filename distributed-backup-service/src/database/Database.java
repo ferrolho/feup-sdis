@@ -14,7 +14,7 @@ public class Database implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public Database() {
-		chunkDB = new HashMap<ChunkID, ArrayList<PeerID>>();
+		chunkDB = new HashMap<ChunkID, ChunkInfo>();
 		restorableFiles = new HashMap<String, FileInfo>();
 	}
 
@@ -34,27 +34,18 @@ public class Database implements Serializable {
 	/*
 	 * Database of chunks being backed up by this peer
 	 */
-	private volatile HashMap<ChunkID, ArrayList<PeerID>> chunkDB;
+	private volatile HashMap<ChunkID, ChunkInfo> chunkDB;
 
 	public synchronized boolean hasChunk(ChunkID chunkID) {
 		return chunkDB.containsKey(chunkID);
 	}
 
-	public synchronized void addChunk(ChunkID chunkID) {
+	public synchronized void addChunk(ChunkID chunkID, int replicationDegree) {
 		if (!hasChunk(chunkID)) {
-			chunkDB.put(chunkID, new ArrayList<PeerID>());
+			chunkDB.put(chunkID, new ChunkInfo(replicationDegree,
+					new ArrayList<PeerID>()));
 
 			Peer.saveChunkDB();
-		}
-	}
-
-	public synchronized void addChunkMirror(ChunkID chunkID, PeerID peerID) {
-		if (hasChunk(chunkID)) {
-			if (!chunkDB.get(chunkID).contains(peerID)) {
-				chunkDB.get(chunkID).add(peerID);
-
-				Peer.saveChunkDB();
-			}
 		}
 	}
 
@@ -64,8 +55,26 @@ public class Database implements Serializable {
 		Peer.saveChunkDB();
 	}
 
+	public synchronized void addChunkMirror(ChunkID chunkID, PeerID peerID) {
+		if (hasChunk(chunkID)) {
+			if (!chunkDB.get(chunkID).getMirrors().contains(peerID)) {
+				chunkDB.get(chunkID).getMirrors().add(peerID);
+
+				Peer.saveChunkDB();
+			}
+		}
+	}
+
+	public synchronized void removeChunkMirror(ChunkID chunkID) {
+		chunkDB.remove(chunkID);
+	}
+
+	public synchronized int getChunkReplicationDegree(ChunkID chunkID) {
+		return chunkDB.get(chunkID).getReplicationDegree();
+	}
+
 	public synchronized int getChunkMirrorsSize(ChunkID chunkID) {
-		return chunkDB.get(chunkID).size();
+		return chunkDB.get(chunkID).getMirrors().size();
 	}
 
 	public synchronized ArrayList<ChunkID> getChunkIDsOfFile(String fileID) {

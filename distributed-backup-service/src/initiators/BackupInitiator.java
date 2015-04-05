@@ -14,9 +14,6 @@ import database.FileInfo;
 
 public class BackupInitiator implements Runnable {
 
-	private static final long INITIAL_WAITING_TIME = 500;
-	private static final int MAX_ATTEMPTS = 5;
-
 	private File file;
 	private int replicationDegree;
 
@@ -72,51 +69,7 @@ public class BackupInitiator implements Runnable {
 				 * Second step: backup that chunk
 				 */
 
-				Peer.getMcListener()
-						.startSavingStoredConfirmsFor(chunk.getID());
-
-				long waitingTime = INITIAL_WAITING_TIME;
-				int attempt = 0;
-
-				boolean done = false;
-				while (!done) {
-					Peer.getMcListener().clearSavedStoredConfirmsFor(
-							chunk.getID());
-
-					Peer.getCommandForwarder().sendPUTCHUNK(chunk);
-
-					try {
-						System.out.println("Waiting for STOREDs for "
-								+ waitingTime + "ms");
-						Thread.sleep(waitingTime);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-					int confirmedRepDeg = Peer.getMcListener()
-							.getNumStoredConfirmsFor(chunk.getID());
-
-					Log.info(confirmedRepDeg
-							+ " peers have backed up the chunk. (desired: "
-							+ replicationDegree + " )");
-
-					if (confirmedRepDeg < replicationDegree) {
-						attempt++;
-
-						if (attempt > MAX_ATTEMPTS) {
-							Log.info("Reached maximum number of attempts to backup chunk with desired replication degree.");
-							done = true;
-						} else {
-							Log.info("Desired replication degree was not reached. Trying again...");
-							waitingTime *= 2;
-						}
-					} else {
-						Log.info("Desired replication degree reached.");
-						done = true;
-					}
-				}
-
-				Peer.getMcListener().stopSavingStoredConfirmsFor(chunk.getID());
+				new Thread(new BackupChunkInitiator(chunk));
 			}
 
 			Peer.getDatabase().addRestorableFile(file.getName(),
