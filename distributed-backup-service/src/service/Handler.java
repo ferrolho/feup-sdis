@@ -117,8 +117,6 @@ public class Handler implements Runnable {
 
 		Peer.getChunkDB().addChunkMirror(chunkID, senderID);
 
-		System.out.println(Peer.getChunkDB());
-
 		Peer.getMcListener().processStoredConfirm(chunkID, senderID);
 	}
 

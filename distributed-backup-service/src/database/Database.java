@@ -90,7 +90,7 @@ public class Database implements Serializable {
 
 		Peer.saveChunkDB();
 
-		Log.info("Added restorable file:\n" + fileName + " - " + fileInfo);
+		Log.info("Added restorable file:\n\t" + fileName + " - " + fileInfo);
 	}
 
 	public synchronized void removeRestorableFile(String fileName) {

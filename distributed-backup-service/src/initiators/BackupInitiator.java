@@ -5,8 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 
+import listeners.SocketListener;
 import peer.Peer;
-import service.Protocol;
 import utils.FileManager;
 import utils.Log;
 import utils.Utils;
@@ -37,18 +37,21 @@ public class BackupInitiator implements Runnable {
 		// return;
 		// }
 
-		try {
-			String fileID = Utils.getFileID(file);
-			byte[] fileData = FileManager.loadFile(file);
-			ByteArrayInputStream stream = new ByteArrayInputStream(fileData);
+		String fileID = Utils.getFileID(file);
 
-			int numChunks = fileData.length / Protocol.PACKET_MAX_SIZE + 1;
+		try {
+			byte[] fileData = FileManager.loadFile(file);
+
+			int numChunks = fileData.length / SocketListener.PACKET_MAX_SIZE
+					+ 1;
 			Log.info(file.getName() + " will be splitted into " + numChunks
 					+ " chunks.");
 
-			byte[] buf = new byte[Protocol.PACKET_MAX_SIZE];
+			ByteArrayInputStream stream = new ByteArrayInputStream(fileData);
+			byte[] buf = new byte[Chunk.MAX_SIZE];
 
-			for (int i = 0, offset = 0; i < numChunks; i++) {
+			for (int i = 0; i < numChunks; i++) {
+				System.out.println("\tCHUNK " + i);
 				byte[] chunkData;
 
 				/*
@@ -56,19 +59,19 @@ public class BackupInitiator implements Runnable {
 				 * the chunk size.
 				 */
 				if (i == numChunks - 1
-						&& fileData.length % Protocol.PACKET_MAX_SIZE == 0) {
+						&& fileData.length % SocketListener.PACKET_MAX_SIZE == 0) {
 					chunkData = new byte[0];
 				} else {
-					int dataStart = i * Protocol.PACKET_MAX_SIZE;
-					int dataEnd = dataStart + Protocol.PACKET_MAX_SIZE;
+					int dataStart = i * SocketListener.PACKET_MAX_SIZE;
+					int dataEnd = dataStart + SocketListener.PACKET_MAX_SIZE;
 
 					if (dataEnd > fileData.length)
 						dataEnd = fileData.length;
 
-					int readBytes = stream.read(buf, offset,
-							Protocol.PACKET_MAX_SIZE);
-					offset += readBytes;
+					int readBytes = stream.read(buf, 0, buf.length);
+					System.out.println("bytes read: " + readBytes);
 
+					chunkData = new byte[readBytes];
 					chunkData = Arrays.copyOfRange(buf, 0, readBytes);
 				}
 

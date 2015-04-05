@@ -2,6 +2,8 @@ package chunk;
 
 public class Chunk {
 
+	public static final int MAX_SIZE = 64000;
+
 	private ChunkID id;
 
 	private int replicationDegree;
