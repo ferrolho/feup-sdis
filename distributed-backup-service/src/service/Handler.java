@@ -14,6 +14,7 @@ import java.util.Arrays;
 import peer.Peer;
 import peer.PeerID;
 import utils.FileManager;
+import utils.Log;
 import utils.Utils;
 import chunk.Chunk;
 import chunk.ChunkID;
@@ -149,8 +150,7 @@ public class Handler implements Runnable {
 					.stopSavingCHUNKsFor(chunkID);
 
 			if (!chunkAlreadySent) {
-				System.out
-						.println("no peer has sent the chunk yet. preparing chunk...");
+				Log.info("No peer has sent the chunk yet. Preparing to send chunk.");
 
 				try {
 					byte[] data = FileManager.loadChunkData(chunkID);

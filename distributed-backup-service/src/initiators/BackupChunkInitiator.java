@@ -39,8 +39,8 @@ public class BackupChunkInitiator implements Runnable {
 			int confirmedRepDeg = Peer.getMcListener().getNumStoredConfirmsFor(
 					chunk.getID());
 
-			Log.info(confirmedRepDeg
-					+ " peers have backed up the chunk. (desired: "
+			Log.info(confirmedRepDeg + " peers have backed up chunk no. "
+					+ chunk.getID().getChunkNo() + ". (desired: "
 					+ chunk.getReplicationDegree() + " )");
 
 			if (confirmedRepDeg < chunk.getReplicationDegree()) {

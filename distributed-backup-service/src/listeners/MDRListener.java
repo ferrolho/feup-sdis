@@ -20,7 +20,6 @@ public class MDRListener extends SocketListener {
 
 	@Override
 	protected void handler(DatagramPacket packet) {
-		System.out.println("--- MDR HANDLER ---");
 		new Thread(new Handler(packet)).start();
 	}
 
