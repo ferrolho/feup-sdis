@@ -83,7 +83,7 @@ public class BackupInitiator implements Runnable {
 					Peer.getMcListener().clearSavedStoredConfirmsFor(
 							chunk.getID());
 
-					Peer.commandForwarder.sendPUTCHUNK(chunk);
+					Peer.getCommandForwarder().sendPUTCHUNK(chunk);
 
 					try {
 						System.out.println("Waiting for STOREDs for "
@@ -119,7 +119,7 @@ public class BackupInitiator implements Runnable {
 				Peer.getMcListener().stopSavingStoredConfirmsFor(chunk.getID());
 			}
 
-			Peer.getChunkDB().addRestorableFile(file.getName(),
+			Peer.getDatabase().addRestorableFile(file.getName(),
 					new FileInfo(fileID, numChunks));
 		} catch (FileNotFoundException e) {
 			Log.error("file not found");

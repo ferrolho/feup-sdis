@@ -77,7 +77,7 @@ public class FileManager {
 		out.close();
 
 		// update database
-		Peer.getChunkDB().addChunk(chunkID);
+		Peer.getDatabase().addChunk(chunkID);
 	}
 
 	public static final byte[] loadChunk(ChunkID chunkID)

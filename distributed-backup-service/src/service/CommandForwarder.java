@@ -66,8 +66,14 @@ public class CommandForwarder implements Protocol {
 	}
 
 	@Override
-	public void sendREMOVED() {
-		// TODO Auto-generated method stub
+	public void sendREMOVED(ChunkID chunkID) {
+		String header = MessageType.REMOVED + " " + Protocol.VERSION;
+		header += " " + chunkID.getFileID();
+		header += " " + chunkID.getChunkNo();
+		header += " " + Protocol.CRLF;
+		header += Protocol.CRLF;
+
+		sendPacketToMC(header.getBytes());
 	}
 
 	private synchronized void sendPacketToMC(byte[] buf) {

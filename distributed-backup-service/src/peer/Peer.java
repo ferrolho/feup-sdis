@@ -31,7 +31,7 @@ public class Peer implements RMIService {
 
 	private static final String DB_NAME = "db.data";
 
-	private static volatile Database chunkDB;
+	private static volatile Database database;
 
 	private static MulticastSocket socket;
 	private static PeerID id;
@@ -40,7 +40,7 @@ public class Peer implements RMIService {
 	private static volatile MDBListener mdbListener;
 	private static volatile MDRListener mdrListener;
 
-	public static CommandForwarder commandForwarder;
+	private static CommandForwarder commandForwarder;
 
 	private static String remoteObjectName;
 
@@ -67,7 +67,7 @@ public class Peer implements RMIService {
 	}
 
 	private static void createNewDB() {
-		chunkDB = new Database();
+		database = new Database();
 
 		saveChunkDB();
 
@@ -82,7 +82,7 @@ public class Peer implements RMIService {
 			ObjectInputStream objectInputStream = new ObjectInputStream(
 					fileInputStream);
 
-			chunkDB = (Database) objectInputStream.readObject();
+			database = (Database) objectInputStream.readObject();
 
 			objectInputStream.close();
 		} catch (FileNotFoundException e) {
@@ -99,7 +99,7 @@ public class Peer implements RMIService {
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
 					fileOutputStream);
 
-			objectOutputStream.writeObject(chunkDB);
+			objectOutputStream.writeObject(database);
 
 			objectOutputStream.close();
 		} catch (FileNotFoundException e) {
@@ -196,8 +196,8 @@ public class Peer implements RMIService {
 		return true;
 	}
 
-	public static Database getChunkDB() {
-		return chunkDB;
+	public static Database getDatabase() {
+		return database;
 	}
 
 	public static MulticastSocket getSocket() {
@@ -218,6 +218,10 @@ public class Peer implements RMIService {
 
 	public static MDRListener getMdrListener() {
 		return mdrListener;
+	}
+
+	public static CommandForwarder getCommandForwarder() {
+		return commandForwarder;
 	}
 
 }

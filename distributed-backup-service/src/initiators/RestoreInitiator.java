@@ -21,8 +21,8 @@ public class RestoreInitiator implements Runnable {
 
 	@Override
 	public void run() {
-		if (Peer.getChunkDB().fileHasBeenBackedUp(file.getName())) {
-			FileInfo fileInfo = Peer.getChunkDB().getFileInfo(file.getName());
+		if (Peer.getDatabase().fileHasBeenBackedUp(file.getName())) {
+			FileInfo fileInfo = Peer.getDatabase().getFileInfo(file.getName());
 
 			byte[] fileData = new byte[0];
 
@@ -30,8 +30,8 @@ public class RestoreInitiator implements Runnable {
 				Peer.getMdrListener().prepareToReceiveFileChunks(
 						fileInfo.getFileID());
 
-				Peer.commandForwarder.sendGETCHUNK(new ChunkID(fileInfo
-						.getFileID(), i));
+				Peer.getCommandForwarder().sendGETCHUNK(
+						new ChunkID(fileInfo.getFileID(), i));
 
 				Chunk chunk = Peer.getMdrListener().consumeChunk(
 						fileInfo.getFileID());

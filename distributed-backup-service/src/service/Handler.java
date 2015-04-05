@@ -71,6 +71,7 @@ public class Handler implements Runnable {
 		// 3.5 Space reclaiming subprotocol
 
 		case REMOVED:
+			handleREMOVED();
 			break;
 
 		default:
@@ -89,7 +90,7 @@ public class Handler implements Runnable {
 
 		try {
 			if (FileManager.fileExists(chunkID.toString()))
-				Peer.commandForwarder.sendSTORED(chunkID);
+				Peer.getCommandForwarder().sendSTORED(chunkID);
 			else {
 				Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);
 
@@ -99,7 +100,7 @@ public class Handler implements Runnable {
 				if (Peer.getMcListener().getNumStoredConfirmsFor(chunkID) < replicationDeg) {
 					FileManager.saveChunk(chunkID, body);
 
-					Peer.commandForwarder.sendSTORED(chunkID);
+					Peer.getCommandForwarder().sendSTORED(chunkID);
 				}
 
 				Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
@@ -115,8 +116,16 @@ public class Handler implements Runnable {
 
 		PeerID senderID = new PeerID(packet.getAddress(), packet.getPort());
 
-		Peer.getChunkDB().addChunkMirror(chunkID, senderID);
+		/*
+		 * If this peer is backing up this chunk, save the other peers which are
+		 * also backing it up.
+		 */
+		Peer.getDatabase().addChunkMirror(chunkID, senderID);
 
+		/*
+		 * If this peer requested the backup, update the number of received
+		 * STOREDs (replication degree).
+		 */
 		Peer.getMcListener().processStoredConfirm(chunkID, senderID);
 	}
 
@@ -124,7 +133,7 @@ public class Handler implements Runnable {
 		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
 				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
-		if (Peer.getChunkDB().hasChunk(chunkID)) {
+		if (Peer.getDatabase().hasChunk(chunkID)) {
 			Peer.getMdrListener().startSavingCHUNKsFor(chunkID);
 
 			try {
@@ -147,7 +156,7 @@ public class Handler implements Runnable {
 					Chunk chunk = new Chunk(chunkID.getFileID(),
 							chunkID.getChunkNo(), -1, data);
 
-					Peer.commandForwarder.sendCHUNK(chunk);
+					Peer.getCommandForwarder().sendCHUNK(chunk);
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -174,7 +183,7 @@ public class Handler implements Runnable {
 	private void handleDELETE() {
 		String fileID = headerTokens[HeaderField.FILE_ID];
 
-		ArrayList<ChunkID> chunksToBeDeleted = Peer.getChunkDB()
+		ArrayList<ChunkID> chunksToBeDeleted = Peer.getDatabase()
 				.getChunkIDsOfFile(fileID);
 
 		while (!chunksToBeDeleted.isEmpty()) {
@@ -182,8 +191,14 @@ public class Handler implements Runnable {
 
 			FileManager.deleteChunk(chunkID);
 
-			Peer.getChunkDB().removeChunk(chunkID);
+			Peer.getDatabase().removeChunk(chunkID);
+
+			Peer.getCommandForwarder().sendREMOVED(chunkID);
 		}
+	}
+
+	private void handleREMOVED() {
+
 	}
 
 	private boolean extractHeader() {

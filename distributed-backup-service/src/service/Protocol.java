@@ -29,6 +29,6 @@ public interface Protocol {
 
 	// 3.5 Space reclaiming subprotocol
 
-	void sendREMOVED();
+	void sendREMOVED(ChunkID chunkID);
 
 }
