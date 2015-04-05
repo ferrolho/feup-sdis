@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 
-import listeners.SocketListener;
 import peer.Peer;
 import utils.FileManager;
 import utils.Log;
@@ -42,40 +41,36 @@ public class BackupInitiator implements Runnable {
 		try {
 			byte[] fileData = FileManager.loadFile(file);
 
-			int numChunks = fileData.length / SocketListener.PACKET_MAX_SIZE
-					+ 1;
+			int numChunks = fileData.length / Chunk.MAX_SIZE + 1;
+
 			Log.info(file.getName() + " will be splitted into " + numChunks
 					+ " chunks.");
 
 			ByteArrayInputStream stream = new ByteArrayInputStream(fileData);
-			byte[] buf = new byte[Chunk.MAX_SIZE];
+			byte[] streamConsumer = new byte[Chunk.MAX_SIZE];
 
 			for (int i = 0; i < numChunks; i++) {
-				System.out.println("\tCHUNK " + i);
+				/*
+				 * First step: get a chunk of the file
+				 */
+
 				byte[] chunkData;
 
-				/*
-				 * If this is the last chunk, and the file size is a multiple of
-				 * the chunk size.
-				 */
-				if (i == numChunks - 1
-						&& fileData.length % SocketListener.PACKET_MAX_SIZE == 0) {
+				if (i == numChunks - 1 && fileData.length % Chunk.MAX_SIZE == 0) {
 					chunkData = new byte[0];
 				} else {
-					int dataStart = i * SocketListener.PACKET_MAX_SIZE;
-					int dataEnd = dataStart + SocketListener.PACKET_MAX_SIZE;
+					int numBytesRead = stream.read(streamConsumer, 0,
+							streamConsumer.length);
 
-					if (dataEnd > fileData.length)
-						dataEnd = fileData.length;
-
-					int readBytes = stream.read(buf, 0, buf.length);
-					System.out.println("bytes read: " + readBytes);
-
-					chunkData = new byte[readBytes];
-					chunkData = Arrays.copyOfRange(buf, 0, readBytes);
+					chunkData = Arrays.copyOfRange(streamConsumer, 0,
+							numBytesRead);
 				}
 
 				Chunk chunk = new Chunk(fileID, i, replicationDegree, chunkData);
+
+				/*
+				 * Second step: backup that chunk
+				 */
 
 				Peer.getMcListener()
 						.startSavingStoredConfirmsFor(chunk.getID());
@@ -98,22 +93,27 @@ public class BackupInitiator implements Runnable {
 						e.printStackTrace();
 					}
 
-					System.out.println(Peer.getMcListener()
-							.getNumStoredConfirmsFor(chunk.getID())
-							+ " of "
-							+ replicationDegree + " peers stored the chunk");
-					System.out.println();
+					int confirmedRepDeg = Peer.getMcListener()
+							.getNumStoredConfirmsFor(chunk.getID());
 
-					if (Peer.getMcListener().getNumStoredConfirmsFor(
-							chunk.getID()) < replicationDegree) {
+					Log.info(confirmedRepDeg
+							+ " peers have backed up the chunk. (desired: "
+							+ replicationDegree + " )");
+
+					if (confirmedRepDeg < replicationDegree) {
 						attempt++;
 
-						if (attempt > MAX_ATTEMPTS)
+						if (attempt > MAX_ATTEMPTS) {
+							Log.info("Reached maximum number of attempts to backup chunk with desired replication degree.");
 							done = true;
-						else
+						} else {
+							Log.info("Desired replication degree was not reached. Trying again...");
 							waitingTime *= 2;
-					} else
+						}
+					} else {
+						Log.info("Desired replication degree reached.");
 						done = true;
+					}
 				}
 
 				Peer.getMcListener().stopSavingStoredConfirmsFor(chunk.getID());
