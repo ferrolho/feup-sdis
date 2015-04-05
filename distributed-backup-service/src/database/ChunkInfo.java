@@ -1,10 +1,13 @@
 package database;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import peer.PeerID;
 
-public class ChunkInfo {
+public class ChunkInfo implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private int replicationDegree;
 	private ArrayList<PeerID> mirrors;
