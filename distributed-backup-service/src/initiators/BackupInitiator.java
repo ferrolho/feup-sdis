@@ -69,7 +69,14 @@ public class BackupInitiator implements Runnable {
 				 * Second step: backup that chunk
 				 */
 
-				new Thread(new BackupChunkInitiator(chunk)).start();
+				Thread t = new Thread(new BackupChunkInitiator(chunk));
+				t.start();
+
+				try {
+					t.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 
 			Peer.getDatabase().addRestorableFile(file.getName(),
