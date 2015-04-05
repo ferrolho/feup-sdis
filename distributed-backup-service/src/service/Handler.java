@@ -194,8 +194,6 @@ public class Handler implements Runnable {
 			FileManager.deleteChunk(chunkID);
 
 			Peer.getDatabase().removeChunk(chunkID);
-
-			Peer.getCommandForwarder().sendREMOVED(chunkID);
 		}
 	}
 
