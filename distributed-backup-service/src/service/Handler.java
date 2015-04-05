@@ -210,21 +210,30 @@ public class Handler implements Runnable {
 				chunkID);
 
 		if (currentRepDeg < desiredRepDeg) {
+			Peer.getMdbListener().startSavingPUTCHUNKsFor(chunkID);
+
 			try {
 				Thread.sleep(Utils.random.nextInt(400));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 
-			try {
-				byte[] data = FileManager.loadChunkData(chunkID);
+			int numPUTCHUNKsRegisteredMeanwhile = Peer.getMdbListener()
+					.getNumPUTCHUNKsFor(chunkID);
 
-				Chunk chunk = new Chunk(chunkID.getFileID(),
-						chunkID.getChunkNo(), desiredRepDeg, data);
+			Peer.getMdbListener().stopSavingPUTCHUNKsFor(chunkID);
 
-				new Thread(new BackupChunkInitiator(chunk));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+			if (numPUTCHUNKsRegisteredMeanwhile == 0) {
+				try {
+					byte[] data = FileManager.loadChunkData(chunkID);
+
+					Chunk chunk = new Chunk(chunkID.getFileID(),
+							chunkID.getChunkNo(), desiredRepDeg, data);
+
+					new Thread(new BackupChunkInitiator(chunk));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
