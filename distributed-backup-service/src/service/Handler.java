@@ -228,7 +228,7 @@ public class Handler implements Runnable {
 					Chunk chunk = new Chunk(chunkID.getFileID(),
 							chunkID.getChunkNo(), desiredRepDeg, data);
 
-					new Thread(new BackupChunkInitiator(chunk));
+					new Thread(new BackupChunkInitiator(chunk)).start();
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
