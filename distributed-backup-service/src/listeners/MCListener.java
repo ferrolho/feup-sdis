@@ -21,14 +21,12 @@ public class MCListener extends SocketListener {
 
 	@Override
 	public void handler(DatagramPacket packet) {
-		System.out.println("MC HANDLR");
+		System.out.println("--- MC HANDLER ---");
 		new Thread(new Handler(packet)).start();
 	}
 
 	public synchronized void startSavingStoredConfirmsFor(ChunkID chunkID) {
 		storedConfirms.put(chunkID, new ArrayList<PeerID>());
-
-		System.out.println(storedConfirms.toString());
 	}
 
 	public synchronized void clearSavedStoredConfirmsFor(ChunkID chunkID) {

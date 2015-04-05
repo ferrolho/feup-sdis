@@ -11,7 +11,7 @@ import chunk.ChunkID;
 
 public class FileManager {
 
-	public static final String FILES = "FILES/";
+	public static final String FILES = "../FILES/";
 
 	private static final String CHUNKS = "CHUNKS/";
 

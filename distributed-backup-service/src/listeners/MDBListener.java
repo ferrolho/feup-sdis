@@ -13,7 +13,7 @@ public class MDBListener extends SocketListener {
 
 	@Override
 	public void handler(DatagramPacket packet) {
-		System.out.println("MDB HANDLR");
+		System.out.println("--- MDB HANDLER ---");
 		new Thread(new Handler(packet)).start();
 	}
 

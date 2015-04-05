@@ -20,7 +20,7 @@ public class MDRListener extends SocketListener {
 
 	@Override
 	protected void handler(DatagramPacket packet) {
-		System.out.println("MDR LISTENER HANDLER");
+		System.out.println("--- MDR HANDLER ---");
 		new Thread(new Handler(packet)).start();
 	}
 
@@ -32,8 +32,6 @@ public class MDRListener extends SocketListener {
 
 	public synchronized void startSavingCHUNKsFor(ChunkID chunkID) {
 		sentCHUNKs.put(chunkID, false);
-
-		System.out.println(sentCHUNKs.toString());
 	}
 
 	public synchronized void registerCHUNK(ChunkID chunkID) {
@@ -62,7 +60,6 @@ public class MDRListener extends SocketListener {
 	public synchronized void feedChunk(Chunk chunk) {
 		chunks.get(chunk.getID().getFileID()).add(chunk);
 
-		System.out.println("sending feed notification");
 		notifyAll();
 	}
 
@@ -80,8 +77,6 @@ public class MDRListener extends SocketListener {
 
 			chunk = fileChunks.isEmpty() ? null : chunks.get(fileID).remove(0);
 		}
-
-		System.out.println("chunk consumed");
 
 		return chunk;
 	}
