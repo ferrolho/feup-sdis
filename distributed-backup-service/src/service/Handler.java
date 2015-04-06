@@ -94,25 +94,31 @@ public class Handler implements Runnable {
 
 			extractBody();
 
-			try {
-				if (FileManager.fileExists(chunkID.toString()))
-					Peer.getCommandForwarder().sendSTORED(chunkID);
-				else {
-					Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);
-
-					// random delay between 0 and 400ms
-					Thread.sleep(Utils.random.nextInt(400));
-
-					if (Peer.getMcListener().getNumStoredConfirmsFor(chunkID) < replicationDeg) {
+			if (body.length < Peer.getDisk().getFreeBytes()) {
+				try {
+					if (FileManager.fileExists(chunkID.toString()))
 						Peer.getCommandForwarder().sendSTORED(chunkID);
+					else {
+						Peer.getMcListener().startSavingStoredConfirmsFor(
+								chunkID);
 
-						FileManager.saveChunk(chunkID, replicationDeg, body);
+						// random delay between 0 and 400ms
+						Thread.sleep(Utils.random.nextInt(400));
+
+						if (Peer.getMcListener().getNumStoredConfirmsFor(
+								chunkID) < replicationDeg) {
+							Peer.getCommandForwarder().sendSTORED(chunkID);
+
+							FileManager
+									.saveChunk(chunkID, replicationDeg, body);
+						}
+
+						Peer.getMcListener().stopSavingStoredConfirmsFor(
+								chunkID);
 					}
-
-					Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 	}

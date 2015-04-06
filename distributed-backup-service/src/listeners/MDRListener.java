@@ -49,7 +49,8 @@ public class MDRListener extends SocketListener {
 	private volatile HashMap<String, ArrayList<Chunk>> chunks;
 
 	public synchronized void prepareToReceiveFileChunks(String fileID) {
-		chunks.put(fileID, new ArrayList<Chunk>());
+		if (!chunks.containsKey(fileID))
+			chunks.put(fileID, new ArrayList<Chunk>());
 	}
 
 	public synchronized boolean feedingChunksOfFile(String fileID) {
@@ -78,6 +79,17 @@ public class MDRListener extends SocketListener {
 		}
 
 		return chunk;
+	}
+
+	public synchronized boolean hasReceivedChunk(ChunkID chunkID) {
+		for (ArrayList<Chunk> chunks : chunks.values()) {
+			for (Chunk chunk : chunks) {
+				if (chunk.getID().equals(chunkID))
+					return true;
+			}
+		}
+
+		return false;
 	}
 
 	public synchronized void stopSavingFileChunks(String fileID) {

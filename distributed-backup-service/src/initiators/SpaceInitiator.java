@@ -44,13 +44,40 @@ public class SpaceInitiator implements Runnable {
 				Peer.getMdbListener().stopSavingPUTCHUNKsFor(chunkID);
 
 				/*
+				 * If no PUTCHUNK is registered, it might also mean that no
+				 * other peer is backing up this chunk.
+				 */
+				boolean noneOfThePeersHaveThisChunk = false;
+
+				if (numPUTCHUNKsRegisteredMeanwhile == 0) {
+					Peer.getMdrListener().prepareToReceiveFileChunks(
+							chunkID.getFileID());
+
+					Peer.getCommandForwarder().sendGETCHUNK(chunkID);
+
+					try {
+						Thread.sleep(Utils.random.nextInt(500));
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						return;
+					}
+
+					noneOfThePeersHaveThisChunk = !Peer.getMdrListener()
+							.hasReceivedChunk(chunkID);
+
+					Peer.getMdrListener().stopSavingFileChunks(
+							chunkID.getFileID());
+				}
+
+				/*
 				 * If no PUTCHUNKs are received after 500ms, that means the
 				 * replication degree of the chunk this peer is removing is
 				 * still greater or equal to the desired; else, start listening
 				 * for STOREDs and only delete the chunk after a STORED has been
 				 * confirmed, or maximum attempt has been reached.
 				 */
-				if (numPUTCHUNKsRegisteredMeanwhile != 0) {
+				if (numPUTCHUNKsRegisteredMeanwhile != 0
+						|| noneOfThePeersHaveThisChunk) {
 					Log.info("Replication degree is less than desired. Trying to fix it.");
 
 					Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);
