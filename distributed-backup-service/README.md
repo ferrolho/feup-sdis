@@ -53,6 +53,21 @@ Usages where the user does not specify the multicast addresses and ports will ha
 |224.0.0.0:8000|224.0.0.0:8001|224.0.0.0:8002|
 
 
+#### Local files and configuration
+
+The *Peer* relies on three external files:
+
+- db.data
+- disk.data
+- enhancements-config.data
+
+You need not generate these files manually. Once the *Peer* is launched for the very first time, they will be automatically created.
+
+You should not manually edit **db.data** neither **disk.data**. These files are managed by the service.
+
+You can, however, edit **enhancements-config.data** manually using a text editor. This file contains a single **1** or **0** in order to tell the *Peer* to use, or not to use enhancements, respectively.
+
+
 ### Trigger
 
 Following are the possible usages of the *Trigger*, which is used to issue commands to the service.
