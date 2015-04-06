@@ -25,4 +25,8 @@ public class ChunkInfo implements Serializable {
 		return mirrors;
 	}
 
+	public void removeMirror(PeerID peerID) {
+		mirrors.remove(peerID);
+	}
+
 }

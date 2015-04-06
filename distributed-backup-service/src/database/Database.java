@@ -65,8 +65,8 @@ public class Database implements Serializable {
 		}
 	}
 
-	public synchronized void removeChunkMirror(ChunkID chunkID) {
-		chunkDB.remove(chunkID);
+	public synchronized void removeChunkMirror(ChunkID chunkID, PeerID peerID) {
+		chunkDB.get(chunkID).removeMirror(peerID);
 	}
 
 	public synchronized int getChunkReplicationDegree(ChunkID chunkID) {

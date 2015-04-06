@@ -3,6 +3,7 @@ package initiators;
 import chunk.ChunkID;
 import peer.Peer;
 import storage.FileManager;
+import utils.Log;
 
 public class FreeInitiator implements Runnable {
 
@@ -19,9 +20,13 @@ public class FreeInitiator implements Runnable {
 		while (Peer.getDisk().getFreeBytes() < 0) {
 			ChunkID chunkID = Peer.getDatabase().getMostBackedUpChunk();
 
-			FileManager.deleteChunk(chunkID);
+			if (chunkID != null) {
+				FileManager.deleteChunk(chunkID);
 
-			Peer.getCommandForwarder().sendREMOVED(chunkID);
+				Peer.getCommandForwarder().sendREMOVED(chunkID);
+			} else {
+				Log.error("There are no chunks stored. Unexpected error.");
+			}
 		}
 	}
 

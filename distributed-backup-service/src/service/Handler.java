@@ -199,36 +199,38 @@ public class Handler implements Runnable {
 		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
 				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
-		Peer.getDatabase().removeChunkMirror(chunkID);
+		if (Peer.getDatabase().hasChunk(chunkID)) {
+			Peer.getDatabase().removeChunkMirror(chunkID, Peer.getId());
 
-		int currentRepDeg = Peer.getDatabase().getChunkMirrorsSize(chunkID);
-		int desiredRepDeg = Peer.getDatabase().getChunkReplicationDegree(
-				chunkID);
+			int currentRepDeg = Peer.getDatabase().getChunkMirrorsSize(chunkID);
+			int desiredRepDeg = Peer.getDatabase().getChunkReplicationDegree(
+					chunkID);
 
-		if (currentRepDeg < desiredRepDeg) {
-			Peer.getMdbListener().startSavingPUTCHUNKsFor(chunkID);
+			if (currentRepDeg < desiredRepDeg) {
+				Peer.getMdbListener().startSavingPUTCHUNKsFor(chunkID);
 
-			try {
-				Thread.sleep(Utils.random.nextInt(400));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			int numPUTCHUNKsRegisteredMeanwhile = Peer.getMdbListener()
-					.getNumPUTCHUNKsFor(chunkID);
-
-			Peer.getMdbListener().stopSavingPUTCHUNKsFor(chunkID);
-
-			if (numPUTCHUNKsRegisteredMeanwhile == 0) {
 				try {
-					byte[] data = FileManager.loadChunkData(chunkID);
-
-					Chunk chunk = new Chunk(chunkID.getFileID(),
-							chunkID.getChunkNo(), desiredRepDeg, data);
-
-					new Thread(new BackupChunkInitiator(chunk)).start();
-				} catch (FileNotFoundException e) {
+					Thread.sleep(Utils.random.nextInt(400));
+				} catch (InterruptedException e) {
 					e.printStackTrace();
+				}
+
+				int numPUTCHUNKsRegisteredMeanwhile = Peer.getMdbListener()
+						.getNumPUTCHUNKsFor(chunkID);
+
+				Peer.getMdbListener().stopSavingPUTCHUNKsFor(chunkID);
+
+				if (numPUTCHUNKsRegisteredMeanwhile == 0) {
+					try {
+						byte[] data = FileManager.loadChunkData(chunkID);
+
+						Chunk chunk = new Chunk(chunkID.getFileID(),
+								chunkID.getChunkNo(), desiredRepDeg, data);
+
+						new Thread(new BackupChunkInitiator(chunk)).start();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
