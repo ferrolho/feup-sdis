@@ -75,4 +75,7 @@ The file path used by the *backup* command can either be an **absolute path**, o
 
 The file path used by the *restore* and *delete* commands can be a **relative path**, an **absolute path**, or just a **file name** followed by the file extension.
 
+
+##### Amount of space argument
+
 The amount of space specified along the *space* command is not the amount of space to be freed by the disk, but the amount of space used to set a new disk capacity. It is specified in bytes.
