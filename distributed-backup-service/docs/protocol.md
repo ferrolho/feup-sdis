@@ -86,4 +86,31 @@ if (peer is backink up a copy of that chunk) {
 
 Meanwhile, the peer who sent the **REMOVED** message does the following:
 ```
+for a random interval uniformly distributed between 0 and 400 ms {
+	listen PUTCHUNKs
+}
+
+if (no PUTCHUNK was listened) {
+	ask for the chunk to be deleted
+
+	for a random interval uniformly distributed between 0 and 500 ms {
+		listen for CHUNKs
+	}
+
+	if (no CHUNK is listened)
+		none of the peers has the chunk
+}
+
+if (at least one PUTCHUNK was listened **OR** none of the peers has the chunk) {
+	repeat 5 times, double waiting time every retry {
+		wait for 500ms;
+
+		meanwhile, listen STORED messages;
+
+		if (STORED message received)
+			stop repeating this block;
+	}
+}
+
+finally, delete stored chunk;
 ```
