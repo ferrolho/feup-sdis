@@ -55,17 +55,6 @@ This implementation has the following flaw:
 If a peer fails during the chunk backup subprotocol step, the replication degree of the file chunk may be lower than desired.
 
 
-An even worst case scenario would be the following:  
-
-- There are 3 peers running: A, B, and C
-- Peer A backs up file X.png with replication degree = 1
-- X.png originates 4 chunks upon the splitting process
-- Peer B stores the first chunk
-- Peer C stores the remaining 3 chunks
-- Peer B reclaims total space of his disk, and therefore sends a **REMOVED** message regarding the first chunk of X.png
-- Since the replication degree is 1, and taking the actions described in the specification, neither peer A or C would back up the to be deleted chunk, because none of them has another backup if that chunk
-
-
 Our enhancement does not require any additional special messages, and therefore is interoperable with any other implementations of the protocol:
 
 When a peer receives a **REMOVED** message:
