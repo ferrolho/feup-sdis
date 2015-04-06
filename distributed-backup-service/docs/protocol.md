@@ -9,7 +9,7 @@ The project specification proposes the following actions to be taken when a **PU
 3. Send **STORED** message
 
 
-Our enhancement does not require any additional special messages, and therefore is interoperable with any other implementations of the protocol:
+Our enhancement does not require any additional special messages, and therefore is inter operable with any other implementations of the protocol:
 
 ```
 wait for a random interval uniformly distributed between 0 and 400 ms;
@@ -55,15 +55,15 @@ This implementation has the following flaw:
 If a peer fails during the chunk backup subprotocol step, the replication degree of the file chunk may be lower than desired.
 
 
-Our enhancement does not require any additional special messages, and therefore is interoperable with any other implementations of the protocol:
+Our enhancement does not require any additional special messages, and therefore is inter operable with any other implementations of the protocol:
 
 When a peer receives a **REMOVED** message:
 
 ```
-if (peer is backink up a copy of that chunk) {
+if (peer is backing up a copy of that chunk) {
   update available mirrors of chunk;
 	
-	if (new replication degree < desiredRepDeg) {
+	if (new replication degree < desired) {
 		wait for a random interval uniformly distributed between 0 and 400 ms;
 		
 		meanwhile, save number of received PUTCHUNK messages;
