@@ -2,12 +2,11 @@ package initiators;
 
 import java.io.FileNotFoundException;
 
-import chunk.Chunk;
-import chunk.ChunkID;
 import peer.Peer;
 import storage.FileManager;
 import utils.Log;
-import utils.Utils;
+import chunk.Chunk;
+import chunk.ChunkID;
 
 public class SpaceInitiator implements Runnable {
 
@@ -33,7 +32,7 @@ public class SpaceInitiator implements Runnable {
 				Peer.getMdbListener().startSavingPUTCHUNKsFor(chunkID);
 
 				try {
-					Thread.sleep(Utils.random.nextInt(500));
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -56,7 +55,7 @@ public class SpaceInitiator implements Runnable {
 					Peer.getCommandForwarder().sendGETCHUNK(chunkID);
 
 					try {
-						Thread.sleep(Utils.random.nextInt(500));
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 						return;
