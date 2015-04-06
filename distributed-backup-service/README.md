@@ -55,7 +55,7 @@ Usages where the user does not specify the multicast addresses and ports will ha
 
 #### Local files and configuration
 
-The *Peer* relies on three external files:
+Each *Peer* relies on three external files:
 
 - db.data
 - disk.data
