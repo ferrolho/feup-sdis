@@ -131,4 +131,13 @@ public class Database implements Serializable {
 		return restorableFiles.get(fileName);
 	}
 
+	public synchronized boolean canSaveChunksOf(String fileID) {
+		for (FileInfo fileInfo : restorableFiles.values()) {
+			if (fileInfo.getFileID().equals(fileID))
+				return false;
+		}
+
+		return true;
+	}
+
 }

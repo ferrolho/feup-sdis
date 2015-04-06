@@ -83,33 +83,37 @@ public class Handler implements Runnable {
 	}
 
 	private void handlePUTCHUNK() {
-		extractBody();
+		if (Peer.getDatabase().canSaveChunksOf(
+				headerTokens[HeaderField.FILE_ID])) {
 
-		ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
-				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
+			ChunkID chunkID = new ChunkID(headerTokens[HeaderField.FILE_ID],
+					Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
-		int replicationDeg = Integer
-				.parseInt(headerTokens[HeaderField.REPLICATION_DEG]);
+			int replicationDeg = Integer
+					.parseInt(headerTokens[HeaderField.REPLICATION_DEG]);
 
-		try {
-			if (FileManager.fileExists(chunkID.toString()))
-				Peer.getCommandForwarder().sendSTORED(chunkID);
-			else {
-				Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);
+			extractBody();
 
-				// random delay between 0 and 400ms
-				Thread.sleep(Utils.random.nextInt(400));
-
-				if (Peer.getMcListener().getNumStoredConfirmsFor(chunkID) < replicationDeg) {
-					FileManager.saveChunk(chunkID, replicationDeg, body);
-
+			try {
+				if (FileManager.fileExists(chunkID.toString()))
 					Peer.getCommandForwarder().sendSTORED(chunkID);
-				}
+				else {
+					Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);
 
-				Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
+					// random delay between 0 and 400ms
+					Thread.sleep(Utils.random.nextInt(400));
+
+					if (Peer.getMcListener().getNumStoredConfirmsFor(chunkID) < replicationDeg) {
+						FileManager.saveChunk(chunkID, replicationDeg, body);
+
+						Peer.getCommandForwarder().sendSTORED(chunkID);
+					}
+
+					Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
