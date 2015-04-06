@@ -2,6 +2,7 @@ package peer;
 
 import initiators.BackupInitiator;
 import initiators.DeleteInitiator;
+import initiators.FreeInitiator;
 import initiators.RestoreInitiator;
 
 import java.io.File;
@@ -23,14 +24,17 @@ import listeners.MDBListener;
 import listeners.MDRListener;
 import service.CommandForwarder;
 import service.RMIService;
+import storage.Disk;
 import utils.Log;
 import utils.Utils;
 import database.Database;
 
 public class Peer implements RMIService {
 
+	private static final String DISK_NAME = "disk.data";
 	private static final String DB_NAME = "db.data";
 
+	private static volatile Disk disk;
 	private static volatile Database database;
 
 	private static MulticastSocket socket;
@@ -49,7 +53,8 @@ public class Peer implements RMIService {
 		if (!validArgs(args))
 			return;
 
-		loadChunkDB();
+		loadDisk();
+		loadDatabase();
 
 		socket = new MulticastSocket();
 		id = new PeerID(Utils.getIPv4(), socket.getLocalPort());
@@ -66,15 +71,62 @@ public class Peer implements RMIService {
 		System.out.println("- SERVER READY -");
 	}
 
-	private static void createNewDB() {
+	private static void createNewDisk() {
+		disk = new Disk();
+
+		saveDisk();
+
+		Log.info("A new disk with capacity of " + disk.getCapacity()
+				+ " bytes has been created.");
+	}
+
+	private static void loadDisk() throws ClassNotFoundException, IOException {
+		try {
+			FileInputStream fileInputStream = new FileInputStream(DISK_NAME);
+
+			ObjectInputStream objectInputStream = new ObjectInputStream(
+					fileInputStream);
+
+			disk = (Disk) objectInputStream.readObject();
+
+			objectInputStream.close();
+		} catch (FileNotFoundException e) {
+			Log.error("Disk not found");
+
+			createNewDisk();
+		}
+	}
+
+	public static void saveDisk() {
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(DISK_NAME);
+
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+					fileOutputStream);
+
+			objectOutputStream.writeObject(disk);
+
+			objectOutputStream.close();
+		} catch (FileNotFoundException e) {
+			Log.error("Disk not found");
+
+			createNewDisk();
+
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void createNewDatabase() {
 		database = new Database();
 
-		saveChunkDB();
+		saveDatabase();
 
 		Log.info("A new empty database has been created");
 	}
 
-	private static void loadChunkDB() throws ClassNotFoundException,
+	private static void loadDatabase() throws ClassNotFoundException,
 			IOException {
 		try {
 			FileInputStream fileInputStream = new FileInputStream(DB_NAME);
@@ -88,11 +140,11 @@ public class Peer implements RMIService {
 		} catch (FileNotFoundException e) {
 			Log.error("Database not found");
 
-			createNewDB();
+			createNewDatabase();
 		}
 	}
 
-	public static void saveChunkDB() {
+	public static void saveDatabase() {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream(DB_NAME);
 
@@ -105,7 +157,7 @@ public class Peer implements RMIService {
 		} catch (FileNotFoundException e) {
 			Log.error("Database not found");
 
-			createNewDB();
+			createNewDatabase();
 
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -142,8 +194,8 @@ public class Peer implements RMIService {
 	}
 
 	@Override
-	public void free(int kbyte) throws RemoteException {
-		System.out.println("freeing " + kbyte + "kbyte");
+	public void free(int amount) throws RemoteException {
+		new Thread(new FreeInitiator(amount)).start();
 	}
 
 	private static boolean validArgs(String[] args) throws UnknownHostException {
@@ -194,6 +246,10 @@ public class Peer implements RMIService {
 		mdrListener = new MDRListener(mdrAddress, mdrPort);
 
 		return true;
+	}
+
+	public static Disk getDisk() {
+		return disk;
 	}
 
 	public static Database getDatabase() {

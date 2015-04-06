@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 import peer.Peer;
-import utils.FileManager;
+import storage.FileManager;
 import utils.Log;
 import utils.Utils;
 import chunk.Chunk;
@@ -72,6 +72,10 @@ public class BackupInitiator implements Runnable {
 				Thread t = new Thread(new BackupChunkInitiator(chunk));
 				t.start();
 
+				/*
+				 * TODO can chunks be backed up in parallel? not working for big
+				 * files...
+				 */
 				try {
 					t.join();
 				} catch (InterruptedException e) {

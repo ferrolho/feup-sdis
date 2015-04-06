@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 import peer.Peer;
 import peer.PeerID;
-import utils.FileManager;
+import storage.FileManager;
 import utils.Log;
 import utils.Utils;
 import chunk.Chunk;
@@ -192,8 +192,6 @@ public class Handler implements Runnable {
 			ChunkID chunkID = chunksToBeDeleted.remove(0);
 
 			FileManager.deleteChunk(chunkID);
-
-			Peer.getDatabase().removeChunk(chunkID);
 		}
 	}
 

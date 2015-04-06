@@ -1,4 +1,4 @@
-package utils;
+package storage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,6 +78,9 @@ public class FileManager {
 
 		// update database
 		Peer.getDatabase().addChunk(chunkID, replicationDegree);
+
+		// update disk space
+		Peer.getDisk().saveFile(data.length);
 	}
 
 	public static final byte[] loadChunkData(ChunkID chunkID)
@@ -99,8 +102,12 @@ public class FileManager {
 
 	public static final void deleteChunk(ChunkID chunkID) {
 		File file = new File(CHUNKS + chunkID);
+		long fileSize = file.length();
 
 		file.delete();
+
+		Peer.getDisk().removeFile(fileSize);
+		Peer.getDatabase().removeChunk(chunkID);
 	}
 
 }

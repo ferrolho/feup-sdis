@@ -3,7 +3,7 @@ package initiators;
 import java.io.File;
 
 import peer.Peer;
-import utils.FileManager;
+import storage.FileManager;
 import utils.Log;
 
 public class DeleteInitiator implements Runnable {

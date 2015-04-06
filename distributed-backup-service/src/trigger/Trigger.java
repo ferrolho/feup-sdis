@@ -17,7 +17,7 @@ public class Trigger {
 	private static String remoteObjectName;
 	private static String command;
 	private static File file;
-	private static int replicationDegree, kbyte;
+	private static int replicationDegree, bytes;
 
 	private static RMIService peer;
 
@@ -39,7 +39,7 @@ public class Trigger {
 			break;
 
 		case TriggerCommands.SPACE:
-			peer.free(kbyte);
+			peer.free(bytes);
 			break;
 
 		default:
@@ -178,9 +178,9 @@ public class Trigger {
 		return true;
 	}
 
-	private static boolean validAmountOfSpace(String kbyteStr) {
+	private static boolean validAmountOfSpace(String bytesStr) {
 		try {
-			kbyte = Integer.parseInt(kbyteStr);
+			bytes = Integer.parseInt(bytesStr);
 		} catch (NumberFormatException e) {
 			Log.error("The space to be freed must be a valid integer");
 

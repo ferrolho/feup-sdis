@@ -45,14 +45,14 @@ public class Database implements Serializable {
 			chunkDB.put(chunkID, new ChunkInfo(replicationDegree,
 					new ArrayList<PeerID>()));
 
-			Peer.saveChunkDB();
+			Peer.saveDatabase();
 		}
 	}
 
 	public synchronized void removeChunk(ChunkID chunkID) {
 		chunkDB.remove(chunkID);
 
-		Peer.saveChunkDB();
+		Peer.saveDatabase();
 	}
 
 	public synchronized void addChunkMirror(ChunkID chunkID, PeerID peerID) {
@@ -60,7 +60,7 @@ public class Database implements Serializable {
 			if (!chunkDB.get(chunkID).getMirrors().contains(peerID)) {
 				chunkDB.get(chunkID).getMirrors().add(peerID);
 
-				Peer.saveChunkDB();
+				Peer.saveDatabase();
 			}
 		}
 	}
@@ -87,6 +87,19 @@ public class Database implements Serializable {
 		return chunkIDs;
 	}
 
+	public synchronized ChunkID getMostBackedUpChunk() {
+		ChunkID best = null;
+
+		for (ChunkID chunkID : chunkDB.keySet()) {
+			if (best == null
+					|| getChunkMirrorsSize(chunkID) > getChunkMirrorsSize(best)) {
+				best = chunkID;
+			}
+		}
+
+		return best;
+	}
+
 	/*
 	 * Database of the files this peer requested the network to backup, and
 	 * therefore can be restored.
@@ -97,7 +110,7 @@ public class Database implements Serializable {
 			FileInfo fileInfo) {
 		restorableFiles.put(fileName, fileInfo);
 
-		Peer.saveChunkDB();
+		Peer.saveDatabase();
 
 		Log.info("Added restorable file:\n\t" + fileName + " - " + fileInfo);
 	}
@@ -105,7 +118,7 @@ public class Database implements Serializable {
 	public synchronized void removeRestorableFile(String fileName) {
 		restorableFiles.remove(fileName);
 
-		Peer.saveChunkDB();
+		Peer.saveDatabase();
 
 		Log.info("Removed restorable file: " + fileName);
 	}

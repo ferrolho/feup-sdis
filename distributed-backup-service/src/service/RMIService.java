@@ -12,6 +12,6 @@ public interface RMIService extends Remote {
 
 	void delete(File file) throws RemoteException;
 
-	void free(int kbyte) throws RemoteException;
+	void free(int amount) throws RemoteException;
 
 }

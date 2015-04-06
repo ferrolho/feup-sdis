@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import peer.Peer;
-import utils.FileManager;
+import storage.FileManager;
 import utils.Log;
 import utils.Utils;
 import chunk.Chunk;
