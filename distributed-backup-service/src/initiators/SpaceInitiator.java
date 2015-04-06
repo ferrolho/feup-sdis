@@ -1,5 +1,8 @@
 package initiators;
 
+import java.io.FileNotFoundException;
+
+import chunk.Chunk;
 import chunk.ChunkID;
 import peer.Peer;
 import storage.FileManager;
@@ -48,6 +51,8 @@ public class SpaceInitiator implements Runnable {
 				 * confirmed, or maximum attempt has been reached.
 				 */
 				if (numPUTCHUNKsRegisteredMeanwhile != 0) {
+					Log.info("Replication degree is less than desired. Trying to fix it.");
+
 					Peer.getMcListener().startSavingStoredConfirmsFor(chunkID);
 
 					long waitingTime = BackupChunkInitiator.INITIAL_WAITING_TIME;
@@ -68,7 +73,23 @@ public class SpaceInitiator implements Runnable {
 							attempt++;
 
 							if (attempt > BackupChunkInitiator.MAX_ATTEMPTS) {
-								Log.error("None of the peers has stored this chunk. Replication degree will be less than desired.");
+								Log.info("None of the peers has stored this chunk.");
+								Log.info("Starting chunk backup initiator before deleting this chunk.");
+
+								try {
+									byte[] data = FileManager
+											.loadChunkData(chunkID);
+
+									Chunk chunk = new Chunk(
+											chunkID.getFileID(),
+											chunkID.getChunkNo(), 1, data);
+
+									new Thread(new BackupChunkInitiator(chunk))
+											.start();
+								} catch (FileNotFoundException e) {
+									e.printStackTrace();
+								}
+
 								done = true;
 							} else {
 								waitingTime *= 2;
