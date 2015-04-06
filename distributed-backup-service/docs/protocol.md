@@ -61,3 +61,19 @@ An even worst case scenario would be the following:
 
 
 Our enhancement does not require any additional special messages, and therefore is interoperable with any other implementations of the protocol:
+
+When a peer receives a **REMOVED** message:
+
+```
+if (peer is backink up a copy of that chunk) {
+  update available mirrors of chunk;
+	
+	if (new replication degree < desiredRepDeg) {
+			wait for a random interval uniformly distributed between 0 and 400 ms;
+			
+			meanwhile, save number of received PUTCHUNK messages;
+
+			if (no PUTCHUNK message was registered meanwhile)
+					start backup sub-protocol of that chunk;
+}
+```
