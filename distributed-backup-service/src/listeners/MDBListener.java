@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import peer.PeerID;
-import chunk.ChunkID;
 import service.Handler;
+import chunk.ChunkID;
 
 public class MDBListener extends SocketListener {
 

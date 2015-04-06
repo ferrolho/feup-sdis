@@ -150,7 +150,8 @@ public class Handler implements Runnable {
 					.stopSavingCHUNKsFor(chunkID);
 
 			if (!chunkAlreadySent) {
-				Log.info("No peer has sent the chunk yet. Preparing to send chunk.");
+				Log.info("No peer has sent chunk no. " + chunkID.getChunkNo()
+						+ " yet. Sending chunk.");
 
 				try {
 					byte[] data = FileManager.loadChunkData(chunkID);
@@ -159,6 +160,8 @@ public class Handler implements Runnable {
 							chunkID.getChunkNo(), -1, data);
 
 					Peer.getCommandForwarder().sendCHUNK(chunk);
+
+					Log.info("Chunk no. " + chunkID.getChunkNo() + " sent.");
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -255,7 +258,34 @@ public class Handler implements Runnable {
 	}
 
 	private void extractBody() {
-		int bodyStartIndex = header.getBytes().length + 2
+		/*
+		 * In order to support other implementations which may use additional
+		 * header lines, the correct way to extract the body is to read header
+		 * lines until an empty line is read. After that, the body start
+		 * position is the sum of the length of the lines read, plus the length
+		 * of the <CRLF> of each line.
+		 */
+		ByteArrayInputStream stream = new ByteArrayInputStream(packet.getData());
+		BufferedReader reader = new BufferedReader(
+				new InputStreamReader(stream));
+
+		String line = null;
+		int headerLinesLengthSum = 0;
+		int numLines = 0;
+
+		do {
+			try {
+				line = reader.readLine();
+
+				headerLinesLengthSum += line.length();
+
+				numLines++;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} while (!line.isEmpty());
+
+		int bodyStartIndex = headerLinesLengthSum + numLines
 				* Protocol.CRLF.getBytes().length;
 
 		body = Arrays.copyOfRange(packet.getData(), bodyStartIndex,
