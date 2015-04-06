@@ -2,8 +2,8 @@ package peer;
 
 import initiators.BackupInitiator;
 import initiators.DeleteInitiator;
-import initiators.SpaceInitiator;
 import initiators.RestoreInitiator;
+import initiators.SpaceInitiator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,12 +12,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 
 import listeners.MCListener;
 import listeners.MDBListener;
@@ -31,8 +33,11 @@ import database.Database;
 
 public class Peer implements RMIService {
 
+	private static final String ENHANCEMENTS_CONFIG_NAME = "enhancements-config.data";
 	private static final String DISK_NAME = "disk.data";
 	private static final String DB_NAME = "db.data";
+
+	private static int usingEnhancements;
 
 	private static volatile Disk disk;
 	private static volatile Database database;
@@ -53,6 +58,8 @@ public class Peer implements RMIService {
 		if (!validArgs(args))
 			return;
 
+		loadEnhancementsConfig();
+
 		loadDisk();
 		loadDatabase();
 
@@ -68,7 +75,32 @@ public class Peer implements RMIService {
 		if (remoteObjectName != null)
 			startRMI();
 
-		System.out.println("- SERVER READY -");
+		Log.info("- SERVER READY -");
+	}
+
+	private static void loadEnhancementsConfig() {
+		try {
+			Scanner stream = new Scanner(new File(ENHANCEMENTS_CONFIG_NAME));
+			usingEnhancements = stream.nextInt();
+			stream.close();
+
+			Log.info("Enhancements are "
+					+ (usingEnhancements == 1 ? "on" : "off"));
+		} catch (FileNotFoundException e) {
+			Log.error("Enhancements configuration not found.");
+
+			try {
+				PrintWriter out = new PrintWriter(ENHANCEMENTS_CONFIG_NAME);
+				out.write("0\n");
+				out.close();
+
+				Log.info("Created enhancements configuration. Enhancements are off by default.");
+
+				loadEnhancementsConfig();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	private static void createNewDisk() {
@@ -246,6 +278,10 @@ public class Peer implements RMIService {
 		mdrListener = new MDRListener(mdrAddress, mdrPort);
 
 		return true;
+	}
+
+	public static boolean usesEnhancements() {
+		return usingEnhancements == 1;
 	}
 
 	public static Disk getDisk() {
