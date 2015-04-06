@@ -237,14 +237,14 @@ public class Peer implements RMIService {
 		if (args.length != 0 && args.length != 1 && args.length != 6
 				&& args.length != 7) {
 			System.out.println("Usage: (w/o trigger)");
-			System.out.println("\tjava Server");
+			System.out.println("\tjava peer.Peer");
 			System.out
-					.println("\tjava Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>");
+					.println("\tjava peer.Peer <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort>");
 			System.out.println();
 			System.out.println("Usage: (w/ trigger)");
-			System.out.println("\tjava Server <RMI obj. name>");
+			System.out.println("\tjava peer.Peer <RMI obj. name>");
 			System.out
-					.println("\tjava Server <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort> <RMI obj. name>");
+					.println("\tjava peer.Peer <mcAddress> <mcPort> <mdbAddress> <mdbPort> <mdrAddress> <mdrPort> <RMI obj. name>");
 
 			return false;
 		} else if (args.length == 0 || args.length == 1) {
