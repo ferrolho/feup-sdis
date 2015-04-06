@@ -6,7 +6,7 @@ The source files are under the project **src** folder.
 
 ## How to compile
 
-The project can be compiled using the javac command.
+The project can be compiled using the *javac* command.
 
 Alternatively, eclipse can be used to open the project and build it automatically as follows:
 
@@ -16,6 +16,8 @@ Alternatively, eclipse can be used to open the project and build it automaticall
 
 
 ## How to run
+
+After having built the project with eclipse, open a *Terminal* in the **bin** folder resultant of the build process. You can then launch a peer or issue a command with the trigger.
 
 ### RMI registry
 
@@ -55,7 +57,7 @@ Usages where the user does not specify the multicast addresses and ports will ha
 
 Following are the possible usages of the *Trigger*, which is used to issue commands to the service.
 
-Note that the ```<RMI obj. name>``` must be the same used to launch the *Peer* we intended to connect this *Trigger* with.
+The ```<RMI obj. name>``` must be the same as the one used when the *Peer* we intended to connect this *Trigger* with was launched.
 
 ```
 Usage:
@@ -64,3 +66,13 @@ Usage:
 	java trigger.Trigger <RMI obj. name> delete <file path>
 	java trigger.Trigger <RMI obj. name> space <amount of space>
 ```
+
+#### Trigger notes
+
+##### File path argument
+
+The file path used by the *backup* command can either be an **absolute path**, or a path **relative** to the folder in which the Trigger is launched.
+
+The file path used by the *restore* and *delete* commands can be a **relative path**, an **absolute path**, or just a **file name** followed by the file extension.
+
+The amount of space specified along the *space* command is not the amount of space to be freed by the disk, but the amount of space used to set a new disk capacity. It is specified in bytes.
