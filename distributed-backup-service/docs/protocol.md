@@ -16,9 +16,10 @@ wait for a random interval uniformly distributed between 0 and 400 ms;
 
 meanwhile, save the number of received STORED messages related to the chunk being backed up
 
-if (that number < desired replication degree)
+if (that number < desired replication degree) {
   store the chunk;
   send STORED message;
+}
 ```
 
 
@@ -74,11 +75,15 @@ if (peer is backink up a copy of that chunk) {
   update available mirrors of chunk;
 	
 	if (new replication degree < desiredRepDeg) {
-			wait for a random interval uniformly distributed between 0 and 400 ms;
-			
-			meanwhile, save number of received PUTCHUNK messages;
+		wait for a random interval uniformly distributed between 0 and 400 ms;
+		
+		meanwhile, save number of received PUTCHUNK messages;
 
-			if (no PUTCHUNK message was registered meanwhile)
-					start backup sub-protocol of that chunk;
+		if (no PUTCHUNK message was registered meanwhile)
+			start backup sub-protocol of that chunk;
 }
+```
+
+Meanwhile, the peer who sent the **REMOVED** message does the following:
+```
 ```
