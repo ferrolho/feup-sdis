@@ -21,6 +21,18 @@ This enhancement:
 
 ## Chunk restore protocol
 
+To do.
+
 ## File deletion subprotocol
 
+To do.
+
 ## Space reclaiming subprotocol
+
+The project specification proposes the following actions to be taken when a **REMOVED** message is received:
+
+1. Update local count of peers backing up the chunk (chunk mirrors)
+2. If that count drops below the desired replication degree of that chunk
+  - Wait for a random interval uniformly distributed between 0 and 400 ms
+  - If a **PUTCHUNK** message has NOT been received meanwhile
+    - Start chunk backup subprotocol
