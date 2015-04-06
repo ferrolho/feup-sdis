@@ -104,9 +104,9 @@ public class Handler implements Runnable {
 					Thread.sleep(Utils.random.nextInt(400));
 
 					if (Peer.getMcListener().getNumStoredConfirmsFor(chunkID) < replicationDeg) {
-						FileManager.saveChunk(chunkID, replicationDeg, body);
-
 						Peer.getCommandForwarder().sendSTORED(chunkID);
+
+						FileManager.saveChunk(chunkID, replicationDeg, body);
 					}
 
 					Peer.getMcListener().stopSavingStoredConfirmsFor(chunkID);
@@ -207,7 +207,10 @@ public class Handler implements Runnable {
 				Integer.parseInt(headerTokens[HeaderField.CHUNK_NO]));
 
 		if (Peer.getDatabase().hasChunk(chunkID)) {
-			Peer.getDatabase().removeChunkMirror(chunkID, Peer.getId());
+			PeerID senderID = new PeerID(packet.getAddress(), packet.getPort());
+
+			// updating available mirrors of chunk
+			Peer.getDatabase().removeChunkMirror(chunkID, senderID);
 
 			int currentRepDeg = Peer.getDatabase().getChunkMirrorsSize(chunkID);
 			int desiredRepDeg = Peer.getDatabase().getChunkReplicationDegree(

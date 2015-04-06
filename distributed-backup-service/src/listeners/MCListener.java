@@ -25,7 +25,8 @@ public class MCListener extends SocketListener {
 	}
 
 	public synchronized void startSavingStoredConfirmsFor(ChunkID chunkID) {
-		storedConfirms.put(chunkID, new ArrayList<PeerID>());
+		if (!storedConfirms.containsKey(chunkID))
+			storedConfirms.put(chunkID, new ArrayList<PeerID>());
 	}
 
 	public synchronized void clearSavedStoredConfirmsFor(ChunkID chunkID) {

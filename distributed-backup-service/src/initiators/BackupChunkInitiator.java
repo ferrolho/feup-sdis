@@ -6,8 +6,8 @@ import utils.Log;
 
 public class BackupChunkInitiator implements Runnable {
 
-	private static final long INITIAL_WAITING_TIME = 500;
-	private static final int MAX_ATTEMPTS = 5;
+	public static final long INITIAL_WAITING_TIME = 500;
+	public static final int MAX_ATTEMPTS = 5;
 
 	private Chunk chunk;
 

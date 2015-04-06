@@ -60,8 +60,8 @@ public class Disk implements Serializable {
 		Peer.saveDisk();
 	}
 
-	public synchronized void removeCapacity(int bytes) {
-		capacityBytes -= bytes;
+	public synchronized void setCapacity(int bytes) {
+		capacityBytes = bytes;
 
 		Peer.saveDisk();
 

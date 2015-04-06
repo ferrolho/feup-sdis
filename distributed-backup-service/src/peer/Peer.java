@@ -2,7 +2,7 @@ package peer;
 
 import initiators.BackupInitiator;
 import initiators.DeleteInitiator;
-import initiators.FreeInitiator;
+import initiators.SpaceInitiator;
 import initiators.RestoreInitiator;
 
 import java.io.File;
@@ -194,8 +194,8 @@ public class Peer implements RMIService {
 	}
 
 	@Override
-	public void free(int amount) throws RemoteException {
-		new Thread(new FreeInitiator(amount)).start();
+	public void space(int amount) throws RemoteException {
+		new Thread(new SpaceInitiator(amount)).start();
 	}
 
 	private static boolean validArgs(String[] args) throws UnknownHostException {

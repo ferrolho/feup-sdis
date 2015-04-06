@@ -39,7 +39,7 @@ public class Trigger {
 			break;
 
 		case TriggerCommands.SPACE:
-			peer.free(bytes);
+			peer.space(bytes);
 			break;
 
 		default:

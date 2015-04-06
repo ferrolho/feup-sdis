@@ -25,7 +25,8 @@ public class MDBListener extends SocketListener {
 	}
 
 	public synchronized void startSavingPUTCHUNKsFor(ChunkID chunkID) {
-		PUTCHUNKsLog.put(chunkID, new ArrayList<PeerID>());
+		if (!PUTCHUNKsLog.containsKey(chunkID))
+			PUTCHUNKsLog.put(chunkID, new ArrayList<PeerID>());
 	}
 
 	public synchronized int getNumPUTCHUNKsFor(ChunkID chunkID) {
