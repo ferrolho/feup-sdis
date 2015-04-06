@@ -21,6 +21,12 @@ public class FreeInitiator implements Runnable {
 			ChunkID chunkID = Peer.getDatabase().getMostBackedUpChunk();
 
 			if (chunkID != null) {
+				Log.info("Deleting chunk no. " + chunkID.getChunkNo());
+
+				/*
+				 * TODO if there is only one chunk, it will be lost before
+				 * someone can back it up! Need to change this.
+				 */
 				FileManager.deleteChunk(chunkID);
 
 				Peer.getCommandForwarder().sendREMOVED(chunkID);

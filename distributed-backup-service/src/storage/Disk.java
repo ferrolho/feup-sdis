@@ -64,6 +64,8 @@ public class Disk implements Serializable {
 		capacityBytes -= bytes;
 
 		Peer.saveDisk();
+
+		Log.info(toString());
 	}
 
 	@Override
