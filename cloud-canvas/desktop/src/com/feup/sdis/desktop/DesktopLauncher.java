@@ -2,11 +2,13 @@ package com.feup.sdis.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.feup.sdis.Game;
+import com.feup.sdis.CloudCanvas;
 
 public class DesktopLauncher {
+
 	public static void main(String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Game(), config);
+		new LwjglApplication(new CloudCanvas(), config);
 	}
+
 }
