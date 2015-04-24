@@ -47,14 +47,32 @@ Users can create new rooms with this button. They will be asked to input the *ca
 
 ## Additional Services and Improvements
 
-### Authentication
+The group will implement the basis architecture to develop a usable application. After this, the group will improve the application in order to be able to achieve a better grade.
 
-### Fault tolerance
+Following are the improvements expected to be made.
 
-### Consistency
+### Architecture
+
+The application should *not* usa a Server-Client architecture. There should be a server to keep the current list of available rooms online *only*.
+
+The processing of events should be made by the device which created the room, without requiring any interaction with the server.  
+Moreover, a better approach would be to move the responsability of processing/managing the room to the most powerful device. This could be done when a user enters the room: if the user's device is more powerful than the host device, the application should "put the new user in charge" of hosting that room.
 
 ### Scalability
 
+The application should scale with ease: a similar performance should be achieved, whether 1 or 1000 users are in the room.
+
+### Consistency
+
+The application should be consistent, i.e. it should correctly manage concurrent events and canvas drawings. For example: if user A starts drawing a line, and meanwhile user B draws a line on top of the region where A has already drawn, the application should decide correctly which of the lines sits on top of the other.
+
+### Authentication
+
+Access to private rooms should require authentication: users need to input the *room ID* and *password*.
+
+### Fault tolerance
+
+asd
 
 ## Proposed grade ceiling
 
