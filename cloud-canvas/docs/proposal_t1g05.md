@@ -15,9 +15,9 @@
 
 The group proposes to develop a cross-platform collaborative drawing application.
 
-The application will have *two main screens*: a *main menu* screen and a *room* screen.  
-In the **main menu**, users will be able to *join* existing rooms, or to *create* new rooms.
-After having joined or created a room, users are presented with the **room screen**. Each room has a *canvas* where its users will be able to draw, sketch, or paint collaboratively with each other. The canvas of each room is unique, and therefore what is drawn in the canvas of a room, is not drawn on any other canvas of other rooms.
+The application will have two main screens: a *main menu* screen and a *room* screen.  
+In the **main menu**, users will be able to *join* existing rooms, or to *create* new rooms.  
+Users are presented with the **room screen** after having joined or created a room. Each room has a *canvas* where its users will be able to draw, sketch, or paint collaboratively with each other. The canvas of each room is unique, and therefore what is drawn in the canvas of a room is not drawn on any other canvas of other rooms.
 
 
 ## Main Features
