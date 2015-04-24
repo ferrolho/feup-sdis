@@ -25,13 +25,18 @@ Users are presented with the **room screen** after having joined or created a ro
 When users start the app they are presented with a *menu* containing three buttons. Each button *deploys* one of the following *actions*:
 
 #### **Join** a *public* room
-- **Join** a *private* room
-- **Create** a *new* room
 
-- Create rooms
-- Join rooms
-- Sketch/draw
+After pressing this button, users are presented with a **list** of *public* online rooms. Users are free to pick one of the rooms and start drawing on the canvas along with the other users in the room.
 
+#### **Join** a *private* room
+
+Private rooms require users to specify a room ID and a password to be granted access.
+
+This type of rooms can be used when users want to restrain access to a room.
+
+#### **Create** a *new* room
+
+Users can create new rooms with this button. They will be asked to input the *canvas size*, and whether the room should be *public* or *private*. In the latter case, the *room ID* and *password* also need to be specified.
 
 ## Target Platforms
 
