@@ -1,6 +1,6 @@
 # SDIS - 2nd Project Specification
 
-<p align="right">24 de Abril de 2015</p>
+<p align="right">24 April - 2015</p>
 
 
 ##### T1G05
@@ -22,7 +22,7 @@ Users are presented with the **room screen** after having joined or created a ro
 
 ## Main Features
 
-When users start the app they are presented with a *menu* containing three buttons. Each button *deploys* one of the following *actions*:
+When users start the application they are presented with a *menu* containing three buttons. Each button *deploys* one of the following *actions*:
 
 #### **Join** a *public* room
 
@@ -53,14 +53,14 @@ Following are the improvements expected to be made.
 
 ### Architecture
 
-The application should *not* usa a Server-Client architecture. There should be a server to keep the current list of available rooms online *only*.
+The application should *not* use a Server-Client architecture. There should be a server to keep the current list of available rooms online *only*.
 
 The processing of events should be made by the device which created the room, without requiring any interaction with the server.  
-Moreover, a better approach would be to move the responsability of processing/managing the room to the most powerful device. This could be done when a user enters the room: if the user's device is more powerful than the host device, the application should "put the new user in charge" of hosting that room.
+Moreover, a better approach would be to move the responsibility of processing/managing the room to the most powerful device. This could be done when a user enters the room: if the user's device is more powerful than the host device, the application should "put the new user in charge" of hosting that room.
 
 ### Scalability
 
-The application should scale with ease: a similar performance should be achieved, whether 1 or 1000 users are in the room. The group considers this will come as a good consequence of the architecture improvement descrived in the previous topic.
+The application should scale with ease: a similar performance should be achieved, whether 1 or 1000 users are in the room. The group considers this will come as a good consequence of the architecture improvement described in the previous topic.
 
 ### Consistency
 
