@@ -60,7 +60,7 @@ Moreover, a better approach would be to move the responsability of processing/ma
 
 ### Scalability
 
-The application should scale with ease: a similar performance should be achieved, whether 1 or 1000 users are in the room.
+The application should scale with ease: a similar performance should be achieved, whether 1 or 1000 users are in the room. The group considers this will come as a good consequence of the architecture improvement descrived in the previous topic.
 
 ### Consistency
 
@@ -72,7 +72,7 @@ Access to private rooms should require authentication: users need to input the *
 
 ### Fault tolerance
 
-asd
+The application should tolerate faults with ease, such as temporary internet disconnections.
 
 ## Proposed grade ceiling
 
