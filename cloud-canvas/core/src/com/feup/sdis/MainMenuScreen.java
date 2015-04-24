@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 public class MainMenuScreen implements Screen {
 
@@ -11,26 +13,38 @@ public class MainMenuScreen implements Screen {
 
 	OrthographicCamera camera;
 
-	public MainMenuScreen(final CloudCanvas gam) {
-		game = gam;
+	private String titleStr = "Cloud Canvas";
+	private Vector2 titlePos;
 
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 800, 480);
+	private String infoStr = "Tap anywhere to draw";
+	private Vector2 infoPos;
 
+	public MainMenuScreen(final CloudCanvas game) {
+		this.game = game;
+
+		titlePos = new Vector2(Gdx.graphics.getWidth() / 2,
+				Gdx.graphics.getHeight() * 0.7f);
+
+		infoPos = new Vector2(Gdx.graphics.getWidth() / 2,
+				Gdx.graphics.getHeight() * 0.5f);
 	}
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+		Gdx.gl.glClearColor(0.2f, 0.6f, 1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		camera.update();
-		game.batch.setProjectionMatrix(camera.combined);
+		game.spriteBatch.begin();
 
-		game.batch.begin();
-		game.font.draw(game.batch, "Welcome to Drop!!! ", 100, 150);
-		game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
-		game.batch.end();
+		// title
+		game.font.draw(game.spriteBatch, titleStr, titlePos.x, titlePos.y, 0,
+				Align.center, true);
+
+		// info
+		game.font.draw(game.spriteBatch, infoStr, infoPos.x, infoPos.y, 0,
+				Align.center, true);
+
+		game.spriteBatch.end();
 
 		if (Gdx.input.isTouched()) {
 			game.setScreen(new CanvasScreen(game));
