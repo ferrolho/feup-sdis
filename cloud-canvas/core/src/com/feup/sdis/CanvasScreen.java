@@ -1,7 +1,7 @@
 package com.feup.sdis;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector3;
 
-public class CanvasScreen implements Screen {
+public class CanvasScreen implements Screen, InputProcessor {
 
 	// TODO change this
 	private int CANVAS_WIDTH = 400;
@@ -40,12 +40,10 @@ public class CanvasScreen implements Screen {
 	public CanvasScreen(final CloudCanvas game) {
 		this.game = game;
 
+		Gdx.input.setInputProcessor(this);
+
 		viewportWidth = Gdx.graphics.getWidth();
 		viewportHeight = Gdx.graphics.getHeight();
-
-		// create the camera and the SpriteBatch
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, viewportWidth, viewportHeight);
 
 		dropImage = new Texture(Gdx.files.internal("droplet.png"));
 		bucketImage = new Texture(Gdx.files.internal("bucket.png"));
@@ -62,6 +60,10 @@ public class CanvasScreen implements Screen {
 
 		touching = false;
 		touchPos = new Vector3();
+
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, viewportWidth, viewportHeight);
+		camera.position.set(texture.getWidth() / 2, texture.getHeight() / 2, 0);
 	}
 
 	@Override
@@ -110,20 +112,6 @@ public class CanvasScreen implements Screen {
 
 			lastTouchPos = null;
 		}
-
-		int temp = 4;
-
-		if (Gdx.input.isKeyPressed(Keys.E)) {
-			viewportWidth -= temp;
-			viewportHeight -= temp;
-		}
-
-		if (Gdx.input.isKeyPressed(Keys.F)) {
-			viewportWidth += temp;
-			viewportHeight += temp;
-		}
-
-		camera.setToOrtho(false, viewportWidth, viewportHeight);
 	}
 
 	@Override
@@ -155,6 +143,61 @@ public class CanvasScreen implements Screen {
 		bucketImage.dispose();
 		dropSound.dispose();
 		rainMusic.dispose();
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		int delta = amount * 100;
+
+		viewportWidth += delta;
+		viewportHeight += delta;
+
+		camera.setToOrtho(false, viewportWidth, viewportHeight);
+		camera.position.set(texture.getWidth() / 2, texture.getHeight() / 2, 0);
+
+		return true;
 	}
 
 }
