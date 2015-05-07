@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 public class CanvasScreen implements Screen, InputProcessor {
@@ -50,6 +51,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
 		rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
+		rainMusic.setVolume(0.5f);
 		rainMusic.setLooping(true);
 
 		pixmap = new Pixmap(CANVAS_WIDTH, CANVAS_HEIGHT, Format.RGBA8888);
@@ -62,6 +64,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 		touchPos = new Vector3();
 
 		camera = new OrthographicCamera();
+		positionCamera();
+	}
+
+	private void positionCamera() {
 		camera.setToOrtho(false, viewportWidth, viewportHeight);
 		camera.position.set(texture.getWidth() / 2, texture.getHeight() / 2, 0);
 	}
@@ -100,13 +106,12 @@ public class CanvasScreen implements Screen, InputProcessor {
 			if (lastTouchPos != null)
 				lastTouchPos.set(touchPos);
 
-			touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			touchPos.set(Gdx.input.getX(),
+					Gdx.graphics.getHeight() - Gdx.input.getY(), 0);
+			camera.unproject(touchPos);
 
 			if (lastTouchPos == null)
 				lastTouchPos = new Vector3(touchPos);
-
-			// camera.unproject(lastTouchPos);
-			// camera.unproject(touchPos);
 		} else {
 			touching = false;
 
@@ -116,6 +121,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public void resize(int width, int height) {
+		viewportWidth = width;
+		viewportHeight = height;
+
+		positionCamera();
 	}
 
 	@Override
@@ -189,13 +198,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean scrolled(int amount) {
-		int delta = amount * 100;
+		camera.zoom += amount < 0 ? -0.1f : 0.1f;
 
-		viewportWidth += delta;
-		viewportHeight += delta;
-
-		camera.setToOrtho(false, viewportWidth, viewportHeight);
-		camera.position.set(texture.getWidth() / 2, texture.getHeight() / 2, 0);
+		camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 2f * CANVAS_WIDTH
+				/ viewportWidth);
 
 		return true;
 	}
