@@ -1,15 +1,26 @@
 package server;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
+
+import com.sun.net.httpserver.HttpServer;
+
 
 public class Main {
 
 	// map<roomName, room>
 	private static HashMap<String, Room> rooms;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		rooms = new HashMap<String, Room>();
+		 HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+		   server.createContext("/canvas", new RequestHandler());
+		   server.setExecutor(null); // creates a default executor
+		   server.start();
+		
+		
 	}
 
 	public static void create(String name, InetAddress ip) {
@@ -41,4 +52,6 @@ public class Main {
 			System.out.println("Room deleted.");
 	}
 
+	
+	
 }
