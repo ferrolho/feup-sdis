@@ -11,9 +11,11 @@ public class RequestHandler implements HttpHandler {
 
 	@Override
 	public void handle(HttpExchange t) throws IOException {
+		System.out.println(t.getRequestURI().toString());
 		InputStream is = t.getRequestBody();
-		System.out.println(is.toString());
-		String response = "This is the response";
+		byte[] b = new byte[256];
+		is.read(b);
+		String response = "Ola";
 		t.sendResponseHeaders(200, response.length());
 		OutputStream os = t.getResponseBody();
 		os.write(response.getBytes());
