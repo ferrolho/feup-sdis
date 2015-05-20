@@ -14,15 +14,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
-public class CanvasScreen implements Screen, InputProcessor {
+public class CanvasScreen implements Screen {
 
 	// TODO change this
-	private int CANVAS_WIDTH = 400;
-	private int CANVAS_HEIGHT = 400;
+	int CANVAS_WIDTH = 400;
+	int CANVAS_HEIGHT = 400;
 
 	private final CloudCanvas game;
 
-	private OrthographicCamera camera;
+	OrthographicCamera camera;
 
 	private Texture dropImage;
 	private Texture bucketImage;
@@ -33,15 +33,15 @@ public class CanvasScreen implements Screen, InputProcessor {
 	Pixmap pixmap;
 	Texture texture;
 
-	private boolean touching;
-	private Vector3 lastTouchPos, touchPos;
+	boolean touching;
+	Vector3 lastTouchPos, touchPos;
 
-	private int viewportWidth, viewportHeight;
+	int viewportWidth, viewportHeight;
 
 	public CanvasScreen(final CloudCanvas game) {
 		this.game = game;
 
-		Gdx.input.setInputProcessor(this);
+		Gdx.input.setInputProcessor(new CanvasInputProcessor(this));
 
 		viewportWidth = Gdx.graphics.getWidth();
 		viewportHeight = Gdx.graphics.getHeight();
@@ -94,29 +94,26 @@ public class CanvasScreen implements Screen, InputProcessor {
 			pixmap.setColor(0, 0, 0, 1);
 			pixmap.drawLine((int) lastTouchPos.x, (int) lastTouchPos.y,
 					(int) touchPos.x, (int) touchPos.y);
+			System.out.println("drawing from : " + lastTouchPos.x + " "
+					+ lastTouchPos.y + " to " + touchPos.x + " " + touchPos.y);
 			texture.draw(pixmap, 0, 0);
 
 			game.shapeRenderer.end();
 		}
-
-		// process user input
 		if (Gdx.input.isTouched()) {
 			touching = true;
-
 			if (lastTouchPos != null)
 				lastTouchPos.set(touchPos);
-
 			touchPos.set(Gdx.input.getX(),
 					Gdx.graphics.getHeight() - Gdx.input.getY(), 0);
 			camera.unproject(touchPos);
-
 			if (lastTouchPos == null)
 				lastTouchPos = new Vector3(touchPos);
 		} else {
 			touching = false;
-
 			lastTouchPos = null;
 		}
+
 	}
 
 	@Override
@@ -152,58 +149,6 @@ public class CanvasScreen implements Screen, InputProcessor {
 		bucketImage.dispose();
 		dropSound.dispose();
 		rainMusic.dispose();
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		camera.zoom += amount < 0 ? -0.1f : 0.1f;
-
-		camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 2f * CANVAS_WIDTH
-				/ viewportWidth);
-
-		return true;
 	}
 
 }
