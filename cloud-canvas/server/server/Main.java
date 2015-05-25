@@ -3,6 +3,7 @@ package server;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.sun.net.httpserver.HttpServer;
@@ -20,6 +21,9 @@ public class Main {
 		   server.setExecutor(null); // creates a default executor
 		   server.start();
 		
+		   create("sala 1",InetAddress.getLocalHost());
+		   create("sala 2",InetAddress.getLocalHost());
+		   create("sala 3",InetAddress.getLocalHost());
 		
 	}
 
@@ -50,6 +54,16 @@ public class Main {
 					+ " does not exist. Room deletion failed.");
 		else
 			System.out.println("Room deleted.");
+	}
+	public static String getRoomList(){
+		
+		ArrayList<String> list = new ArrayList<String>();
+		
+        rooms.forEach((k,v) -> list.add(k));
+		
+		
+		return list.toString() + "\n";
+		
 	}
 
 	
