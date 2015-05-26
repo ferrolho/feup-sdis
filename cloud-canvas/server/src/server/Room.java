@@ -26,6 +26,7 @@ public class Room {
 
 	public void incNumUsers() {
 		numUsers++;
+		System.out.println("room updated");
 	}
 
 	public void decNumUsers() {

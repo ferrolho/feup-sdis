@@ -59,7 +59,7 @@ public class Main {
 		
 		ArrayList<String> list = new ArrayList<String>();
 		
-        rooms.forEach((k,v) -> list.add(k));
+        rooms.forEach((k,v) -> list.add(k + "," + v.getIp().toString()));
 		
 		
 		return list.toString() + "\n";
