@@ -2,7 +2,6 @@ package server;
 
 import java.net.InetAddress;
 
-
 public class Room {
 
 	private InetAddress ip;

@@ -1,6 +1,9 @@
 package com.feup.sdis;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -10,19 +13,18 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
-public class CanvasScreen implements Screen {
+public class CanvasScreen implements Screen, InputProcessor {
 
 	// TODO change this
-	int CANVAS_WIDTH = 400;
-	int CANVAS_HEIGHT = 400;
+	private int CANVAS_WIDTH = 400;
+	private int CANVAS_HEIGHT = 400;
 
 	private final CloudCanvas game;
 
-	OrthographicCamera camera;
+	private OrthographicCamera camera;
 
 	private Texture dropImage;
 	private Texture bucketImage;
@@ -30,18 +32,20 @@ public class CanvasScreen implements Screen {
 	private Sound dropSound;
 	private Music rainMusic;
 
-	Pixmap pixmap;
-	Texture texture;
+	private Pixmap pixmap;
+	private Texture texture;
 
-	boolean touching;
-	Vector3 lastTouchPos, touchPos;
+	private ArrayList<Curve> drawing;
+	private Curve currentCurve;
 
-	int viewportWidth, viewportHeight;
+	private Vector3 lastTouchPos, touchPos;
+
+	private int viewportWidth, viewportHeight;
 
 	public CanvasScreen(final CloudCanvas game) {
 		this.game = game;
 
-		Gdx.input.setInputProcessor(new CanvasInputProcessor(this));
+		Gdx.input.setInputProcessor(this);
 
 		viewportWidth = Gdx.graphics.getWidth();
 		viewportHeight = Gdx.graphics.getHeight();
@@ -60,7 +64,9 @@ public class CanvasScreen implements Screen {
 
 		texture = new Texture(pixmap, true);
 
-		touching = false;
+		drawing = new ArrayList<Curve>();
+		currentCurve = new Curve();
+
 		touchPos = new Vector3();
 
 		camera = new OrthographicCamera();
@@ -74,6 +80,7 @@ public class CanvasScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		// clear display
 		Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -84,36 +91,10 @@ public class CanvasScreen implements Screen {
 		// coordinate system specified by the camera.
 		game.spriteBatch.setProjectionMatrix(camera.combined);
 
+		// draw the canvas with the drawing
 		game.spriteBatch.begin();
 		game.spriteBatch.draw(texture, 0, 0);
 		game.spriteBatch.end();
-
-		if (touching && touchPos != lastTouchPos) {
-			game.shapeRenderer.begin(ShapeType.Filled);
-
-			pixmap.setColor(0, 0, 0, 1);
-			pixmap.drawLine((int) lastTouchPos.x, (int) lastTouchPos.y,
-					(int) touchPos.x, (int) touchPos.y);
-			System.out.println("drawing from : " + lastTouchPos.x + " "
-					+ lastTouchPos.y + " to " + touchPos.x + " " + touchPos.y);
-			texture.draw(pixmap, 0, 0);
-
-			game.shapeRenderer.end();
-		}
-		if (Gdx.input.isTouched()) {
-			touching = true;
-			if (lastTouchPos != null)
-				lastTouchPos.set(touchPos);
-			touchPos.set(Gdx.input.getX(),
-					Gdx.graphics.getHeight() - Gdx.input.getY(), 0);
-			camera.unproject(touchPos);
-			if (lastTouchPos == null)
-				lastTouchPos = new Vector3(touchPos);
-		} else {
-			touching = false;
-			lastTouchPos = null;
-		}
-
 	}
 
 	@Override
@@ -149,6 +130,124 @@ public class CanvasScreen implements Screen {
 		bucketImage.dispose();
 		dropSound.dispose();
 		rainMusic.dispose();
+	}
+
+	boolean ctrlIsBeingPressed = false;
+
+	@Override
+	public boolean keyDown(int keycode) {
+		switch (keycode) {
+		case Input.Keys.CONTROL_LEFT:
+		case Input.Keys.CONTROL_RIGHT:
+			ctrlIsBeingPressed = true;
+			break;
+
+		case Input.Keys.Z:
+			if (ctrlIsBeingPressed) {
+				if (!drawing.isEmpty())
+					drawing.remove(drawing.size() - 1);
+				else
+					System.out.println("CTRL + Z - Nothing to undo!");
+
+				pixmap.setColor(1, 1, 1, 1);
+				pixmap.fillRectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+				// draw the drawing to the canvas
+				for (Curve curve : drawing)
+					curve.draw(pixmap);
+				texture.draw(pixmap, 0, 0);
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		switch (keycode) {
+		case Input.Keys.CONTROL_LEFT:
+		case Input.Keys.CONTROL_RIGHT:
+			ctrlIsBeingPressed = false;
+			break;
+
+		default:
+			break;
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		return true;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		temp(screenX, screenY);
+
+		return true;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		temp(screenX, screenY);
+
+		return true;
+	}
+
+	private void temp(int screenX, int screenY) {
+		// saving previous touch position
+		if (lastTouchPos != null)
+			lastTouchPos.set(touchPos);
+
+		// saving current touch position
+		touchPos.set(screenX, Gdx.graphics.getHeight() - screenY, 0);
+		camera.unproject(touchPos);
+
+		// if touch has just started, there is no last touch position -> set it
+		if (lastTouchPos == null) {
+			lastTouchPos = new Vector3(touchPos);
+			currentCurve.add(lastTouchPos.x, lastTouchPos.y);
+		}
+
+		// if touch is a drawing move
+		if (touchPos != lastTouchPos) {
+			currentCurve.add(touchPos.x, touchPos.y);
+
+			// draw current curve to the canvas
+			currentCurve.draw(pixmap);
+			texture.draw(pixmap, 0, 0);
+		}
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		drawing.add(currentCurve);
+
+		currentCurve = new Curve();
+		lastTouchPos = null;
+
+		return true;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		camera.zoom += amount < 0 ? -0.1f : 0.1f;
+
+		camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 2f * CANVAS_WIDTH
+				/ viewportWidth);
+
+		return true;
 	}
 
 }

@@ -8,19 +8,21 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 public class RequestHandler implements HttpHandler {
-	
-	public RequestHandler(){
+
+	public RequestHandler() {
 	}
 
 	@Override
 	public void handle(HttpExchange t) throws IOException {
 		String path = t.getRequestURI().getPath();
 		String[] paths = path.split("/");
+		
 		for (String string : paths) {
 			System.out.println(string);
 		}
-		if(paths[1].equals("canvas")){
-			if(paths[2].equals("getRoomList")){
+		
+		if (paths[1].equals("canvas")) {
+			if (paths[2].equals("getRoomList")) {
 				InputStream is = t.getRequestBody();
 				byte[] b = new byte[256];
 				is.read(b);
@@ -33,6 +35,7 @@ public class RequestHandler implements HttpHandler {
 				return;
 			}
 		}
+		
 		InputStream is = t.getRequestBody();
 		byte[] b = new byte[256];
 		is.read(b);
@@ -41,8 +44,6 @@ public class RequestHandler implements HttpHandler {
 		OutputStream os = t.getResponseBody();
 		os.write(response.getBytes());
 		os.close();
-
-		
 	}
 
 }

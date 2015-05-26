@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import com.sun.net.httpserver.HttpServer;
 
-
 public class Main {
 
 	// map<roomName, room>
@@ -16,15 +15,15 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 		rooms = new HashMap<String, Room>();
-		 HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
-		   server.createContext("/canvas", new RequestHandler());
-		   server.setExecutor(null); // creates a default executor
-		   server.start();
-		
-		   create("sala 1",InetAddress.getLocalHost());
-		   create("sala 2",InetAddress.getLocalHost());
-		   create("sala 3",InetAddress.getLocalHost());
-		
+		HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+		server.createContext("/canvas", new RequestHandler());
+		server.setExecutor(null); // creates a default executor
+		server.start();
+
+		create("sala 1", InetAddress.getLocalHost());
+		create("sala 2", InetAddress.getLocalHost());
+		create("sala 3", InetAddress.getLocalHost());
+
 	}
 
 	public static void create(String name, InetAddress ip) {
@@ -55,6 +54,7 @@ public class Main {
 		else
 			System.out.println("Room deleted.");
 	}
+
 	public static String getRoomList(){
 		
 		ArrayList<String> list = new ArrayList<String>();
@@ -66,6 +66,4 @@ public class Main {
 		
 	}
 
-	
-	
 }
