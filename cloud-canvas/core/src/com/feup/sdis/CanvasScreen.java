@@ -1,5 +1,9 @@
 package com.feup.sdis;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -42,7 +46,11 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	private int viewportWidth, viewportHeight;
 
-	public CanvasScreen(final CloudCanvas game) {
+	// distributed stuff things
+	private static ServerSocket serverSocket;
+	private static Socket socket;
+
+	public CanvasScreen(final CloudCanvas game) throws IOException {
 		this.game = game;
 
 		Gdx.input.setInputProcessor(this);
@@ -71,6 +79,9 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		camera = new OrthographicCamera();
 		positionCamera();
+
+		// distributed stuff things
+		serverSocket = new ServerSocket(6666);
 	}
 
 	private void positionCamera() {
@@ -80,6 +91,13 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public void render(float delta) {
+		// check if someone tries to connect
+		try {
+			socket = serverSocket.accept();
+		} catch (IOException e) {
+			System.err.println("Accept failed");
+		}
+
 		// clear display
 		Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -228,6 +246,17 @@ public class CanvasScreen implements Screen, InputProcessor {
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		drawing.add(currentCurve);
+
+		if (socket != null) {
+			try {
+				ObjectOutputStream oos = new ObjectOutputStream(
+						socket.getOutputStream());
+				oos.writeObject(currentCurve);
+				oos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		currentCurve = new Curve();
 		lastTouchPos = null;

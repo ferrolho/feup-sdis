@@ -34,17 +34,24 @@ public class Main {
 					.println("Room name already exists. Room creation failed.");
 	}
 
-	public static void incUsers(String name) {
+	public static int incUsers(String name) {
 		rooms.get(name).incNumUsers();
+		return rooms.get(name).getNumUsers();
 	}
 
-	public static void decUsers(String name) {
+	public static int decUsers(String name) {
 		Room room = rooms.get(name);
-
+ 
 		room.decNumUsers();
 
-		if (room.isEmpty())
+		if (room.isEmpty()){
 			delete(name);
+			return 0;
+		}
+		else{
+			
+			return rooms.get(name).getNumUsers();
+		}
 	}
 
 	private static void delete(String name) {

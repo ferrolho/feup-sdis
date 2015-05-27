@@ -1,5 +1,7 @@
 package com.feup.sdis;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -47,8 +49,12 @@ public class MainMenuScreen implements Screen {
 		game.spriteBatch.end();
 
 		if (Gdx.input.isTouched()) {
-			game.setScreen(new CanvasScreen(game));
-			dispose();
+			try {
+				game.setScreen(new CanvasScreen(game));
+				dispose();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
