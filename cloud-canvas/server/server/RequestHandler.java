@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -17,6 +18,8 @@ public class RequestHandler implements HttpHandler {
 		String path = t.getRequestURI().getPath();
 		String[] paths = path.split("/");
 
+			
+		
 		for (String string : paths) {
 			System.out.println(string);
 		}

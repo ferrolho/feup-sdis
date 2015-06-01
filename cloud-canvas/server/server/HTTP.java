@@ -1,12 +1,20 @@
 package server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 
 public class HTTP {
 	private URL url;
 
-	public HTTP(String url) {
+	public HTTP(String url) throws MalformedURLException {
 		this.url = new URL(url);
 	}
 
@@ -78,40 +86,40 @@ public class HTTP {
 
 	public void PUT() throws IOException {
 		// Starting HTTP connection
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
 
 		httpCon.setRequestMethod("PUT");
 		httpCon.setDoOutput(true);
 
-		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+		OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
 		out.write("Resource content");
 		out.close();
 
 		// check connection response
-		if (conn.getResponseCode() != 200) {
-			throw new IOException(conn.getResponseMessage());
+		if (httpCon.getResponseCode() != 200) {
+			throw new IOException(httpCon.getResponseMessage());
 		}
 
 		// TODO what we need to put in there
 
-		conn.disconnect();
+		httpCon.disconnect();
 	}
 
 	public void DELETE() throws IOException {
 		// Starting HTTP connection
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
 
 		httpCon.setRequestMethod("DELETE");
 		httpCon.setDoOutput(true);
 		// TODO put here the requests properties we have to create
 
 		// check connection response
-		if (conn.getResponseCode() != 200) {
-			throw new IOException(conn.getResponseMessage());
+		if (httpCon.getResponseCode() != 200) {
+			throw new IOException(httpCon.getResponseMessage());
 		}
 
 		// TODO what we need to put in there
 
-		conn.disconnect();
+		httpCon.disconnect();
 	}
 }
