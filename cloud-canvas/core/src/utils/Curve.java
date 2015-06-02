@@ -1,4 +1,4 @@
-package com.feup.sdis;
+package utils;
 
 import java.util.ArrayList;
 

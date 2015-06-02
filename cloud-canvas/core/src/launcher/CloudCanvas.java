@@ -1,4 +1,6 @@
-package com.feup.sdis;
+package launcher;
+
+import screens.MainMenuScreen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

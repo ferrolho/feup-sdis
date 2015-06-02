@@ -1,8 +1,9 @@
 package com.feup.sdis.desktop;
 
+import launcher.CloudCanvas;
+
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.feup.sdis.CloudCanvas;
 
 public class DesktopLauncher {
 

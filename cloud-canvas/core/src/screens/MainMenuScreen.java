@@ -1,6 +1,8 @@
-package com.feup.sdis;
+package screens;
 
 import java.io.IOException;
+
+import launcher.CloudCanvas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

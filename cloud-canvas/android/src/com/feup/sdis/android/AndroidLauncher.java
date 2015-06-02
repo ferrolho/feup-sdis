@@ -1,10 +1,10 @@
 package com.feup.sdis.android;
 
+import launcher.CloudCanvas;
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.feup.sdis.CloudCanvas;
 
 public class AndroidLauncher extends AndroidApplication {
 

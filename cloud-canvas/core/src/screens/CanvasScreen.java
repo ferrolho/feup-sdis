@@ -1,10 +1,13 @@
-package com.feup.sdis;
+package screens;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+
+import utils.Curve;
+import launcher.CloudCanvas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -92,11 +95,11 @@ public class CanvasScreen implements Screen, InputProcessor {
 	@Override
 	public void render(float delta) {
 		// check if someone tries to connect
-		try {
-			socket = serverSocket.accept();
-		} catch (IOException e) {
-			System.err.println("Accept failed");
-		}
+		// try {
+		// socket = serverSocket.accept();
+		// } catch (IOException e) {
+		// System.err.println("Accept failed");
+		// }
 
 		// clear display
 		Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1);
