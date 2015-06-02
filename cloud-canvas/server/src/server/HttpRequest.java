@@ -11,10 +11,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class HTTP {
+public class HttpRequest {
 	private URL url;
 
-	public HTTP(String url) throws MalformedURLException {
+	public HttpRequest(String url) throws MalformedURLException {
 		this.url = new URL(url);
 	}
 
