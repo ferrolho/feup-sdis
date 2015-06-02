@@ -1,5 +1,7 @@
 package launcher;
 
+import java.util.ArrayList;
+
 import screens.MainMenuScreen;
 
 import com.badlogic.gdx.Game;
@@ -13,10 +15,18 @@ public class CloudCanvas extends Game {
 	public SpriteBatch spriteBatch;
 	public BitmapFont font;
 
+	public ArrayList<Integer> peerPorts;
+	public int listenerPort;
+
 	public void create() {
 		shapeRenderer = new ShapeRenderer();
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
+
+		peerPorts = new ArrayList<Integer>();
+		peerPorts.add(8002);
+
+		listenerPort = 8001;
 
 		this.setScreen(new MainMenuScreen(this));
 	}

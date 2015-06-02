@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.Pixmap;
@@ -7,7 +8,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-public class Curve {
+public class Curve implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	ArrayList<Vector2> vertices;
 	Vector3 color;

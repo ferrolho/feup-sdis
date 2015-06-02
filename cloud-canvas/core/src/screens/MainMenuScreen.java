@@ -1,7 +1,5 @@
 package screens;
 
-import java.io.IOException;
-
 import launcher.CloudCanvas;
 
 import com.badlogic.gdx.Gdx;
@@ -13,7 +11,7 @@ import com.badlogic.gdx.utils.Align;
 
 public class MainMenuScreen implements Screen {
 
-	final CloudCanvas game;
+	private final CloudCanvas game;
 
 	OrthographicCamera camera;
 
@@ -51,12 +49,8 @@ public class MainMenuScreen implements Screen {
 		game.spriteBatch.end();
 
 		if (Gdx.input.isTouched()) {
-			try {
-				game.setScreen(new CanvasScreen(game));
-				dispose();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			game.setScreen(new CanvasScreen(game));
+			dispose();
 		}
 	}
 

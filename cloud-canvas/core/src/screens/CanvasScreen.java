@@ -2,12 +2,12 @@ package screens;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import utils.Curve;
 import launcher.CloudCanvas;
+import peer.Listener;
+import utils.Curve;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -29,7 +29,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 	private int CANVAS_WIDTH = 400;
 	private int CANVAS_HEIGHT = 400;
 
-	private final CloudCanvas game;
+	public final CloudCanvas game;
 
 	private OrthographicCamera camera;
 
@@ -39,21 +39,18 @@ public class CanvasScreen implements Screen, InputProcessor {
 	private Sound dropSound;
 	private Music rainMusic;
 
-	private Pixmap pixmap;
-	private Texture texture;
+	public Pixmap pixmap;
+	public Texture texture;
 
-	private ArrayList<Curve> drawing;
+	public ArrayList<Curve> drawing;
 	private Curve currentCurve;
 
 	private Vector3 lastTouchPos, touchPos;
+	private boolean redraw;
 
 	private int viewportWidth, viewportHeight;
 
-	// distributed stuff things
-	private static ServerSocket serverSocket;
-	private static Socket socket;
-
-	public CanvasScreen(final CloudCanvas game) throws IOException {
+	public CanvasScreen(final CloudCanvas game) {
 		this.game = game;
 
 		Gdx.input.setInputProcessor(this);
@@ -79,12 +76,12 @@ public class CanvasScreen implements Screen, InputProcessor {
 		currentCurve = new Curve();
 
 		touchPos = new Vector3();
+		redraw = false;
 
 		camera = new OrthographicCamera();
 		positionCamera();
 
-		// distributed stuff things
-		serverSocket = new ServerSocket(6666);
+		new Thread(new Listener(this)).start();
 	}
 
 	private void positionCamera() {
@@ -94,13 +91,6 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public void render(float delta) {
-		// check if someone tries to connect
-		// try {
-		// socket = serverSocket.accept();
-		// } catch (IOException e) {
-		// System.err.println("Accept failed");
-		// }
-
 		// clear display
 		Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -111,6 +101,12 @@ public class CanvasScreen implements Screen, InputProcessor {
 		// tell the SpriteBatch to render in the
 		// coordinate system specified by the camera.
 		game.spriteBatch.setProjectionMatrix(camera.combined);
+
+		if (redraw) {
+			for (Curve curve : drawing)
+				curve.draw(pixmap);
+			texture.draw(pixmap, 0, 0);
+		}
 
 		// draw the canvas with the drawing
 		game.spriteBatch.begin();
@@ -173,10 +169,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 				pixmap.setColor(1, 1, 1, 1);
 				pixmap.fillRectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-				// draw the drawing to the canvas
-				for (Curve curve : drawing)
-					curve.draw(pixmap);
-				texture.draw(pixmap, 0, 0);
+				redraw();
 			}
 			break;
 
@@ -185,6 +178,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 		}
 
 		return true;
+	}
+
+	public void redraw() {
+		redraw = true;
 	}
 
 	@Override
@@ -250,15 +247,27 @@ public class CanvasScreen implements Screen, InputProcessor {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		drawing.add(currentCurve);
 
-		if (socket != null) {
-			try {
-				ObjectOutputStream oos = new ObjectOutputStream(
-						socket.getOutputStream());
-				oos.writeObject(currentCurve);
-				oos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			String tabletIP = "192.168.1.91";
+			String pcIP = "192.168.1.128";
+
+			// open socket
+			Socket socket = new Socket(tabletIP, game.listenerPort);
+
+			// open streams
+			ObjectOutputStream oos = new ObjectOutputStream(
+					socket.getOutputStream());
+
+			// send curve
+			oos.writeObject(currentCurve);
+
+			// close stream
+			oos.close();
+
+			// close socket
+			socket.close();
+		} catch (IOException e) {
+			System.out.println("the other peer is offline");
 		}
 
 		currentCurve = new Curve();
