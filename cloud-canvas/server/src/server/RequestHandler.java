@@ -28,7 +28,7 @@ public class RequestHandler implements HttpHandler {
 				InputStream is = t.getRequestBody();
 				byte[] b = new byte[256];
 				is.read(b);
-				String response = Main.getRoomList();
+				String response = Server.getRoomList();
 				System.out.println(response);
 				t.sendResponseHeaders(200, response.length());
 				OutputStream os = t.getResponseBody();
@@ -44,7 +44,7 @@ public class RequestHandler implements HttpHandler {
 				String[] query = qr.split("=");
 				System.out.println(query.length);
 				if (query[0].equals("name") && query.length == 2) {
-					int nusr = Main.incUsers(query[1]);
+					int nusr = Server.incUsers(query[1]);
 					System.out.println(query[1]);
 					String response = "Room joined, current size: " + nusr + "\n";
 					t.sendResponseHeaders(200, response.length());
@@ -63,7 +63,7 @@ public class RequestHandler implements HttpHandler {
 				String[] query = qr.split("=");
 				System.out.println(query.length);
 				if (query[0].equals("name") && query.length == 2) {
-					int nusr = Main.decUsers(query[1]);
+					int nusr = Server.decUsers(query[1]);
 					System.out.println(query[1]);
 					String response = "Left room, current size: " + nusr + "\n";
 					t.sendResponseHeaders(200, response.length());
