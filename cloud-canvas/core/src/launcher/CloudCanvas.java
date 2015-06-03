@@ -2,6 +2,7 @@ package launcher;
 
 import java.util.ArrayList;
 
+import peer.PeerID;
 import screens.MainMenuScreen;
 
 import com.badlogic.gdx.Game;
@@ -15,7 +16,7 @@ public class CloudCanvas extends Game {
 	public SpriteBatch spriteBatch;
 	public BitmapFont font;
 
-	public ArrayList<Integer> peerPorts;
+	public ArrayList<PeerID> peers;
 	public int listenerPort;
 
 	public void create() {
@@ -23,10 +24,8 @@ public class CloudCanvas extends Game {
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
 
-		peerPorts = new ArrayList<Integer>();
-		peerPorts.add(8001);
-
-		listenerPort = 8002;
+		peers = new ArrayList<PeerID>();
+		listenerPort = 8008;
 
 		this.setScreen(new MainMenuScreen(this));
 	}

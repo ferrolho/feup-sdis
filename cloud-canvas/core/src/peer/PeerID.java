@@ -19,9 +19,8 @@ public class PeerID implements Serializable {
 		return ip;
 	}
 
-	@Override
-	public String toString() {
-		return ip + ":" + port;
+	public int getPort() {
+		return port;
 	}
 
 	@Override
@@ -47,6 +46,11 @@ public class PeerID implements Serializable {
 			return false;
 
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return ip + ":" + port;
 	}
 
 }

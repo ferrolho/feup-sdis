@@ -8,6 +8,8 @@ import java.net.Socket;
 import screens.CanvasScreen;
 import utils.Curve;
 
+import commands.Command;
+
 public class Listener implements Runnable {
 
 	private final CanvasScreen canvasScreen;
@@ -21,19 +23,18 @@ public class Listener implements Runnable {
 	@Override
 	public void run() {
 		try {
-			temp();
+			listen();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void temp() throws IOException {
+	private void listen() throws IOException {
 		try {
-			serverSocket = new ServerSocket(canvasScreen.game.peerPorts.get(0));
+			serverSocket = new ServerSocket(canvasScreen.game.listenerPort);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.err.println("Could not listen on port: "
-					+ canvasScreen.game.peerPorts.get(0));
+			System.err.println("Could not listen.");
 			System.exit(-1);
 		}
 
@@ -46,8 +47,7 @@ public class Listener implements Runnable {
 			try {
 				socket = serverSocket.accept();
 			} catch (IOException e) {
-				System.err.println("Accept failed: "
-						+ canvasScreen.game.peerPorts.get(0));
+				System.err.println("Accept failed");
 				System.exit(1);
 			}
 
@@ -57,10 +57,34 @@ public class Listener implements Runnable {
 
 			// receive curve
 			try {
-				Curve curve = (Curve) ois.readObject();
-				canvasScreen.drawing.add(curve);
+				Command command = (Command) ois.readObject();
 
-				canvasScreen.redraw();
+				switch (command.getType()) {
+				case CURVE:
+					Curve curve = command.getCurve();
+					canvasScreen.drawing.add(curve);
+					canvasScreen.redraw();
+					break;
+
+				case GET_PEERS:
+					break;
+
+				case JOIN:
+					PeerID peerID = command.getPeer();
+					canvasScreen.game.peers.add(peerID);
+					break;
+
+				case PEERS:
+					canvasScreen.game.peers = command.getPeers();
+					break;
+
+				case PULL_DRAWING:
+					canvasScreen.drawing = command.getDrawing();
+					break;
+
+				default:
+					break;
+				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
