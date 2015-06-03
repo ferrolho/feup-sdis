@@ -16,8 +16,8 @@ import utils.Utils;
 public class HttpRequest {
 	private URL url;
 
-	public HttpRequest(String url) throws MalformedURLException {
-		this.url = new URL(url);
+	public HttpRequest(String file) throws MalformedURLException {
+		this.url = new URL("http","46.101.171.164",8000,file);
 	}
 
 	public String GET(String charset) throws IOException {

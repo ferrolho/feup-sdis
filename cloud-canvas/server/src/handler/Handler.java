@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 
 import server.Server;
 
@@ -30,12 +31,37 @@ public class Handler implements HttpHandler {
 			break;
 		case "leaveRoom":
 			handleLeaveRoom(t);
+		case "createRoom":
+			handleCreateRoom(t);
 
 		default:
 			sendResponse(t, 404, "nothing at all");
 			break;
 		}
 
+	}
+
+	private void handleCreateRoom(HttpExchange t) {
+		String[] ipQ;
+		try {
+			ipQ = readPostQuery(t).split("&")[0].split("=");
+			if (ipQ[0].equals("userIp")) {
+
+				Server.createRoom("Sala", InetAddress.getByName(ipQ[1]));
+				sendResponse(t, 200,"Room sucefully created");
+			}
+			else{
+				sendResponse(t, 400, "Invalid ip argument");
+
+			}
+		} catch (IOException e) {
+			try {
+				sendResponse(t, 400, "Invalid query arguments");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	private void handleRoomList(HttpExchange t) throws IOException {
