@@ -96,18 +96,19 @@ public class Server {
 	 * @return the number of the users in the room or 0 if the room is empty
 	 */
 	public static int decUsersRoom(String name) {
-		if(!rooms.containsKey(name)){
+		System.out.println("DBG: -" + name + "-");
+
+		if (!rooms.containsKey(name))
 			return -1;
-		}
+
 		Room room = rooms.get(name);
-		
+
 		room.decNumUsers();
 
 		if (room.isEmpty()) {
 			deleteRoom(name);
 			return 0;
 		} else {
-
 			return rooms.get(name).getNumUsers();
 		}
 	}

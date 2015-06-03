@@ -31,9 +31,10 @@ public class Handler implements HttpHandler {
 			break;
 		case "leaveRoom":
 			handleLeaveRoom(t);
+			break;
 		case "createRoom":
 			handleCreateRoom(t);
-
+			break;
 		default:
 			sendResponse(t, 404, "nothing at all");
 			break;
@@ -48,9 +49,8 @@ public class Handler implements HttpHandler {
 			if (ipQ[0].equals("userIp")) {
 
 				Server.createRoom("Sala", InetAddress.getByName(ipQ[1]));
-				sendResponse(t, 200,"Room sucefully created");
-			}
-			else{
+				sendResponse(t, 200, "Room sucefully created");
+			} else {
 				sendResponse(t, 400, "Invalid ip argument");
 
 			}
@@ -81,8 +81,7 @@ public class Handler implements HttpHandler {
 				sendResponse(t, 400, "Invalid roomName argument");
 
 			}
-		}
-		else{
+		} else {
 			sendResponse(t, 400, "Invalid query arguments");
 		}
 
@@ -101,8 +100,7 @@ public class Handler implements HttpHandler {
 			} else {
 				sendResponse(t, 400, "Invalid roomName argument");
 			}
-		}
-		else{
+		} else {
 			sendResponse(t, 400, "Invalid query arguments");
 		}
 

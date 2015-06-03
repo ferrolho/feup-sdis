@@ -21,7 +21,7 @@ public class Room {
 	}
 
 	public boolean isEmpty() {
-		return numUsers == 0;
+		return numUsers <= 0;
 	}
 
 	public void incNumUsers() {
