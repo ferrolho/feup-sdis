@@ -18,9 +18,9 @@ public class Main {
 
 		Server.init();
 
-		Server.createRoom("sala 1", InetAddress.getLocalHost());
-		Server.createRoom("sala 2", InetAddress.getLocalHost());
-		Server.createRoom("sala 3", InetAddress.getLocalHost());
+		Server.createRoom("sala1", Server.getIPv4());
+		Server.createRoom("sala2", Server.getIPv4());
+		Server.createRoom("sala3", Server.getIPv4());
 
 		System.out.println(Server.getRoomList());*/
 
