@@ -88,6 +88,8 @@ public class CanvasScreen implements Screen, InputProcessor {
 		camera = new OrthographicCamera();
 		positionCamera();
 
+		new Thread(new Listener(this)).start();
+
 		{
 			try {
 				HttpRequest request = new HttpRequest("/canvas/getRoomList");
@@ -136,8 +138,6 @@ public class CanvasScreen implements Screen, InputProcessor {
 				e.printStackTrace();
 			}
 		}
-
-		new Thread(new Listener(this)).start();
 	}
 
 	private void positionCamera() {

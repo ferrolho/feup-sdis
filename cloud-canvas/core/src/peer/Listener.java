@@ -74,9 +74,13 @@ public class Listener implements Runnable {
 					System.out.println(tempIP);
 					Socket tempsocket = new Socket(tempIP, 8008);
 
+					System.out.println("1");
+
 					// open streams
 					ObjectOutputStream oos = new ObjectOutputStream(
 							tempsocket.getOutputStream());
+
+					System.out.println("2");
 
 					// send curve
 					ArrayList<PeerID> peers = canvasScreen.game.peers;
@@ -84,8 +88,12 @@ public class Listener implements Runnable {
 							canvasScreen.game.listenerPort));
 					oos.writeObject(new Command(peers));
 
+					System.out.println("3");
+
 					// close stream
 					oos.close();
+
+					System.out.println("4");
 
 					// close socket
 					tempsocket.close();
