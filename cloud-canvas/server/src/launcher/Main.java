@@ -18,15 +18,8 @@ public class Main {
 		server = new Server(8000, "/canvas", new Handler());
 
 		Server.init();
-
-		Server.createRoom("sala1", Utils.getIPv4());
-		Server.createRoom("sala2", Utils.getIPv4());
-		Server.createRoom("sala3", Utils.getIPv4());
-
-		System.out.println(Server.getRoomList());
-
-		request = new HttpRequest("http://stackoverflow.com/search");
-		System.out.println(request.GET(Utils.UTF_8));
+		/*request = new HttpRequest("http://stackoverflow.com/search");
+		System.out.println(request.GET(Utils.UTF_8));*/
 
 	}
 
