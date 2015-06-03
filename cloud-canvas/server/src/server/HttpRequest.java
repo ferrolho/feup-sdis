@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import utils.Agent;
+
 public class HttpRequest {
 	private URL url;
 
@@ -23,6 +25,9 @@ public class HttpRequest {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
 		conn.setRequestMethod("GET");
+
+		// add request header
+		conn.setRequestProperty("User-Agent", Agent.USER_AGENT);
 
 		// check connection response
 		if (conn.getResponseCode() != 200) {
@@ -39,7 +44,8 @@ public class HttpRequest {
 		}
 		rd.close();
 
-		conn.disconnect();
+		if (conn != null)
+			conn.disconnect();
 		return sb.toString();
 	}
 
@@ -52,7 +58,10 @@ public class HttpRequest {
 		conn.setDoInput(true);
 		conn.setUseCaches(false);
 		conn.setAllowUserInteraction(false);
+		
 		// TODO put here the requests properties we have to create
+		conn.setRequestProperty("Content-Type", "application/json");
+		conn.setRequestProperty("Accept", "application/json");
 
 		// Create the form content
 		OutputStream out = conn.getOutputStream();
@@ -80,46 +89,51 @@ public class HttpRequest {
 			sb.append(line);
 		}
 		rd.close();
-		conn.disconnect();
+
+		if (conn != null)
+			conn.disconnect();
+
 		return sb.toString();
 	}
 
 	public void PUT() throws IOException {
 		// Starting HTTP connection
-		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-		httpCon.setRequestMethod("PUT");
-		httpCon.setDoOutput(true);
+		conn.setRequestMethod("PUT");
+		conn.setDoOutput(true);
 
-		OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
+		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
 		out.write("Resource content");
 		out.close();
 
 		// check connection response
-		if (httpCon.getResponseCode() != 200) {
-			throw new IOException(httpCon.getResponseMessage());
+		if (conn.getResponseCode() != 200) {
+			throw new IOException(conn.getResponseMessage());
 		}
 
 		// TODO what we need to put in there
 
-		httpCon.disconnect();
+		if (conn != null)
+			conn.disconnect();
 	}
 
 	public void DELETE() throws IOException {
 		// Starting HTTP connection
-		HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-		httpCon.setRequestMethod("DELETE");
-		httpCon.setDoOutput(true);
+		conn.setRequestMethod("DELETE");
+		conn.setDoOutput(true);
 		// TODO put here the requests properties we have to create
 
 		// check connection response
-		if (httpCon.getResponseCode() != 200) {
-			throw new IOException(httpCon.getResponseMessage());
+		if (conn.getResponseCode() != 200) {
+			throw new IOException(conn.getResponseMessage());
 		}
 
 		// TODO what we need to put in there
 
-		httpCon.disconnect();
+		if (conn != null)
+			conn.disconnect();
 	}
 }
