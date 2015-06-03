@@ -70,8 +70,9 @@ public class Listener implements Runnable {
 
 				case GET_PEERS:
 					// open socket
-					Socket tempsocket = new Socket(socket.getInetAddress(),
-							socket.getPort());
+					String tempIP = socket.getInetAddress().getHostAddress();
+					System.out.println(tempIP + " vs " + command.getOriginIP());
+					Socket tempsocket = new Socket(tempIP, 8008);
 
 					// open streams
 					ObjectOutputStream oos = new ObjectOutputStream(
