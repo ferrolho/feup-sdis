@@ -11,7 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import utils.Agent;
+import utils.Utils;
 
 public class HttpRequest {
 	private URL url;
@@ -20,14 +20,16 @@ public class HttpRequest {
 		this.url = new URL(url);
 	}
 
-	public String GET() throws IOException {
+	public String GET(String charset) throws IOException {
 		// Starting HTTP connection
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
+		// request headers
 		conn.setRequestMethod("GET");
-
-		// add request header
-		conn.setRequestProperty("User-Agent", Agent.USER_AGENT);
+		conn.setRequestProperty("Accept-Charset", charset);
+		conn.setRequestProperty("Content-Type", "" + Utils.CONTENT_TYPE
+				+ charset);
+		conn.setRequestProperty("User-Agent", Utils.USER_AGENT);
 
 		// check connection response
 		if (conn.getResponseCode() != 200) {
@@ -58,7 +60,7 @@ public class HttpRequest {
 		conn.setDoInput(true);
 		conn.setUseCaches(false);
 		conn.setAllowUserInteraction(false);
-		
+
 		// TODO put here the requests properties we have to create
 		conn.setRequestProperty("Content-Type", "application/json");
 		conn.setRequestProperty("Accept", "application/json");
