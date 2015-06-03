@@ -1,11 +1,14 @@
 package commands;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import peer.PeerID;
 import utils.Curve;
 
-public class Command {
+public class Command implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private CommandType type;
 
