@@ -3,8 +3,10 @@ package server;
 import handler.Handler;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -131,9 +133,30 @@ public class Server {
 
 		ArrayList<String> list = new ArrayList<String>();
 
-		rooms.forEach((k, v) -> list.add(k + "," + v.getIp().toString()));
+		rooms.forEach((k, v) -> list.add(k + "," + v.getIp().getHostAddress()));
 
 		return list.toString() + "\n";
 
+	}
+	public static boolean roomExists(String roomName){
+		return rooms.containsKey(roomName);
+	}
+	public static InetAddress getIPv4() throws IOException {
+		MulticastSocket socket = new MulticastSocket();
+		socket.setTimeToLive(0);
+
+		InetAddress addr = InetAddress.getByName("225.0.0.0");
+		socket.joinGroup(addr);
+
+		byte[] bytes = new byte[0];
+		DatagramPacket packet = new DatagramPacket(bytes, bytes.length, addr,
+				socket.getLocalPort());
+
+		socket.send(packet);
+		socket.receive(packet);
+
+		socket.close();
+
+		return packet.getAddress();
 	}
 }
