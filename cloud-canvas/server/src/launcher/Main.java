@@ -18,8 +18,6 @@ public class Main {
 		server = new Server(8000, "/canvas", new Handler());
 
 		Server.init();
-		/*request = new HttpRequest("http://stackoverflow.com/search");
-		System.out.println(request.GET(Utils.UTF_8));*/
 
 	}
 
