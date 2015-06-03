@@ -19,6 +19,7 @@ import elements.Room;
  *
  */
 public class Server {
+
 	private static HashMap<String, Room> rooms;
 
 	public static HttpServer server;
@@ -128,16 +129,24 @@ public class Server {
 	 * @return a string with the information
 	 */
 	public static String getRoomList() {
-
 		ArrayList<String> list = new ArrayList<String>();
 
 		rooms.forEach((k, v) -> list.add(k + "," + v.getIp().getHostAddress()));
 
-		return list.toString() + "\n";
+		String str = "";
 
+		for (int i = 0; i < list.size(); i++) {
+			str += list.get(i);
+
+			if (i < list.size() - 1)
+				str += " ";
+		}
+
+		return str;
 	}
 
 	public static boolean roomExists(String roomName) {
 		return rooms.containsKey(roomName);
 	}
+
 }

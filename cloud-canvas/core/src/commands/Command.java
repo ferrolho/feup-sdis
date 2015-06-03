@@ -18,6 +18,11 @@ public class Command {
 		this.type = type;
 	}
 
+	public Command(ArrayList<PeerID> peers) {
+		this.type = CommandType.PEERS;
+		this.peers = peers;
+	}
+
 	public CommandType getType() {
 		return type;
 	}

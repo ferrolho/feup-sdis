@@ -10,6 +10,10 @@ public class Utils {
 
 	public static Random random = new Random();
 
+	public static final String USER_AGENT = "Mozilla/5.0";
+	public static final String CONTENT_TYPE = "application/x-www-form-urlencoded;charset=";
+	public static final String UTF_8 = "UTF-8";
+
 	public static byte[] concatBytes(byte[] a, byte[] b) {
 		int aLen = a.length;
 		int bLen = b.length;
