@@ -2,12 +2,14 @@ package peer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import screens.CanvasScreen;
 import utils.Curve;
-
+import utils.Utils;
 import commands.Command;
 
 public class Listener implements Runnable {
@@ -67,6 +69,25 @@ public class Listener implements Runnable {
 					break;
 
 				case GET_PEERS:
+					// open socket
+					Socket tempsocket = new Socket(socket.getInetAddress(),
+							socket.getPort());
+
+					// open streams
+					ObjectOutputStream oos = new ObjectOutputStream(
+							tempsocket.getOutputStream());
+
+					// send curve
+					ArrayList<PeerID> peers = canvasScreen.game.peers;
+					peers.add(new PeerID(Utils.getIPv4(),
+							canvasScreen.game.listenerPort));
+					oos.writeObject(new Command(peers));
+
+					// close stream
+					oos.close();
+
+					// close socket
+					tempsocket.close();
 					break;
 
 				case JOIN:

@@ -2,6 +2,7 @@ package screens;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -9,6 +10,8 @@ import launcher.CloudCanvas;
 import peer.Listener;
 import peer.PeerID;
 import utils.Curve;
+import utils.HttpRequest;
+import utils.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -81,6 +84,34 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		camera = new OrthographicCamera();
 		positionCamera();
+
+		{
+			try {
+				HttpRequest request = new HttpRequest("/canvas/getRoomList");
+				String roomsStr = request.GET(Utils.UTF_8);
+
+				if (roomsStr.isEmpty()) {
+					System.out.println("no rooms! creating a new one");
+
+					String[] paramName = { "userIp" };
+					String[] paramVal = { Utils.getIPv4().getHostAddress() };
+
+					String ret = new HttpRequest("/canvas/createRoom").POST(
+							paramName, paramVal);
+
+					System.out.println("RET: " + ret);
+				} else {
+					String[] rooms = roomsStr.split("\\s+");
+					System.out.println("Room: " + rooms[0]);
+				}
+			} catch (MalformedURLException e) {
+				System.out.println("damn you BOTAS!");
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("damn you BOTAS 2!");
+				e.printStackTrace();
+			}
+		}
 
 		new Thread(new Listener(this)).start();
 	}
