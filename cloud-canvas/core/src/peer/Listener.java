@@ -70,8 +70,8 @@ public class Listener implements Runnable {
 
 				case GET_PEERS:
 					// open socket
-					String tempIP = socket.getInetAddress().getHostAddress();
-					System.out.println(tempIP + " vs " + command.getOriginIP());
+					String tempIP = command.getOriginIP();
+					System.out.println(tempIP);
 					Socket tempsocket = new Socket(tempIP, 8008);
 
 					// open streams
@@ -89,6 +89,7 @@ public class Listener implements Runnable {
 
 					// close socket
 					tempsocket.close();
+					System.out.println("peers sent");
 					break;
 
 				case JOIN:
