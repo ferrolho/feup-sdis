@@ -27,6 +27,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
+import commands.Command;
+import commands.CommandType;
+
 public class CanvasScreen implements Screen, InputProcessor {
 
 	// TODO change this
@@ -103,6 +106,27 @@ public class CanvasScreen implements Screen, InputProcessor {
 				} else {
 					String[] rooms = roomsStr.split("\\s+");
 					System.out.println("Room: " + rooms[0]);
+
+					String ip = rooms[0].split(",")[1];
+					System.out.println("IP: -" + ip + "-");
+
+					{
+						// open socket
+						Socket tempsocket = new Socket(ip, 8008);
+
+						// open streams
+						ObjectOutputStream oos = new ObjectOutputStream(
+								tempsocket.getOutputStream());
+
+						// send curve
+						oos.writeObject(new Command(CommandType.GET_PEERS));
+
+						// close stream
+						oos.close();
+
+						// close socket
+						tempsocket.close();
+					}
 				}
 			} catch (MalformedURLException e) {
 				System.out.println("damn you BOTAS!");

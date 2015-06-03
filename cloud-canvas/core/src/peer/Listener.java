@@ -97,6 +97,8 @@ public class Listener implements Runnable {
 
 				case PEERS:
 					canvasScreen.game.peers = command.getPeers();
+					System.out.println("Peers received: "
+							+ canvasScreen.game.peers);
 					break;
 
 				case PULL_DRAWING:
