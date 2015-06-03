@@ -91,7 +91,8 @@ public class HttpRequest {
 		httpCon.setRequestMethod("PUT");
 		httpCon.setDoOutput(true);
 
-		OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
+		OutputStreamWriter out = new OutputStreamWriter(
+				httpCon.getOutputStream());
 		out.write("Resource content");
 		out.close();
 

@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 import server.Server;
 
@@ -65,7 +64,7 @@ public class Handler implements HttpHandler {
 	}
 
 	private void handleLeaveRoom(HttpExchange t) throws IOException {
-		
+
 		String[] query = readPostQuery(t).split("&");
 		System.out.println(query[1]);
 		String[] roomQ = query[0].split("=");

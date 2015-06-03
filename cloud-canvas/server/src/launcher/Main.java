@@ -1,13 +1,13 @@
-package laucher;
+package launcher;
 
 import handler.Handler;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 import server.Server;
 
 public class Main {
+
 	public static Server server;
 
 	public static void main(String[] args) throws IOException {
@@ -22,4 +22,5 @@ public class Main {
 
 		System.out.println(Server.getRoomList());
 	}
+
 }
