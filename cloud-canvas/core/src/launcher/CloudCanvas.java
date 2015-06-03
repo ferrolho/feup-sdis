@@ -24,9 +24,9 @@ public class CloudCanvas extends Game {
 		font = new BitmapFont();
 
 		peerPorts = new ArrayList<Integer>();
-		peerPorts.add(8002);
+		peerPorts.add(8001);
 
-		listenerPort = 8001;
+		listenerPort = 8002;
 
 		this.setScreen(new MainMenuScreen(this));
 	}

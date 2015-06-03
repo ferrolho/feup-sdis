@@ -249,10 +249,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		try {
 			String tabletIP = "192.168.1.91";
-			String pcIP = "192.168.1.128";
+			String pcIP = "192.168.33.87";
 
 			// open socket
-			Socket socket = new Socket(tabletIP, game.listenerPort);
+			Socket socket = new Socket(pcIP, game.listenerPort);
 
 			// open streams
 			ObjectOutputStream oos = new ObjectOutputStream(

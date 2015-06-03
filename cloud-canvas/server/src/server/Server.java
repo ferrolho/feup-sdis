@@ -136,7 +136,8 @@ public class Server {
 		return list.toString() + "\n";
 
 	}
-	public static boolean roomExists(String roomName){
+
+	public static boolean roomExists(String roomName) {
 		return rooms.containsKey(roomName);
 	}
 }

@@ -1,4 +1,4 @@
-package laucher;
+package launcher;
 
 import handler.Handler;
 
@@ -9,6 +9,7 @@ import server.Server;
 import utils.Utils;
 
 public class Main {
+
 	public static Server server;
 	public static HttpRequest request;
 
@@ -28,4 +29,5 @@ public class Main {
 		System.out.println(request.GET(Utils.UTF_8));
 
 	}
+
 }

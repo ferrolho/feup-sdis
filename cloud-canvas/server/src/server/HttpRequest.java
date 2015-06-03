@@ -106,6 +106,7 @@ public class HttpRequest {
 		conn.setDoOutput(true);
 
 		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+
 		out.write("Resource content");
 		out.close();
 
