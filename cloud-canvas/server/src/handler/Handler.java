@@ -69,9 +69,8 @@ public class Handler implements HttpHandler {
 	}
 
 	private void handleJoinRoom(HttpExchange t) throws IOException {
-		String[] query = readPostQuery(t).split("&");
-		String[] roomQ = query[0].split("=");
-		System.out.println(query[1]);
+		String query = readPostQuery(t);
+		String[] roomQ = query.split("=");
 		if (roomQ[0].equals("roomName")) {
 			String roomName = roomQ[1];
 			System.out.println("Room Name is " + roomName);
@@ -90,9 +89,8 @@ public class Handler implements HttpHandler {
 
 	private void handleLeaveRoom(HttpExchange t) throws IOException {
 
-		String[] query = readPostQuery(t).split("&");
-		System.out.println(query[1]);
-		String[] roomQ = query[0].split("=");
+		String query = readPostQuery(t);
+		String[] roomQ = query.split("=");
 		if (roomQ[0].equals("roomName")) {
 			String roomName = roomQ[1];
 			System.out.println("Room Name is " + roomName);
