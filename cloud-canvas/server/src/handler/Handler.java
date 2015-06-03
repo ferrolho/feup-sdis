@@ -81,9 +81,10 @@ public class Handler implements HttpHandler {
 				sendResponse(t, 400, "Invalid roomName argument");
 
 			}
-			return;
 		}
-		sendResponse(t, 400, "Invalid query arguments");
+		else{
+			sendResponse(t, 400, "Invalid query arguments");
+		}
 
 	}
 
@@ -100,9 +101,10 @@ public class Handler implements HttpHandler {
 			} else {
 				sendResponse(t, 400, "Invalid roomName argument");
 			}
-			return;
 		}
-		sendResponse(t, 400, "Invalid query arguments");
+		else{
+			sendResponse(t, 400, "Invalid query arguments");
+		}
 
 	}
 
