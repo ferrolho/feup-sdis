@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import launcher.CloudCanvas;
 import peer.Listener;
+import peer.PeerID;
 import utils.Curve;
 
 import com.badlogic.gdx.Gdx;
@@ -247,27 +248,26 @@ public class CanvasScreen implements Screen, InputProcessor {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		drawing.add(currentCurve);
 
-		try {
-			String tabletIP = "192.168.1.91";
-			String pcIP = "192.168.33.87";
+		for (PeerID peerID : game.peers) {
+			try {
+				// open socket
+				Socket socket = new Socket(peerID.getIP(), peerID.getPort());
 
-			// open socket
-			Socket socket = new Socket(pcIP, game.listenerPort);
+				// open streams
+				ObjectOutputStream oos = new ObjectOutputStream(
+						socket.getOutputStream());
 
-			// open streams
-			ObjectOutputStream oos = new ObjectOutputStream(
-					socket.getOutputStream());
+				// send curve
+				oos.writeObject(currentCurve);
 
-			// send curve
-			oos.writeObject(currentCurve);
+				// close stream
+				oos.close();
 
-			// close stream
-			oos.close();
-
-			// close socket
-			socket.close();
-		} catch (IOException e) {
-			System.out.println("the other peer is offline");
+				// close socket
+				socket.close();
+			} catch (IOException e) {
+				System.out.println("wtf?!");
+			}
 		}
 
 		currentCurve = new Curve();
