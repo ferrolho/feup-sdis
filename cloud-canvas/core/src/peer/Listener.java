@@ -31,7 +31,7 @@ public class Listener implements Runnable {
 		}
 	}
 
-	private void listen() throws IOException {
+	private synchronized void listen() throws IOException {
 		try {
 			serverSocket = new ServerSocket(canvasScreen.game.listenerPort);
 		} catch (IOException e) {

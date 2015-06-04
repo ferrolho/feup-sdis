@@ -181,14 +181,18 @@ public class CanvasScreen implements Screen, InputProcessor {
 				curve.draw(pixmap);
 			texture.draw(pixmap, 0, 0);
 
-			redraw = false;
-			notifyAll();
+			tempsync();
 		}
 
 		// draw the canvas with the drawing
 		game.spriteBatch.begin();
 		game.spriteBatch.draw(texture, 0, 0);
 		game.spriteBatch.end();
+	}
+
+	private synchronized void tempsync() {
+		redraw = false;
+		notifyAll();
 	}
 
 	@Override
