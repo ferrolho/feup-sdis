@@ -360,7 +360,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 				// close socket
 				socket.close();
 			} catch (IOException e) {
-				System.out.println("wtf?!");
+				System.out.println("CanvasScreen.touchUp");
 			}
 		}
 
