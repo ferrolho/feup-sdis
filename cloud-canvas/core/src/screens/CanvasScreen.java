@@ -50,7 +50,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 	public Pixmap pixmap;
 	public Texture texture;
 
-	public ArrayList<Curve> drawing;
+	public volatile ArrayList<Curve> drawing;
 	private Curve currentCurve;
 
 	private Vector3 lastTouchPos, touchPos;
@@ -180,6 +180,8 @@ public class CanvasScreen implements Screen, InputProcessor {
 			for (Curve curve : drawing)
 				curve.draw(pixmap);
 			texture.draw(pixmap, 0, 0);
+			
+			redraw = false;
 		}
 
 		// draw the canvas with the drawing
