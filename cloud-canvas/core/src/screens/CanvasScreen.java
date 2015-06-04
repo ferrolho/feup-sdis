@@ -1,6 +1,7 @@
 package screens;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -117,14 +118,29 @@ public class CanvasScreen implements Screen, InputProcessor {
 						Socket tempsocket = new Socket(ip, 8008);
 
 						// open streams
+						ObjectInputStream ois = new ObjectInputStream(
+								tempsocket.getInputStream());
 						ObjectOutputStream oos = new ObjectOutputStream(
 								tempsocket.getOutputStream());
 
 						// send curve
 						oos.writeObject(new Command(CommandType.GET_PEERS));
 
+						try {
+							ois.readObject();
+
+							Command command = (Command) ois.readObject();
+							System.out.println("TEST: " + command.getType());
+
+							game.peers = command.getPeers();
+							System.out.println("22Peers received: " + game.peers);
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						}
+
 						// close stream
 						oos.close();
+						ois.close();
 
 						// close socket
 						tempsocket.close();
