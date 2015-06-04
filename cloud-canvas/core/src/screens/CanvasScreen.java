@@ -89,8 +89,6 @@ public class CanvasScreen implements Screen, InputProcessor {
 		camera = new OrthographicCamera();
 		positionCamera();
 
-		new Thread(new Listener(this)).start();
-
 		{
 			try {
 				HttpRequest request = new HttpRequest("/canvas/getRoomList");
@@ -116,6 +114,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 					{
 						// open socket
 						Socket tempsocket = new Socket(ip, 8008);
+						System.out.println("asking " + ip + " for peers");
 
 						// open streams
 						ObjectInputStream ois = new ObjectInputStream(
@@ -127,13 +126,12 @@ public class CanvasScreen implements Screen, InputProcessor {
 						oos.writeObject(new Command(CommandType.GET_PEERS));
 
 						try {
-							ois.readObject();
-
 							Command command = (Command) ois.readObject();
 							System.out.println("TEST: " + command.getType());
 
 							game.peers = command.getPeers();
-							System.out.println("22Peers received: " + game.peers);
+							System.out.println("22Peers received: "
+									+ game.peers);
 						} catch (ClassNotFoundException e) {
 							e.printStackTrace();
 						}
@@ -154,6 +152,9 @@ public class CanvasScreen implements Screen, InputProcessor {
 				e.printStackTrace();
 			}
 		}
+
+		new Thread(new Listener(this)).start();
+
 	}
 
 	private void positionCamera() {
