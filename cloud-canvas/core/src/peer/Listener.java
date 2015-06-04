@@ -64,7 +64,23 @@ public class Listener implements Runnable {
 				switch (command.getType()) {
 				case CURVE:
 					Curve curve = command.getCurve();
-					canvasScreen.drawing.add(curve);
+
+					boolean curveAdded = false;
+					while (!curveAdded) {
+						if (canvasScreen.isRedrawing()) {
+							try {
+								wait();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						} else {
+							// only add curve if not redrawing
+							canvasScreen.drawing.add(curve);
+
+							curveAdded = true;
+						}
+					}
+
 					canvasScreen.redraw();
 					break;
 

@@ -180,8 +180,9 @@ public class CanvasScreen implements Screen, InputProcessor {
 			for (Curve curve : drawing)
 				curve.draw(pixmap);
 			texture.draw(pixmap, 0, 0);
-			
+
 			redraw = false;
+			notifyAll();
 		}
 
 		// draw the canvas with the drawing
@@ -364,6 +365,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 				/ viewportWidth);
 
 		return true;
+	}
+
+	public boolean isRedrawing() {
+		return redraw;
 	}
 
 }
