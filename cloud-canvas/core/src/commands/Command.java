@@ -24,17 +24,24 @@ public class Command implements Serializable {
 	public Command(CommandType type) {
 		this.type = type;
 
-		try {
-			originIP = Utils.getIPv4().getHostAddress();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		addIP();
+	}
+
+	public Command(Curve curve) {
+		this.type = CommandType.CURVE;
+		this.curve = curve;
+
+		addIP();
 	}
 
 	public Command(ArrayList<PeerID> peers) {
 		this.type = CommandType.PEERS;
 		this.peers = peers;
 
+		addIP();
+	}
+
+	private void addIP() {
 		try {
 			originIP = Utils.getIPv4().getHostAddress();
 		} catch (IOException e) {

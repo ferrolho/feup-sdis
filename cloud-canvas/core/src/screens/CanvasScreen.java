@@ -117,13 +117,14 @@ public class CanvasScreen implements Screen, InputProcessor {
 						System.out.println("asking " + ip + " for peers");
 
 						// open streams
-						ObjectInputStream ois = new ObjectInputStream(
-								tempsocket.getInputStream());
 						ObjectOutputStream oos = new ObjectOutputStream(
 								tempsocket.getOutputStream());
 
 						// send curve
 						oos.writeObject(new Command(CommandType.GET_PEERS));
+
+						ObjectInputStream ois = new ObjectInputStream(
+								tempsocket.getInputStream());
 
 						try {
 							Command command = (Command) ois.readObject();
@@ -330,7 +331,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 						socket.getOutputStream());
 
 				// send curve
-				oos.writeObject(currentCurve);
+				oos.writeObject(new Command(currentCurve));
 
 				// close stream
 				oos.close();
