@@ -74,6 +74,9 @@ public class Server {
 		else
 			System.err
 					.println("Room name already exists. Room creation failed.");
+	
+	
+		incUsersRoom(name);
 	}
 
 	/**

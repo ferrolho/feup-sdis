@@ -226,6 +226,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public void dispose() {
+		System.out.println("left room");
 		dropImage.dispose();
 		bucketImage.dispose();
 		dropSound.dispose();

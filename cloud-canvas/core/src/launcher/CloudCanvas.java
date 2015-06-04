@@ -6,6 +6,7 @@ import peer.PeerID;
 import screens.MainMenuScreen;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -35,6 +36,7 @@ public class CloudCanvas extends Game {
 	}
 
 	public void dispose() {
+		this.getScreen().dispose();
 		spriteBatch.dispose();
 		font.dispose();
 	}

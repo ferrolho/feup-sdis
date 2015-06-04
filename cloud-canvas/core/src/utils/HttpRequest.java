@@ -72,7 +72,9 @@ public class HttpRequest {
 			writer.write(paramName[i]);
 			writer.write("=");
 			writer.write(URLEncoder.encode(paramVal[i], "UTF-8"));
-			writer.write("&");
+			if (i != paramName.length - 1){
+				writer.write("&");
+			}
 		}
 		writer.close();
 		out.close();
