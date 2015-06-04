@@ -64,7 +64,7 @@ public class Listener implements Runnable {
 				switch (command.getType()) {
 				case CURVE:
 					Curve curve = command.getCurve();
-
+					System.out.println("got curve");
 					boolean curveAdded = false;
 					while (!curveAdded) {
 						if (canvasScreen.isRedrawing()) {
@@ -97,7 +97,7 @@ public class Listener implements Runnable {
 							socket.getOutputStream());
 
 					// send curve
-					ArrayList<PeerID> peers = canvasScreen.game.peers;
+					ArrayList<PeerID> peers = (ArrayList<PeerID>) canvasScreen.game.peers.clone();
 					peers.add(new PeerID(Utils.getIPv4(),
 							canvasScreen.game.listenerPort));
 					oos.writeObject(new Command(peers));

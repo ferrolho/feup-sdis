@@ -144,6 +144,8 @@ public class CanvasScreen implements Screen, InputProcessor {
 						// close socket
 						tempsocket.close();
 					}
+				 //joins
+					
 				}
 			} catch (MalformedURLException e) {
 				System.out.println("damn you BOTAS!");
@@ -228,6 +230,17 @@ public class CanvasScreen implements Screen, InputProcessor {
 		bucketImage.dispose();
 		dropSound.dispose();
 		rainMusic.dispose();
+		String[] paramName = { "roomName" };
+		String[] paramVal = {"Sala" };
+		try {
+			new HttpRequest("/canvas/leaveRoom").POST(
+					paramName, paramVal);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("merdou a sair da sala");
+		}
 	}
 
 	boolean ctrlIsBeingPressed = false;
@@ -329,6 +342,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 		drawing.add(currentCurve);
 
 		for (PeerID peerID : game.peers) {
+			System.out.println(peerID.getIP().getHostAddress());
 			try {
 				// open socket
 				Socket socket = new Socket(peerID.getIP(), peerID.getPort());
