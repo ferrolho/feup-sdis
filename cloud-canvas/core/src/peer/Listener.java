@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import screens.CanvasScreen;
 import utils.Curve;
 import utils.Utils;
+
 import commands.Command;
 
 public class Listener implements Runnable {
@@ -78,7 +79,7 @@ public class Listener implements Runnable {
 						} else {
 							// only add curve if not redrawing
 							canvasScreen.drawing.add(curve);
-							curveAdded=true;
+							curveAdded = true;
 						}
 					}
 
@@ -98,7 +99,8 @@ public class Listener implements Runnable {
 							socket.getOutputStream());
 
 					// send curve
-					ArrayList<PeerID> peers = (ArrayList<PeerID>) canvasScreen.game.peers.clone();
+					ArrayList<PeerID> peers = new ArrayList<PeerID>(
+							canvasScreen.game.peers);
 					peers.add(new PeerID(Utils.getIPv4(),
 							canvasScreen.game.listenerPort));
 					oos.writeObject(new Command(peers));
