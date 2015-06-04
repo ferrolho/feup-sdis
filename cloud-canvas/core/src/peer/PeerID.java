@@ -2,6 +2,7 @@ package peer;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.Socket;
 
 public class PeerID implements Serializable {
 
@@ -9,6 +10,8 @@ public class PeerID implements Serializable {
 
 	private InetAddress ip;
 	private int port;
+	// new
+	private Socket socket = null;
 
 	public PeerID(InetAddress ip, int port) {
 		this.ip = ip;
@@ -51,6 +54,24 @@ public class PeerID implements Serializable {
 	@Override
 	public String toString() {
 		return ip + ":" + port;
+	}
+
+	// new
+
+	public Socket getSocket() {
+		return socket;
+	}
+
+	// new
+
+	public boolean isSocketSet() {
+		return socket != null;
+	}
+
+	// new
+
+	public void setSocket(Socket socket) {
+		this.socket = socket;
 	}
 
 }

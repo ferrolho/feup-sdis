@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import launcher.CloudCanvas;
@@ -95,56 +96,9 @@ public class CanvasScreen implements Screen, InputProcessor {
 				String roomsStr = request.GET(Utils.UTF_8);
 
 				if (roomsStr.isEmpty()) {
-					System.out.println("no rooms! creating a new one");
-
-					String[] paramName = { "userIp" };
-					String[] paramVal = { Utils.getIPv4().getHostAddress() };
-
-					String ret = new HttpRequest("/canvas/createRoom").POST(
-							paramName, paramVal);
-
-					System.out.println("RET: " + ret);
+					newRoom();
 				} else {
-					String[] rooms = roomsStr.split("\\s+");
-					System.out.println("Room: " + rooms[0]);
-
-					String ip = rooms[0].split(",")[1];
-					System.out.println("IP: -" + ip + "-");
-
-					{
-						// open socket
-						Socket tempsocket = new Socket(ip, 8008);
-						System.out.println("asking " + ip + " for peers");
-
-						// open streams
-						ObjectOutputStream oos = new ObjectOutputStream(
-								tempsocket.getOutputStream());
-
-						// send curve
-						oos.writeObject(new Command(CommandType.GET_PEERS));
-
-						ObjectInputStream ois = new ObjectInputStream(
-								tempsocket.getInputStream());
-
-						try {
-							Command command = (Command) ois.readObject();
-							System.out.println("TEST: " + command.getType());
-
-							game.peers = command.getPeers();
-							System.out.println("22Peers received: "
-									+ game.peers);
-						} catch (ClassNotFoundException e) {
-							e.printStackTrace();
-						}
-
-						// close stream
-						oos.close();
-						ois.close();
-
-						// close socket
-						tempsocket.close();
-					}
-					// joins
+					joinRoom(game, roomsStr);
 
 				}
 			} catch (MalformedURLException e) {
@@ -158,6 +112,75 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		new Thread(new Listener(this)).start();
 
+	}
+
+	// new
+	private void joinRoom(final CloudCanvas game, String roomsStr)
+			throws UnknownHostException, IOException {
+		String[] rooms = roomsStr.split("\\s+");
+		System.out.println("Room: " + rooms[0]);
+
+		String ip = rooms[0].split(",")[1];
+		System.out.println("IP: -" + ip + "-");
+
+		{
+			// open socket
+			Socket tempsocket = new Socket(ip, 8008);
+			System.out.println("asking " + ip + " for peers");
+
+			// open streams
+			ObjectOutputStream oos = new ObjectOutputStream(
+					tempsocket.getOutputStream());
+
+			// send curve
+			oos.writeObject(new Command(CommandType.GET_PEERS));
+
+			ObjectInputStream ois = new ObjectInputStream(
+					tempsocket.getInputStream());
+
+			try {
+				Command command = (Command) ois.readObject();
+				System.out.println("TEST: " + command.getType());
+
+				game.peers = command.getPeers();
+				System.out.println("22Peers received: " + game.peers);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+
+			// close stream
+			oos.close();
+			ois.close();
+
+			// close socket
+			tempsocket.close();
+		}
+		// joins
+	}
+
+	// new
+	private void newRoom() throws IOException, MalformedURLException {
+		System.out.println("no rooms! creating a new one");
+
+		String[] paramName = { "userIp" };
+		String[] paramVal = { Utils.getIPv4().getHostAddress() };
+
+		String ret = new HttpRequest("/canvas/createRoom").POST(paramName,
+				paramVal);
+
+		System.out.println("RET: " + ret);
+	}
+
+	private void closeSockets() {
+		for (PeerID peerID : game.peers) {
+			if (peerID.isSocketSet()) {
+				try {
+					peerID.getSocket().close();
+				} catch (IOException e) {
+					System.out.println("failed to close socket at end");
+				}
+			}
+		}
 	}
 
 	private void positionCamera() {
@@ -231,7 +254,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 		bucketImage.dispose();
 		dropSound.dispose();
 		rainMusic.dispose();
-
+		closeSockets();
 		String[] paramName = { "roomName" };
 		String[] paramVal = { "Sala" };
 		try {
