@@ -17,7 +17,6 @@ public class Command implements Serializable {
 	private String originIP;
 
 	private Curve curve;
-	private Peer peer;
 	private ArrayList<Peer> peers;
 	public ArrayList<Curve> drawing;
 
@@ -25,14 +24,6 @@ public class Command implements Serializable {
 		this.type = type;
 
 		addIP();
-	}
-
-	public Command(Peer peer) {
-		this.type = CommandType.JOIN;
-
-		addIP();
-
-		this.peer = peer;
 	}
 
 	public Command(ArrayList<Peer> peers) {
@@ -69,10 +60,6 @@ public class Command implements Serializable {
 
 	public Curve getCurve() {
 		return curve;
-	}
-
-	public Peer getPeer() {
-		return peer;
 	}
 
 	public ArrayList<Peer> getPeers() {

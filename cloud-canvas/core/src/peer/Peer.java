@@ -14,16 +14,12 @@ public class Peer implements Serializable {
 	private int port;
 
 	private Socket socket;
-	public ObjectInputStream ois;
 	public ObjectOutputStream oos;
+	public ObjectInputStream ois;
 
-	public Peer(String ip) throws IOException {
+	public Peer(String ip) {
 		this.ip = ip;
 		this.port = 8008;
-
-		socket = new Socket(ip, port);
-		ois = new ObjectInputStream(socket.getInputStream());
-		oos = new ObjectOutputStream(socket.getOutputStream());
 	}
 
 	public String getIP() {
@@ -34,11 +30,17 @@ public class Peer implements Serializable {
 		return port;
 	}
 
+	public void createNetworkData() throws IOException {
+		socket = new Socket(ip, port);
+		oos = new ObjectOutputStream(socket.getOutputStream());
+		ois = new ObjectInputStream(socket.getInputStream());
+	}
+
 	public void setNetworkData(Socket socket, ObjectInputStream ois,
 			ObjectOutputStream oos) {
 		this.socket = socket;
-		this.ois = ois;
 		this.oos = oos;
+		this.ois = ois;
 	}
 
 	public Socket getSocket() {

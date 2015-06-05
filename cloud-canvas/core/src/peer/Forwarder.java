@@ -18,8 +18,9 @@ public class Forwarder {
 
 	public void sendJOIN(String ip) throws IOException {
 		Peer host = new Peer(ip);
+		host.createNetworkData();
 
-		host.oos.writeObject(new Command(host));
+		host.oos.writeObject(new Command(CommandType.JOIN));
 		Utils.log("Sent JOIN");
 
 		canvasScreen.game.peers.add(host);

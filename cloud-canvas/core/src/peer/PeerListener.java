@@ -78,13 +78,12 @@ public class PeerListener implements Runnable {
 		}
 	}
 
-	private void handleJoin(Command command) {
+	private void handleJoin(Command command) throws IOException {
 		Utils.log("Received JOIN");
 
 		// read peer received with the command
 		// note: this peer does not have a socket, ois, and oos set yet
-		Peer peer = command.getPeer();
-
+		Peer peer = new Peer(command.getOriginIP());
 		peer.setNetworkData(socket, ois, oos);
 
 		canvasScreen.game.peers.add(peer);
