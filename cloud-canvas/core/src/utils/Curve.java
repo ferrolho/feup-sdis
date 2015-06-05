@@ -39,6 +39,8 @@ public class Curve implements Serializable {
 
 	public void finish() {
 		date = new Date();
+
+		Utils.log("Curve timestamp: " + date.toString());
 	}
 
 	public Date getDate() {
