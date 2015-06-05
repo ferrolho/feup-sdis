@@ -12,7 +12,7 @@
 4. [Informações relevantes](#info)
 2. [Conclusão](#conc)
 
-#intro
+## intro
 ##Introdução##
 
 A aplicação desenvolvida procura oferecer aos seus utilizadores uma aplicação de desenho colaborativo para multi-plataformas 
@@ -27,9 +27,9 @@ ao mesmo tempo.
 Este relatório abrangirá a arquitetura da nossa aplicação, bem como as nossas decisões de implementação, informações que achamos
 relevantes transmitir e conclusão.
 
-#arquitetura
+## arquitetura
 ##Arquitetura##
-#serv
+## serv
 ####Servidor HTTP####
 *IMAGEM ppt que o ferrlho usou para se lembra do que estava a acontecer*
 
@@ -46,14 +46,14 @@ O servidor responde adequadamente com os códigos de resposta HTTP:
 - 404 quando acedida qualquer file ip/canvas/… que não seja valido
 
 O servidor corre numa VPS criada com host pela DigitalOcean, pelo que o seu ip nos HTTPRequest enviados pela aplicação está afixado para esse ip/porta/protocolo;
-#tcpp2p
+## tcpp2p
 ####TCP *Peer-to-peer*####
 Optamos por implementar a comunicação na nossa aplicação de desenho entre os utilizadores com uma rede *peer-to-peer* com 
 ligações TCP em que os *peers* se encontram todos ligados uns aos outros.
 
 Cada *peer* contém um server socket por onde aceita conexões novas e um socket por cada *peer* a que se encontra conectado.
 
-#compeers
+## compeers
 ####Comunicação entre *peers*####
 A comunicação entre *peers* é feita pelo envio de objectos que contêm um dos 6 tipos:
 - **JOIN:** A mensagem JOIN é enviada quando um *peer* se junta à sala de forma a avisar todos os *peers* que ele se juntou;
@@ -72,13 +72,13 @@ Os sockets que establecem a ligação entre *peers* são criados quando o server
 uma mensagem JOIN, e a partir daí a comunicação entre esses 2 *peers* é feita exclusivamente por essa conexão
 Os *peers* recebem notificações de que os outros *peers* se retiram pela quebra no socket que os liga.
 
-#imp
+## imp
 ##Implementação##
 
-#info
+## info
 ##Informações relevantes##
 
-#conc
+## conc
 ##Conclusão##
 
 
