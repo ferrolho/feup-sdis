@@ -10,7 +10,8 @@
   3. Comunicação entre *peers*
 3. Implementação
 4. Informações relevantes
-2. Conclusão
+5. Conclusão
+  1.Melhoramentos
 
 
 ##Introdução##
@@ -80,5 +81,9 @@ Os *peers* recebem notificações de que os outros *peers* se retiram pela quebr
 
 
 ##Conclusão##
+
+####Melhoramentos####
+- Alargar para uma aplicação que não se restringa a uma lan, utilizando hole-poking para realizar ligações TCP peer-to-peer*;
+- Deixar o utilizador escolher as salas e criar as salas que quiser pois o servidor já está a permitir isso;
 
 
