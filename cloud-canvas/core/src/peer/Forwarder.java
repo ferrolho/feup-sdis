@@ -25,6 +25,10 @@ public class Forwarder {
 
 		canvasScreen.game.peers.add(host);
 		Utils.log("Added host to peers array");
+		Utils.log("Current peers array: " + canvasScreen.game.peers);
+
+		Utils.log("Creating PeerListener for the peer we just sent the JOIN to.");
+		new Thread(new PeerListener(canvasScreen, host.getSocket())).start();
 	}
 
 	public void sendGET_PEERS() throws IOException {
