@@ -101,20 +101,16 @@ public class PeerListener implements Runnable {
 	}
 
 	private void handleGetPeers() throws IOException {
-		// open socket
-		// String tempIP = command.getOriginIP();
-		// System.out.println(tempIP);
-		// Socket tempsocket = new Socket(tempIP, 8008);
-		System.out.println(socket.getInetAddress().getHostAddress());
-
-		// open streams
-
-		// send curve
+		// copy current peers to new array
 		ArrayList<PeerID> peers = new ArrayList<PeerID>(canvasScreen.game.peers);
+
+		// add this peer to the peers array to be sent
 		peers.add(new PeerID(Utils.getIPv4(), canvasScreen.game.listenerPort));
+
+		// send peers array
 		oos.writeObject(new Command(peers));
 
-		System.out.println("peers sent");
+		Utils.log("Peers sent to " + socket.getInetAddress().getHostAddress());
 	}
 
 	private void handleJoin(Command command) {

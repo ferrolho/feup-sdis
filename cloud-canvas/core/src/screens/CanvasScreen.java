@@ -126,6 +126,8 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		// TODO change to JOIN
 		oos.writeObject(new Command(CommandType.GET_PEERS));
+		oos.flush();
+		
 		Utils.log("GET_PEERS sent");
 
 		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
