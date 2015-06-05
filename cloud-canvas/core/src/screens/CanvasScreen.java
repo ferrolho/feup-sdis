@@ -77,6 +77,8 @@ public class CanvasScreen implements Screen, InputProcessor {
 	}
 
 	private void initPeerNetwork() {
+		new Thread(new NewPeerListener(this)).start();
+		
 		try {
 			HTTPRequest request = new HTTPRequest("/canvas/getRoomList");
 			String responseStr = request.GET(Utils.UTF_8);
@@ -99,11 +101,9 @@ public class CanvasScreen implements Screen, InputProcessor {
 			System.err
 					.println("CanvasScreen.initPeerNetwork - MalformedURLException");
 		} catch (IOException e) {
-			System.out.println("CanvasScreen.initPeerNetwork - IOException");
 			e.printStackTrace();
+			System.out.println("CanvasScreen.initPeerNetwork - IOException");
 		}
-
-		new Thread(new NewPeerListener(this)).start();
 	}
 
 	private void createRoom() throws IOException, MalformedURLException {
@@ -126,6 +126,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		// TODO change to JOIN
 		oos.writeObject(new Command(CommandType.GET_PEERS));
+		Utils.log("GET_PEERS sent");
 
 		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 

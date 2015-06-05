@@ -30,7 +30,7 @@ public class PeerListener implements Runnable {
 			ois = new ObjectInputStream(socket.getInputStream());
 			oos = new ObjectOutputStream(socket.getOutputStream());
 
-			boolean done = true;
+			boolean done = false;
 			while (!done)
 				listen();
 

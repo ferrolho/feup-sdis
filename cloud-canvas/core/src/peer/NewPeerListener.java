@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import screens.CanvasScreen;
+import utils.Utils;
 
 public class NewPeerListener implements Runnable {
 
@@ -36,10 +37,12 @@ public class NewPeerListener implements Runnable {
 		while (!done) {
 			new Thread(new PeerListener(canvasScreen, serverSocket.accept()))
 					.start();
+			Utils.log("serverSocket.accept()");
 		}
 
 		serverSocket.close();
 
 		System.out.println("Server terminated.");
 	}
+
 }
