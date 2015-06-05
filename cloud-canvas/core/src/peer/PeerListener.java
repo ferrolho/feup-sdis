@@ -75,6 +75,10 @@ public class PeerListener implements Runnable {
 				handlePullDrawing(command);
 				break;
 
+			case DRAWING:
+				handleDrawing(command);
+				break;
+
 			case CURVE:
 				handleCurve(command);
 				break;
@@ -135,13 +139,34 @@ public class PeerListener implements Runnable {
 		Utils.log("Resultant peers array: " + canvasScreen.game.peers);
 	}
 
-	private void handlePullDrawing(Command command) {
+	private void handlePullDrawing(Command command) throws IOException {
+		Utils.log("Received PULL_DRAWING");
+
+		Peer destinyPeer = null;
+
+		for (Peer peer : canvasScreen.game.peers) {
+			if (peer.getIP().equals(destinyPeer)) {
+				destinyPeer = peer;
+				break;
+			}
+		}
+
+		if (destinyPeer != null)
+			canvasScreen.forwarder.sendDRAWING(canvasScreen.drawing,
+					destinyPeer);
+		else
+			Utils.log("handlePullDrawing could not find the destiny peer to send the drawing.");
+	}
+
+	private void handleDrawing(Command command) {
+		Utils.log("Received DRAWING");
+
 		canvasScreen.drawing = command.getDrawing();
 	}
 
 	private void handleCurve(Command command) {
 		Curve curve = command.getCurve();
-		Utils.log("got curve");
+		Utils.log("Received CURVE");
 
 		boolean curveAdded = false;
 		while (!curveAdded) {

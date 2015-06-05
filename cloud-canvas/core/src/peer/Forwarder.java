@@ -1,6 +1,7 @@
 package peer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import screens.CanvasScreen;
 import utils.Curve;
@@ -36,6 +37,21 @@ public class Forwarder {
 
 		host.oos.writeObject(new Command(CommandType.GET_PEERS));
 		Utils.log("Sent GET_PEERS");
+	}
+
+	public void sendPULL_DRAWING() throws IOException {
+		int randomPeerIndex = Utils.random.nextInt(canvasScreen.game.peers
+				.size());
+
+		Peer randomPeer = canvasScreen.game.peers.get(randomPeerIndex);
+
+		randomPeer.oos.writeObject(new Command(CommandType.PULL_DRAWING));
+		Utils.log("Sent PULL_DRAWING");
+	}
+
+	public void sendDRAWING(ArrayList<Curve> drawing, Peer peer)
+			throws IOException {
+		peer.oos.writeObject(new Command(canvasScreen.drawing, 1));
 	}
 
 	public void sendCURVE(Curve currentCurve, Peer peer) {

@@ -95,6 +95,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 				forwarder.sendJOIN(ip);
 				forwarder.sendGET_PEERS();
+				forwarder.sendPULL_DRAWING();
 			}
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
