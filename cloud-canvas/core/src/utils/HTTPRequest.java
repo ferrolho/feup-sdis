@@ -13,10 +13,10 @@ import java.net.URLEncoder;
 
 import utils.Utils;
 
-public class HttpRequest {
+public class HTTPRequest {
 	private URL url;
 
-	public HttpRequest(String file) throws MalformedURLException {
+	public HTTPRequest(String file) throws MalformedURLException {
 		//this.url = new URL("http", "46.101.171.164", 8000, file);
 		this.url = new URL("http", "192.168.2.156", 8000, file);
 	}

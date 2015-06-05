@@ -12,15 +12,13 @@ import launcher.CloudCanvas;
 import peer.Listener;
 import peer.PeerID;
 import utils.Curve;
-import utils.HttpRequest;
+import utils.HTTPRequest;
 import utils.Utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -28,25 +26,17 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-
 import commands.Command;
 import commands.CommandType;
 
 public class CanvasScreen implements Screen, InputProcessor {
 
-	// TODO change this
 	private int CANVAS_WIDTH = 400;
 	private int CANVAS_HEIGHT = 400;
 
 	public final CloudCanvas game;
 
 	private OrthographicCamera camera;
-
-	private Texture dropImage;
-	private Texture bucketImage;
-
-	private Sound dropSound;
-	private Music rainMusic;
 
 	public Pixmap pixmap;
 	public Texture texture;
@@ -67,14 +57,6 @@ public class CanvasScreen implements Screen, InputProcessor {
 		viewportWidth = Gdx.graphics.getWidth();
 		viewportHeight = Gdx.graphics.getHeight();
 
-		dropImage = new Texture(Gdx.files.internal("droplet.png"));
-		bucketImage = new Texture(Gdx.files.internal("bucket.png"));
-
-		dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
-		rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
-		rainMusic.setVolume(0.5f);
-		rainMusic.setLooping(true);
-
 		pixmap = new Pixmap(CANVAS_WIDTH, CANVAS_HEIGHT, Format.RGBA8888);
 		pixmap.setColor(1, 1, 1, 1);
 		pixmap.fillRectangle(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -92,7 +74,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		{
 			try {
-				HttpRequest request = new HttpRequest("/canvas/getRoomList");
+				HTTPRequest request = new HTTPRequest("/canvas/getRoomList");
 				String roomsStr = request.GET(Utils.UTF_8);
 
 				if (roomsStr.isEmpty()) {
@@ -165,7 +147,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 		String[] paramName = { "userIp" };
 		String[] paramVal = { Utils.getIPv4().getHostAddress() };
 
-		String ret = new HttpRequest("/canvas/createRoom").POST(paramName,
+		String ret = new HTTPRequest("/canvas/createRoom").POST(paramName,
 				paramVal);
 
 		System.out.println("RET: " + ret);
@@ -232,7 +214,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 	public void show() {
 		// start the playback of the background music
 		// when the screen is shown
-		rainMusic.play();
+		// rainMusic.play();
 	}
 
 	@Override
@@ -249,16 +231,13 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public void dispose() {
-		System.out.println("left room");
-		dropImage.dispose();
-		bucketImage.dispose();
-		dropSound.dispose();
-		rainMusic.dispose();
 		closeSockets();
+
 		String[] paramName = { "roomName" };
 		String[] paramVal = { "Sala" };
 		try {
-			new HttpRequest("/canvas/leaveRoom").POST(paramName, paramVal);
+			new HTTPRequest("/canvas/leaveRoom").POST(paramName, paramVal);
+			System.out.println("left room");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
