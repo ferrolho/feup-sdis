@@ -2,7 +2,6 @@ package utils;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -40,10 +39,10 @@ public class Curve implements Serializable {
 	}
 
 	public void finish() throws IOException {
-		date = new Date();
 		HTTPRequest request = new HTTPRequest("/canvas/getTime");
 		String responseStr = request.GET(Utils.UTF_8);
-		Utils.log(responseStr);
+		date = new Date(Long.parseLong(responseStr));
+
 		Utils.log("Curve timestamp: " + date.toString());
 	}
 
