@@ -17,8 +17,7 @@ public class HTTPRequest {
 	private URL url;
 
 	public HTTPRequest(String file) throws MalformedURLException {
-		//this.url = new URL("http", "46.101.171.164", 8000, file);
-		this.url = new URL("http", "192.168.2.156", 8000, file);
+		this.url = new URL("http", "46.101.171.164", 8000, file);
 	}
 
 	public String GET(String charset) throws IOException {
@@ -73,7 +72,7 @@ public class HTTPRequest {
 			writer.write(paramName[i]);
 			writer.write("=");
 			writer.write(URLEncoder.encode(paramVal[i], "UTF-8"));
-			if (i != paramName.length - 1){
+			if (i != paramName.length - 1) {
 				writer.write("&");
 			}
 		}

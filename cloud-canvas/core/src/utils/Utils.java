@@ -44,5 +44,9 @@ public class Utils {
 
 		return packet.getAddress();
 	}
+	
+	public static void log(String message) {
+		System.out.println("LOG: " + message);
+	}
 
 }

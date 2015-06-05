@@ -64,7 +64,7 @@ public class PeerID implements Serializable {
 
 	// new
 
-	public boolean isSocketSet() {
+	public boolean socketIsSet() {
 		return socket != null;
 	}
 
