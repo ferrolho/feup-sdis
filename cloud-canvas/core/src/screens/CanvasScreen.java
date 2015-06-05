@@ -140,8 +140,11 @@ public class CanvasScreen implements Screen, InputProcessor {
 		game.spriteBatch.setProjectionMatrix(camera.combined);
 
 		if (redraw) {
-			for (Curve curve : drawing)
-				curve.draw(pixmap);
+			synchronized (drawingLock) {
+				for (Curve curve : drawing)
+					curve.draw(pixmap);
+			}
+
 			texture.draw(pixmap, 0, 0);
 
 			redraw = false;
