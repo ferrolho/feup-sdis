@@ -170,8 +170,18 @@ public class PeerListener implements Runnable {
 		Curve curve = command.getCurve();
 		Utils.log("Received CURVE");
 
+		int destIndex = canvas.drawing.size();
+
+		while (destIndex > 0) {
+			if (curve.getDate().before(
+					canvas.drawing.get(destIndex - 1).getDate()))
+				destIndex--;
+			else
+				break;
+		}
+
 		synchronized (canvas.drawingLock) {
-			canvas.drawing.add(curve);
+			canvas.drawing.add(destIndex, curve);
 		}
 
 		canvas.scheduleRedraw();

@@ -2,6 +2,7 @@ package utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.MathUtils;
@@ -14,6 +15,8 @@ public class Curve implements Serializable {
 
 	ArrayList<Vector2> vertices;
 	Vector3 color;
+
+	Date date;
 
 	public Curve() {
 		vertices = new ArrayList<Vector2>();
@@ -32,6 +35,14 @@ public class Curve implements Serializable {
 		for (int i = 0, j = 1; j < vertices.size(); i++, j++)
 			pixmap.drawLine((int) vertices.get(i).x, (int) vertices.get(i).y,
 					(int) vertices.get(j).x, (int) vertices.get(j).y);
+	}
+
+	public void finish() {
+		date = new Date();
+	}
+
+	public Date getDate() {
+		return date;
 	}
 
 }

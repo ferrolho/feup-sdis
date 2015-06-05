@@ -192,6 +192,9 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public void dispose() {
+		pixmap.dispose();
+		texture.dispose();
+		
 		closeSockets();
 
 		String[] paramName = { "roomName" };
@@ -312,6 +315,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		currentCurve.finish();
 		drawing.add(currentCurve);
 
 		for (Peer peer : peers) {
