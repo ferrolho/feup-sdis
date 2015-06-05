@@ -76,8 +76,14 @@ Os *peers* recebem notificações de que os outros *peers* se retiram pela quebr
 
 ##Implementação##
 
+O servidor http foi implementado com apoio a classe de java do sun HTTPServer e HTTPHandler.Este responde aos varios pedidos feitos atraves de varias instancias da thread Handler.
+
+O implementação TCP peer-to-peer é feita tendo um ServerSocket que aceita as novas conecções e um socket qe se guarda de pois do accept() do ServerSocket
+
 
 ##Informações relevantes##
+
+Foram implementadas escabilidade e consistencia na nossa arquitectura de forma a o desenho na sala ser sempre igual para todos os peer sejam qual for o numero do mesmo
 
 
 ##Conclusão##
