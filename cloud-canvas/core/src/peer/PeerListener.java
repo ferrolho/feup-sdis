@@ -161,7 +161,22 @@ public class PeerListener implements Runnable {
 	private void handleDrawing(Command command) {
 		Utils.log("Received DRAWING");
 
-		canvasScreen.drawing = command.getDrawing();
+		boolean drawingSaved = false;
+		while (!drawingSaved) {
+			// only save drawing if not redrawing
+			if (canvasScreen.isRedrawing()) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else {
+				canvasScreen.drawing = command.getDrawing();
+				drawingSaved = true;
+			}
+		}
+
+		canvasScreen.scheduleRedraw();
 	}
 
 	private void handleCurve(Command command) {
