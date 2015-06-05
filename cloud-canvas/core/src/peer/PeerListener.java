@@ -145,7 +145,7 @@ public class PeerListener implements Runnable {
 		Peer destinyPeer = null;
 
 		for (Peer peer : canvasScreen.game.peers) {
-			if (peer.getIP().equals(destinyPeer)) {
+			if (peer.getIP().equals(command.getOriginIP())) {
 				destinyPeer = peer;
 				break;
 			}
