@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import screens.CanvasScreen;
 import utils.Curve;
 import utils.Utils;
+
 import commands.Command;
 
 public class PeerListener implements Runnable {
@@ -92,20 +93,28 @@ public class PeerListener implements Runnable {
 	}
 
 	private void handleGetPeers() throws IOException {
+		ArrayList<String> peersIP = new ArrayList<String>();
+
 		// copy current peers to new array
-		ArrayList<Peer> peers = new ArrayList<Peer>(canvasScreen.game.peers);
+		for (Peer peer : canvasScreen.game.peers)
+			peersIP.add(peer.getIP());
 
 		// send peers array
-		oos.writeObject(new Command(peers));
+		oos.writeObject(new Command(peersIP));
 
 		Utils.log("Peers sent to " + socket.getInetAddress().getHostAddress());
 	}
 
-	private void handlePeers(Command command) {
-		Utils.log("Peers received: " + command.getPeers());
+	private void handlePeers(Command command) throws IOException {
+		Utils.log("Peers received: " + command.getPeersIP());
 
 		// save the received array of peers
-		canvasScreen.game.peers.addAll(command.getPeers());
+		for (String peerIP : command.getPeersIP()) {
+			Peer peer = new Peer(peerIP);
+			peer.createNetworkData();
+
+			canvasScreen.game.peers.add(peer);
+		}
 
 		Utils.log("Resultant peers array: " + canvasScreen.game.peers);
 	}

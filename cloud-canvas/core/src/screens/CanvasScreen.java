@@ -309,7 +309,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 		drawing.add(currentCurve);
 
 		for (Peer peer : game.peers) {
-			Utils.log("Sending CURVE to" + peer.getIP());
+			Utils.log("Sending CURVE to " + peer.getIP());
 
 			forwarder.sendCURVE(currentCurve, peer);
 		}

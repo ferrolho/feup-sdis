@@ -50,7 +50,7 @@ public class Peer implements Serializable {
 	public boolean socketIsSet() {
 		return socket != null;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
