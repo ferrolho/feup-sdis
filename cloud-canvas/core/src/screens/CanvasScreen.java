@@ -121,32 +121,26 @@ public class CanvasScreen implements Screen, InputProcessor {
 	private void joinRoom(String ip) throws UnknownHostException, IOException {
 		Socket socket = new Socket(ip, 8008);
 
-		{
-			ObjectOutputStream oos = new ObjectOutputStream(
-					socket.getOutputStream());
+		ObjectOutputStream oos = new ObjectOutputStream(
+				socket.getOutputStream());
 
-			// TODO change to JOIN
-			oos.writeObject(new Command(CommandType.GET_PEERS));
+		// TODO change to JOIN
+		oos.writeObject(new Command(CommandType.GET_PEERS));
 
-			oos.close();
+		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+
+		try {
+			Command command = (Command) ois.readObject();
+			Utils.log("TEST: " + command.getType());
+
+			game.peers = command.getPeers();
+			Utils.log("22Peers received: " + game.peers);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 
-		{
-			ObjectInputStream ois = new ObjectInputStream(
-					socket.getInputStream());
-
-			try {
-				Command command = (Command) ois.readObject();
-				Utils.log("TEST: " + command.getType());
-
-				game.peers = command.getPeers();
-				Utils.log("22Peers received: " + game.peers);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-
-			ois.close();
-		}
+		oos.close();
+		ois.close();
 
 		socket.close();
 	}
@@ -232,10 +226,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 	}
 
 	private void closeSockets() {
-		for (PeerID peerID : game.peers) {
-			if (peerID.socketIsSet()) {
+		for (PeerID peer : game.peers) {
+			if (peer.socketIsSet()) {
 				try {
-					peerID.getSocket().close();
+					peer.getSocket().close();
 				} catch (IOException e) {
 					System.out.println("failed to close socket at end");
 				}

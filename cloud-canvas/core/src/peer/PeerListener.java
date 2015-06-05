@@ -17,6 +17,7 @@ public class PeerListener implements Runnable {
 
 	private Socket socket;
 	private ObjectInputStream ois;
+	private ObjectOutputStream oos;
 
 	public PeerListener(CanvasScreen canvasScreen, Socket socket) {
 		this.canvasScreen = canvasScreen;
@@ -27,12 +28,14 @@ public class PeerListener implements Runnable {
 	public void run() {
 		try {
 			ois = new ObjectInputStream(socket.getInputStream());
+			oos = new ObjectOutputStream(socket.getOutputStream());
 
 			boolean done = true;
 			while (!done)
 				listen();
 
 			ois.close();
+			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Handler.handle");
@@ -105,19 +108,12 @@ public class PeerListener implements Runnable {
 		System.out.println(socket.getInetAddress().getHostAddress());
 
 		// open streams
-		ObjectOutputStream oos = new ObjectOutputStream(
-				socket.getOutputStream());
 
 		// send curve
 		ArrayList<PeerID> peers = new ArrayList<PeerID>(canvasScreen.game.peers);
 		peers.add(new PeerID(Utils.getIPv4(), canvasScreen.game.listenerPort));
 		oos.writeObject(new Command(peers));
 
-		// close stream
-		oos.close();
-
-		// close socket
-		// tempsocket.close();
 		System.out.println("peers sent");
 	}
 
