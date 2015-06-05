@@ -315,7 +315,12 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		currentCurve.finish();
+		try {
+			currentCurve.finish();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		drawing.add(currentCurve);
 
 		for (Peer peer : peers) {

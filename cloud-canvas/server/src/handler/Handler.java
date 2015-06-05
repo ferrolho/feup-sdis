@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
+import java.util.Date;
 
 import server.Server;
 
@@ -35,11 +36,19 @@ public class Handler implements HttpHandler {
 		case "createRoom":
 			handleCreateRoom(t);
 			break;
+		case "getTime":
+			handleTime(t);
+			break;
 		default:
 			sendResponse(t, 404, "nothing at all");
 			break;
 		}
 
+	}
+
+	private void handleTime(HttpExchange t) throws IOException {
+		sendResponse(t, 200,""+ new Date().getTime() );
+		
 	}
 
 	private void handleCreateRoom(HttpExchange t) {
