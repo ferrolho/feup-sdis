@@ -36,7 +36,8 @@ public class CanvasScreen implements Screen, InputProcessor {
 	public Pixmap pixmap;
 	public Texture texture;
 
-	public volatile ArrayList<Curve> drawing;
+	public ArrayList<Curve> drawing;
+	public Object drawingLock;
 	private Curve currentCurve;
 
 	private Vector3 lastTouchPos, touchPos;
@@ -61,6 +62,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 		texture = new Texture(pixmap, true);
 
 		drawing = new ArrayList<Curve>();
+		drawingLock = new Object();
 		currentCurve = new Curve();
 
 		touchPos = new Vector3();
@@ -142,18 +144,13 @@ public class CanvasScreen implements Screen, InputProcessor {
 				curve.draw(pixmap);
 			texture.draw(pixmap, 0, 0);
 
-			tempsync();
+			redraw = false;
 		}
 
 		// draw the canvas with the drawing
 		game.spriteBatch.begin();
 		game.spriteBatch.draw(texture, 0, 0);
 		game.spriteBatch.end();
-	}
-
-	private synchronized void tempsync() {
-		redraw = false;
-		notifyAll();
 	}
 
 	@Override
