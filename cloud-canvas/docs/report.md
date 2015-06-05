@@ -84,9 +84,12 @@ O implementação TCP peer-to-peer é feita tendo um ServerSocket que aceita as 
 ##Informações relevantes##
 
 Foram implementadas escabilidade e consistencia na nossa arquitectura de forma a o desenho na sala ser sempre igual para todos os peer sejam qual for o numero do mesmo
+A consistencia é garantida por um timestamp que é recolhido do servidor HTTP
 
 
 ##Conclusão##
+Compreendemos melhor a necessidade do estudo e cuidado na escolha da implementação da arquitectura e dos protocolos, e achamos que conseguimos um bom trabalho neste aspecto pelo que conseguimos um trabalho rapido e eficaz.
+Os membros do grupo trabalharam em conjunto tanto no planeamento como na implementação, e dividimos o nosso esforço igualmente em 25% cada
 
 ####Melhoramentos####
 - Alargar para uma aplicação que não se restringa a uma lan, utilizando hole-poking para realizar ligações TCP peer-to-peer*;
