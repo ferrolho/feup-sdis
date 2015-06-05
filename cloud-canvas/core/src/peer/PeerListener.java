@@ -119,10 +119,17 @@ public class PeerListener implements Runnable {
 
 		// save the received array of peers
 		for (String peerIP : command.getPeersIP()) {
+			if (peerIP.equals(Utils.getIPv4().getHostAddress()))
+				continue;
+
 			Peer peer = new Peer(peerIP);
 			peer.createNetworkData();
 
+			// add to peers array
 			canvasScreen.game.peers.add(peer);
+
+			// send JOIN
+			canvasScreen.forwarder.sendJOIN(peerIP);
 		}
 
 		Utils.log("Resultant peers array: " + canvasScreen.game.peers);
