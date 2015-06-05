@@ -14,15 +14,14 @@ import commands.Command;
 
 public class PeerListener implements Runnable {
 
-	private final CanvasScreen canvasScreen;
+	private final CanvasScreen canvas;
 
 	private Socket socket;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
-	public PeerListener(CanvasScreen canvasScreen, Socket socket)
-			throws IOException {
-		this.canvasScreen = canvasScreen;
+	public PeerListener(CanvasScreen canvas, Socket socket) throws IOException {
+		this.canvas = canvas;
 
 		this.socket = socket;
 		ois = new ObjectInputStream(socket.getInputStream());
@@ -30,7 +29,7 @@ public class PeerListener implements Runnable {
 	}
 
 	public PeerListener(CanvasScreen canvasScreen, Peer host) {
-		this.canvasScreen = canvasScreen;
+		this.canvas = canvasScreen;
 
 		this.socket = host.getSocket();
 		ois = host.ois;
@@ -100,7 +99,7 @@ public class PeerListener implements Runnable {
 		Peer peer = new Peer(command.getOriginIP());
 		peer.setNetworkData(socket, ois, oos);
 
-		canvasScreen.game.peers.add(peer);
+		canvas.peers.add(peer);
 
 		Utils.log("Peer " + peer + " added");
 	}
@@ -109,7 +108,7 @@ public class PeerListener implements Runnable {
 		ArrayList<String> peersIP = new ArrayList<String>();
 
 		// copy current peers to new array
-		for (Peer peer : canvasScreen.game.peers)
+		for (Peer peer : canvas.peers)
 			peersIP.add(peer.getIP());
 
 		// send peers array
@@ -130,13 +129,13 @@ public class PeerListener implements Runnable {
 			peer.createNetworkData();
 
 			// add to peers array
-			canvasScreen.game.peers.add(peer);
+			canvas.peers.add(peer);
 
 			// send JOIN
-			canvasScreen.forwarder.sendJOIN(peerIP);
+			canvas.forwarder.sendJOIN(peerIP);
 		}
 
-		Utils.log("Resultant peers array: " + canvasScreen.game.peers);
+		Utils.log("Resultant peers array: " + canvas.peers);
 	}
 
 	private void handlePullDrawing(Command command) throws IOException {
@@ -144,7 +143,7 @@ public class PeerListener implements Runnable {
 
 		Peer destinyPeer = null;
 
-		for (Peer peer : canvasScreen.game.peers) {
+		for (Peer peer : canvas.peers) {
 			if (peer.getIP().equals(command.getOriginIP())) {
 				destinyPeer = peer;
 				break;
@@ -152,8 +151,7 @@ public class PeerListener implements Runnable {
 		}
 
 		if (destinyPeer != null)
-			canvasScreen.forwarder.sendDRAWING(canvasScreen.drawing,
-					destinyPeer);
+			canvas.forwarder.sendDRAWING(canvas.drawing, destinyPeer);
 		else
 			Utils.log("handlePullDrawing could not find the destiny peer to send the drawing.");
 	}
@@ -161,21 +159,22 @@ public class PeerListener implements Runnable {
 	private void handleDrawing(Command command) {
 		Utils.log("Received DRAWING");
 
-		synchronized (canvasScreen.drawingLock) {
-			canvasScreen.drawing = command.getDrawing();
+		synchronized (canvas.drawingLock) {
+			canvas.drawing = command.getDrawing();
 		}
 
-		canvasScreen.scheduleRedraw();
+		canvas.scheduleRedraw();
 	}
 
 	private void handleCurve(Command command) {
 		Curve curve = command.getCurve();
 		Utils.log("Received CURVE");
 
-		synchronized (canvasScreen.drawingLock) {
-			canvasScreen.drawing.add(curve);
+		synchronized (canvas.drawingLock) {
+			canvas.drawing.add(curve);
 		}
 
-		canvasScreen.scheduleRedraw();
+		canvas.scheduleRedraw();
 	}
+
 }

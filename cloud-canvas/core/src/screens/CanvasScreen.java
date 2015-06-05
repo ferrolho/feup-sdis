@@ -26,11 +26,12 @@ import com.badlogic.gdx.math.Vector3;
 
 public class CanvasScreen implements Screen, InputProcessor {
 
-	private int CANVAS_WIDTH = 400;
+	private int CANVAS_WIDTH = 600;
 	private int CANVAS_HEIGHT = 400;
 
 	public final CloudCanvas game;
 
+	private int viewportWidth, viewportHeight;
 	private OrthographicCamera camera;
 
 	public Pixmap pixmap;
@@ -38,13 +39,15 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	public ArrayList<Curve> drawing;
 	public Object drawingLock;
-	private Curve currentCurve;
-
-	private Vector3 lastTouchPos, touchPos;
 	private boolean redraw;
 
-	private int viewportWidth, viewportHeight;
+	private Curve currentCurve;
+	private Vector3 lastTouchPos, touchPos;
 
+	boolean ctrlIsBeingPressed = false;
+
+	public ArrayList<Peer> peers;
+	public int listenerPort;
 	public Forwarder forwarder;
 
 	public CanvasScreen(final CloudCanvas game) {
@@ -63,10 +66,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 		drawing = new ArrayList<Curve>();
 		drawingLock = new Object();
-		currentCurve = new Curve();
-
-		touchPos = new Vector3();
 		redraw = false;
+
+		currentCurve = new Curve();
+		touchPos = new Vector3();
 
 		camera = new OrthographicCamera();
 		positionCamera();
@@ -74,7 +77,16 @@ public class CanvasScreen implements Screen, InputProcessor {
 		initPeerNetwork();
 	}
 
+	private void positionCamera() {
+		camera.setToOrtho(false, viewportWidth, viewportHeight);
+		camera.position.set(texture.getWidth() / 2, texture.getHeight() / 2, 0);
+	}
+
 	private void initPeerNetwork() {
+		peers = new ArrayList<Peer>();
+
+		listenerPort = 8008;
+
 		forwarder = new Forwarder(this);
 
 		new Thread(new NewPeerListener(this)).start();
@@ -119,11 +131,6 @@ public class CanvasScreen implements Screen, InputProcessor {
 				paramVal);
 
 		Utils.log(ret);
-	}
-
-	private void positionCamera() {
-		camera.setToOrtho(false, viewportWidth, viewportHeight);
-		camera.position.set(texture.getWidth() / 2, texture.getHeight() / 2, 0);
 	}
 
 	@Override
@@ -200,7 +207,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 	}
 
 	private void closeSockets() {
-		for (Peer peer : game.peers) {
+		for (Peer peer : peers) {
 			if (peer.socketIsSet()) {
 				try {
 					peer.getSocket().close();
@@ -210,8 +217,6 @@ public class CanvasScreen implements Screen, InputProcessor {
 			}
 		}
 	}
-
-	boolean ctrlIsBeingPressed = false;
 
 	@Override
 	public boolean keyDown(int keycode) {
@@ -268,19 +273,19 @@ public class CanvasScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		temp(screenX, screenY);
+		updateCurrentCurve(screenX, screenY);
 
 		return true;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		temp(screenX, screenY);
+		updateCurrentCurve(screenX, screenY);
 
 		return true;
 	}
 
-	private void temp(int screenX, int screenY) {
+	private void updateCurrentCurve(int screenX, int screenY) {
 		// saving previous touch position
 		if (lastTouchPos != null)
 			lastTouchPos.set(touchPos);
@@ -309,7 +314,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		drawing.add(currentCurve);
 
-		for (Peer peer : game.peers) {
+		for (Peer peer : peers) {
 			Utils.log("Sending CURVE to " + peer.getIP());
 
 			forwarder.sendCURVE(currentCurve, peer);

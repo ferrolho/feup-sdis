@@ -33,7 +33,7 @@ public class Command implements Serializable {
 		this.peersIP = peersIP;
 	}
 
-	public Command(ArrayList<Curve> drawing, int dummy) {
+	public Command(ArrayList<Curve> drawing, int dummyNo) {
 		this.type = CommandType.DRAWING;
 
 		addIP();

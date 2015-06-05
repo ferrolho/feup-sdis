@@ -11,10 +11,10 @@ import commands.CommandType;
 
 public class Forwarder {
 
-	private final CanvasScreen canvasScreen;
+	private final CanvasScreen canvas;
 
-	public Forwarder(CanvasScreen canvasScreen) {
-		this.canvasScreen = canvasScreen;
+	public Forwarder(CanvasScreen canvas) {
+		this.canvas = canvas;
 	}
 
 	public void sendJOIN(String ip) throws IOException {
@@ -24,26 +24,25 @@ public class Forwarder {
 		host.oos.writeObject(new Command(CommandType.JOIN));
 		Utils.log("Sent JOIN");
 
-		canvasScreen.game.peers.add(host);
+		canvas.peers.add(host);
 		Utils.log("Added host to peers array");
-		Utils.log("Current peers array: " + canvasScreen.game.peers);
+		Utils.log("Current peers array: " + canvas.peers);
 
 		Utils.log("Creating PeerListener for the peer we just sent the JOIN to.");
-		new Thread(new PeerListener(canvasScreen, host)).start();
+		new Thread(new PeerListener(canvas, host)).start();
 	}
 
 	public void sendGET_PEERS() throws IOException {
-		Peer host = canvasScreen.game.peers.get(0);
+		Peer host = canvas.peers.get(0);
 
 		host.oos.writeObject(new Command(CommandType.GET_PEERS));
 		Utils.log("Sent GET_PEERS");
 	}
 
 	public void sendPULL_DRAWING() throws IOException {
-		int randomPeerIndex = Utils.random.nextInt(canvasScreen.game.peers
-				.size());
+		int randomPeerIndex = Utils.random.nextInt(canvas.peers.size());
 
-		Peer randomPeer = canvasScreen.game.peers.get(randomPeerIndex);
+		Peer randomPeer = canvas.peers.get(randomPeerIndex);
 
 		randomPeer.oos.writeObject(new Command(CommandType.PULL_DRAWING));
 		Utils.log("Sent PULL_DRAWING");
@@ -51,7 +50,7 @@ public class Forwarder {
 
 	public void sendDRAWING(ArrayList<Curve> drawing, Peer peer)
 			throws IOException {
-		peer.oos.writeObject(new Command(canvasScreen.drawing, 1));
+		peer.oos.writeObject(new Command(canvas.drawing, 1));
 	}
 
 	public void sendCURVE(Curve currentCurve, Peer peer) {

@@ -8,12 +8,12 @@ import utils.Utils;
 
 public class NewPeerListener implements Runnable {
 
-	private final CanvasScreen canvasScreen;
+	private final CanvasScreen canvas;
 
 	private ServerSocket serverSocket;
 
-	public NewPeerListener(final CanvasScreen canvasScreen) {
-		this.canvasScreen = canvasScreen;
+	public NewPeerListener(final CanvasScreen canvas) {
+		this.canvas = canvas;
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class NewPeerListener implements Runnable {
 
 	private synchronized void listen() throws IOException {
 		try {
-			serverSocket = new ServerSocket(canvasScreen.game.listenerPort);
+			serverSocket = new ServerSocket(canvas.listenerPort);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("Listener.listen");
@@ -35,8 +35,7 @@ public class NewPeerListener implements Runnable {
 
 		boolean done = false;
 		while (!done) {
-			new Thread(new PeerListener(canvasScreen, serverSocket.accept()))
-					.start();
+			new Thread(new PeerListener(canvas, serverSocket.accept())).start();
 			Utils.log("serverSocket.accept()");
 		}
 
