@@ -49,16 +49,12 @@ public class PeerListener implements Runnable {
 
 			// process command according to its type
 			switch (command.getType()) {
-			case CURVE:
-				handleCurve(command);
+			case JOIN:
+				handleJoin(command);
 				break;
 
 			case GET_PEERS:
 				handleGetPeers();
-				break;
-
-			case JOIN:
-				handleJoin(command);
 				break;
 
 			case PEERS:
@@ -69,6 +65,10 @@ public class PeerListener implements Runnable {
 				handlePullDrawing(command);
 				break;
 
+			case CURVE:
+				handleCurve(command);
+				break;
+
 			default:
 				break;
 			}
@@ -76,6 +76,43 @@ public class PeerListener implements Runnable {
 			e.printStackTrace();
 			System.err.println("Handler.handle");
 		}
+	}
+
+	private void handleJoin(Command command) {
+		Utils.log("Received JOIN");
+
+		// read peer received with the command
+		// note: this peer does not have a socket, ois, and oos set yet
+		Peer peer = command.getPeer();
+
+		peer.setNetworkData(socket, ois, oos);
+
+		canvasScreen.game.peers.add(peer);
+
+		Utils.log("Peer " + peer + " added");
+	}
+
+	private void handleGetPeers() throws IOException {
+		// copy current peers to new array
+		ArrayList<Peer> peers = new ArrayList<Peer>(canvasScreen.game.peers);
+
+		// send peers array
+		oos.writeObject(new Command(peers));
+
+		Utils.log("Peers sent to " + socket.getInetAddress().getHostAddress());
+	}
+
+	private void handlePeers(Command command) {
+		Utils.log("Peers received: " + command.getPeers());
+
+		// save the received array of peers
+		canvasScreen.game.peers.addAll(command.getPeers());
+
+		Utils.log("Resultant peers array: " + canvasScreen.game.peers);
+	}
+
+	private void handlePullDrawing(Command command) {
+		canvasScreen.drawing = command.getDrawing();
 	}
 
 	private void handleCurve(Command command) {
@@ -98,35 +135,6 @@ public class PeerListener implements Runnable {
 		}
 
 		canvasScreen.scheduleRedraw();
-	}
-
-	private void handleGetPeers() throws IOException {
-		// copy current peers to new array
-		ArrayList<PeerID> peers = new ArrayList<PeerID>(canvasScreen.game.peers);
-
-		// add this peer to the peers array to be sent
-		peers.add(new PeerID(Utils.getIPv4(), canvasScreen.game.listenerPort));
-
-		// send peers array
-		oos.writeObject(new Command(peers));
-
-		Utils.log("Peers sent to " + socket.getInetAddress().getHostAddress());
-	}
-
-	private void handleJoin(Command command) {
-		PeerID peerID = command.getPeer();
-		canvasScreen.game.peers.add(peerID);
-	}
-
-	private void handlePeers(Command command) {
-		// save the received array of peers
-		canvasScreen.game.peers = command.getPeers();
-
-		Utils.log("Peers received: " + canvasScreen.game.peers);
-	}
-
-	private void handlePullDrawing(Command command) {
-		canvasScreen.drawing = command.getDrawing();
 	}
 
 }

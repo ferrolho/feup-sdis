@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import peer.PeerID;
+import peer.Peer;
 import utils.Curve;
 import utils.Utils;
 
@@ -17,8 +17,8 @@ public class Command implements Serializable {
 	private String originIP;
 
 	private Curve curve;
-	private PeerID peerID;
-	private ArrayList<PeerID> peers;
+	private Peer peer;
+	private ArrayList<Peer> peers;
 	public ArrayList<Curve> drawing;
 
 	public Command(CommandType type) {
@@ -27,18 +27,28 @@ public class Command implements Serializable {
 		addIP();
 	}
 
-	public Command(Curve curve) {
-		this.type = CommandType.CURVE;
-		this.curve = curve;
+	public Command(Peer peer) {
+		this.type = CommandType.JOIN;
 
 		addIP();
+
+		this.peer = peer;
 	}
 
-	public Command(ArrayList<PeerID> peers) {
+	public Command(ArrayList<Peer> peers) {
 		this.type = CommandType.PEERS;
-		this.peers = peers;
 
 		addIP();
+
+		this.peers = peers;
+	}
+
+	public Command(Curve curve) {
+		this.type = CommandType.CURVE;
+
+		addIP();
+
+		this.curve = curve;
 	}
 
 	private void addIP() {
@@ -61,11 +71,11 @@ public class Command implements Serializable {
 		return curve;
 	}
 
-	public PeerID getPeer() {
-		return peerID;
+	public Peer getPeer() {
+		return peer;
 	}
 
-	public ArrayList<PeerID> getPeers() {
+	public ArrayList<Peer> getPeers() {
 		return peers;
 	}
 

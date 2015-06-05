@@ -1,16 +1,13 @@
 package screens;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import launcher.CloudCanvas;
+import peer.Forwarder;
 import peer.NewPeerListener;
-import peer.PeerID;
+import peer.Peer;
 import utils.Curve;
 import utils.HTTPRequest;
 import utils.Utils;
@@ -26,9 +23,6 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-
-import commands.Command;
-import commands.CommandType;
 
 public class CanvasScreen implements Screen, InputProcessor {
 
@@ -49,6 +43,8 @@ public class CanvasScreen implements Screen, InputProcessor {
 	private boolean redraw;
 
 	private int viewportWidth, viewportHeight;
+
+	public Forwarder forwarder;
 
 	public CanvasScreen(final CloudCanvas game) {
 		this.game = game;
@@ -77,8 +73,11 @@ public class CanvasScreen implements Screen, InputProcessor {
 	}
 
 	private void initPeerNetwork() {
+		forwarder = new Forwarder(this);
+
 		new Thread(new NewPeerListener(this)).start();
-		
+
+		// access server information
 		try {
 			HTTPRequest request = new HTTPRequest("/canvas/getRoomList");
 			String responseStr = request.GET(Utils.UTF_8);
@@ -94,7 +93,8 @@ public class CanvasScreen implements Screen, InputProcessor {
 				String ip = rooms[0].split(",")[1];
 				Utils.log("Connecting to IP -" + ip + "-");
 
-				joinRoom(ip);
+				forwarder.sendJOIN(ip);
+				forwarder.sendGET_PEERS();
 			}
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -116,36 +116,6 @@ public class CanvasScreen implements Screen, InputProcessor {
 				paramVal);
 
 		Utils.log(ret);
-	}
-
-	private void joinRoom(String ip) throws UnknownHostException, IOException {
-		Socket socket = new Socket(ip, 8008);
-
-		ObjectOutputStream oos = new ObjectOutputStream(
-				socket.getOutputStream());
-
-		// TODO change to JOIN
-		oos.writeObject(new Command(CommandType.GET_PEERS));
-		oos.flush();
-		
-		Utils.log("GET_PEERS sent");
-
-		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-
-		try {
-			Command command = (Command) ois.readObject();
-			Utils.log("TEST: " + command.getType());
-
-			game.peers = command.getPeers();
-			Utils.log("22Peers received: " + game.peers);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		oos.close();
-		ois.close();
-
-		socket.close();
 	}
 
 	private void positionCamera() {
@@ -229,7 +199,7 @@ public class CanvasScreen implements Screen, InputProcessor {
 	}
 
 	private void closeSockets() {
-		for (PeerID peer : game.peers) {
+		for (Peer peer : game.peers) {
 			if (peer.socketIsSet()) {
 				try {
 					peer.getSocket().close();
@@ -338,27 +308,10 @@ public class CanvasScreen implements Screen, InputProcessor {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		drawing.add(currentCurve);
 
-		for (PeerID peerID : game.peers) {
-			System.out.println(peerID.getIP().getHostAddress());
-			try {
-				// open socket
-				Socket socket = new Socket(peerID.getIP(), peerID.getPort());
+		for (Peer peer : game.peers) {
+			Utils.log("Sending CURVE to" + peer.getIP());
 
-				// open streams
-				ObjectOutputStream oos = new ObjectOutputStream(
-						socket.getOutputStream());
-
-				// send curve
-				oos.writeObject(new Command(currentCurve));
-
-				// close stream
-				oos.close();
-
-				// close socket
-				socket.close();
-			} catch (IOException e) {
-				System.out.println("CanvasScreen.touchUp");
-			}
+			forwarder.sendCURVE(currentCurve, peer);
 		}
 
 		currentCurve = new Curve();
