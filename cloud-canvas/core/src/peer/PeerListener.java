@@ -20,17 +20,26 @@ public class PeerListener implements Runnable {
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
-	public PeerListener(CanvasScreen canvasScreen, Socket socket) {
+	public PeerListener(CanvasScreen canvasScreen, Socket socket)
+			throws IOException {
 		this.canvasScreen = canvasScreen;
+
 		this.socket = socket;
+		ois = new ObjectInputStream(socket.getInputStream());
+		oos = new ObjectOutputStream(socket.getOutputStream());
+	}
+
+	public PeerListener(CanvasScreen canvasScreen, Peer host) {
+		this.canvasScreen = canvasScreen;
+
+		this.socket = host.getSocket();
+		ois = host.ois;
+		oos = host.oos;
 	}
 
 	@Override
 	public void run() {
 		try {
-			ois = new ObjectInputStream(socket.getInputStream());
-			oos = new ObjectOutputStream(socket.getOutputStream());
-
 			boolean done = false;
 			while (!done)
 				listen();
