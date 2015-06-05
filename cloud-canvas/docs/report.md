@@ -2,17 +2,17 @@
 ## Segundo projeto - Relatório ##
 
 ##Índice##
-# Table of Contents
-1. [Introdução](#intro)
-2. [Arquitetura](#arquitetura)
-  1. [Servidor HTTP](#serv)
-  2. [TCP p2p](#tcpp2p)
-  3. [Comunicação entre *peers*](#compeers)
-3. [Implementação](#imp)
-4. [Informações relevantes](#info)
-2. [Conclusão](#conc)
 
-## intro
+1. Introdução
+2. Arquitetura
+  1. Servidor HTTP
+  2. TCP p2p
+  3. Comunicação entre *peers*
+3. Implementação
+4. Informações relevantes
+2. Conclusão
+
+
 ##Introdução##
 
 A aplicação desenvolvida procura oferecer aos seus utilizadores uma aplicação de desenho colaborativo para multi-plataformas 
@@ -27,9 +27,9 @@ ao mesmo tempo.
 Este relatório abrangirá a arquitetura da nossa aplicação, bem como as nossas decisões de implementação, informações que achamos
 relevantes transmitir e conclusão.
 
-## arquitetura
+
 ##Arquitetura##
-## serv
+
 ####Servidor HTTP####
 *IMAGEM ppt que o ferrlho usou para se lembra do que estava a acontecer*
 
@@ -53,7 +53,7 @@ ligações TCP em que os *peers* se encontram todos ligados uns aos outros.
 
 Cada *peer* contém um server socket por onde aceita conexões novas e um socket por cada *peer* a que se encontra conectado.
 
-## compeers
+
 ####Comunicação entre *peers*####
 A comunicação entre *peers* é feita pelo envio de objectos que contêm um dos 6 tipos:
 - **JOIN:** A mensagem JOIN é enviada quando um *peer* se junta à sala de forma a avisar todos os *peers* que ele se juntou;
@@ -72,13 +72,13 @@ Os sockets que establecem a ligação entre *peers* são criados quando o server
 uma mensagem JOIN, e a partir daí a comunicação entre esses 2 *peers* é feita exclusivamente por essa conexão
 Os *peers* recebem notificações de que os outros *peers* se retiram pela quebra no socket que os liga.
 
-## imp
+
 ##Implementação##
 
-## info
+
 ##Informações relevantes##
 
-## conc
+
 ##Conclusão##
 
 
