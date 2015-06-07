@@ -95,33 +95,37 @@ Mensagem enviada sempre que um *peer* desenha uma curva nova, para todos os seus
 
 ---
 
-O protocolo da conexão entre *peers* corresponde ao envio de uma mensagem JOIN para o único peer que o *peer* conhece ao 
-entrar na sala seguido imediatamente de um GET_PEERS após o qual aguarda a resposta. Depois de o *peer* atualizar a lista de 
-*peers*, envia uma mensagem JOIN a cada um, seguido finalmente de um PULL_DRAWING a partir do qual começa a enviar mensagens 
-CURVE sempre que desenha da sala.
+O protocolo da conexão entre *peers* corresponde ao envio de uma mensagem **JOIN** para o único *peer* conhecido ao entrar na sala.  
+Imediatamente depois, é enviado um **GET_PEERS** para o mesmo *peer* utilizado ao enviar a mensagem **JOIN**.  
+Depois do *peer* atualizar a sua lista de *peers*, envia uma mensagem **JOIN** a cada um, seguido finalmente de um **PULL_DRAWING** a partir do qual começa a enviar mensagens **CURVE** sempre que desenha na sala.
 
-Os sockets que establecem a ligação entre *peers* são criados quando o server socket de um *peer* recebe uma conexão nova com 
-uma mensagem JOIN, e a partir daí a comunicação entre esses 2 *peers* é feita exclusivamente por essa conexão
-Os *peers* recebem notificações de que os outros *peers* se retiram pela quebra no socket que os liga.
+Os sockets que establecem a ligação entre *peers* são criados quando o *server socket* de um *peer* recebe uma conexão nova com uma mensagem **JOIN**, e a partir daí a comunicação entre esses dois *peers* é feita exclusivamente por essa conexão.  
+Os *peers* recebem notificações quando os outros *peers* se retiram pela quebra no socket que os liga.
 
 
 ## Implementação
 
-O servidor http foi implementado com apoio a classe de java do sun HTTPServer e HTTPHandler.Este responde aos varios pedidos feitos atraves de varias instancias da thread Handler.
+O servidor HTTP foi implementado com apoio à classes de Java do Sun: **HTTPServer** e **HTTPHandler**. Este responde aos vários pedidos feitos através de várias instâncias da thread **Handler**.
 
-O implementação TCP peer-to-peer é feita tendo um ServerSocket que aceita as novas conecções e um socket qe se guarda de pois do accept() do ServerSocket
+A implementação TCP *peer-to-peer* é feita tendo um **ServerSocket** que aceita as novas conexões, e um **Socket** que se guarda depois do *accept()* do **ServerSocket**.
 
 
 ## Informações relevantes
 
-Foram implementadas escabilidade e consistencia na nossa arquitectura de forma a o desenho na sala ser sempre igual para todos os peer sejam qual for o numero do mesmo
-A consistencia é garantida por um timestamp que é recolhido do servidor HTTP
+A nossa aplicação é **escalável** e **consistente**.
+
+A primeira característica é consequência da boa arquitetura implementada ao longo do desenvolvimento do aplicação.  
+A segunda característica é possível com recurso à ordenação das curvas no desenho, com base no *timestamp* associado a cada curva.  
+Como cada dispositivo que corre a aplicação pode ter um relógio atrasado ou adiantado, o *timestamp* de cada curva é obtido com um pedido HTTP ao servidor, que responde com o seu próprio *timestamp*. Desta forma, mesmo que o relógio do servidor esteja incorrecto não há problema, pois todas as curvas estão unificadas com o tempo marcado por esse relógio.
 
 
 ## Conclusão
-Compreendemos melhor a necessidade do estudo e cuidado na escolha da implementação da arquitectura e dos protocolos, e achamos que conseguimos um bom trabalho neste aspecto pelo que conseguimos um trabalho rapido e eficaz.
-Os membros do grupo trabalharam em conjunto tanto no planeamento como na implementação, e dividimos o nosso esforço igualmente em 25% cada
+
+Compreendemos melhor a necessidade do estudo e cuidado na escolha da implementação da arquitectura e dos protocolos, e achamos que conseguimos um bom trabalho neste aspecto, pois conseguimos uma aplicação rápida e eficaz.
+
+Os membros do grupo trabalharam em conjunto, tanto no planeamento como na implementação, e dividimos o nosso esforço igualmente em 25% por cada um.
 
 #### Melhoramentos
+
 - Alargar para uma aplicação que não se restringa a uma lan, utilizando hole-poking para realizar ligações TCP peer-to-peer*;
 - Deixar o utilizador escolher as salas e criar as salas que quiser pois o servidor já está a permitir isso;
