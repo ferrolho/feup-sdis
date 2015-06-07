@@ -35,16 +35,16 @@ Este relatório abrangirá a arquitetura da nossa aplicação, bem como as nossa
 
 O servidor recebe e responde correctamente aos seguintes HTTP requests:
 
-- **ip/canvas/getRoomList** - Pedido GET que devolve a lista de salas existentes, assim como o IP de alguém que se encontra de momento na sala;
-- **ip/canvas/joinRoom** - Pedido POST com a query: "roomName=<nome>", que incrementa o número de utilizadores presentes na sala;
-- **ip/canvas/leaveRoom** - Pedido POST com a query "roomName=<nome>", que decrementa o número de utilizadores presente na sala, e no caso de ser 0 a elimina;
-- **ip/canvas/CreateRoom** - Pedido POST com a query "userIp=<ip>", que cria uma sala com o nome default "Sala" com população de 1 e com o IP do utilizador que a criou para que outros se possam juntar.
+- **ip/canvas/getRoomList** - Pedido GET que devolve a lista de salas existentes, assim como o IP de alguém que se encontra de momento na sala
+- **ip/canvas/joinRoom** - Pedido POST com a query: "roomName=<nome>", que incrementa o número de utilizadores presentes na sala
+- **ip/canvas/leaveRoom** - Pedido POST com a query "roomName=<nome>", que decrementa o número de utilizadores presente na sala, e no caso de ser 0 a elimina
+- **ip/canvas/CreateRoom** - Pedido POST com a query "userIp=<ip>", que cria uma sala com o nome default "Sala" com população de 1 e com o IP do utilizador que a criou para que outros se possam juntar
 
 
 O servidor responde adequadamente com os códigos de resposta HTTP: 
 
-- **200** em caso de sucesso;
-- **400** em caso de erro de syntax ou de query;
+- **200** em caso de sucesso
+- **400** em caso de erro de syntax ou de query
 - **404** quando se acede a qualquer ficheiro em `ip/canvas/...` que não seja válido
 
 O servidor corre numa **VPS** fornecida pela DigitalOcean. Por essa razão, o IP:porta utilizado nos HTTPRequest enviados pela aplicação é fixo (*hardcoded*), e corresponde ao dessa mesma VPS.
@@ -85,11 +85,11 @@ Um *peer* que se junte à sala e tenha acabado de receber os *peers* presentes n
 
 ##### DRAWING
 
-Esta é a mensagem de resposta à mensagem **PULL_DRAWING**, e contém o desenho atual da sala;
+Esta é a mensagem de resposta à mensagem **PULL_DRAWING**, e contém o desenho atual da sala.
 
 ##### CURVE
 
-Mensagem enviada sempre que um *peer* desenha uma curva nova, para todos os seus *peers*. Esta é a forma de manter a sala toda com o mesmo desenho ao longo do tempo;
+Mensagem enviada sempre que um *peer* desenha uma curva nova, para todos os seus *peers*. Esta é a forma de manter a sala toda com o mesmo desenho ao longo do tempo.
 
 ---
 
@@ -131,4 +131,4 @@ Os membros do grupo trabalharam em conjunto, tanto no planeamento como na implem
 De seguida encontram-se alguns melhoramentos que poderiam ter sido implementados com mais algum tempo.
 
 - Alargar a aplicação para uma que não se restrinja a uma lan, utilizando *hole-poking* para realizar ligações TCP *peer-to-peer*;
-- Deixar o utilizador escolher as salas, bem como criar as salas que quiser, pois o servidor já está preparado e  permite isso;
+- Deixar o utilizador escolher as salas, bem como criar as salas que quiser, pois o servidor já está preparado e  permite isso.
