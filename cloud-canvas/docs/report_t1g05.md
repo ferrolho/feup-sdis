@@ -33,7 +33,7 @@ Este relatório abrangirá a arquitetura da nossa aplicação, bem como as nossa
 
 #### Servidor HTTP
 
-*IMAGEM ppt que o ferrlho usou para se lembra do que estava a acontecer*
+![image](report-res/network-example.gif)
 
 O servidor recebe e responde correctamente aos seguintes HTTP requests:
 
