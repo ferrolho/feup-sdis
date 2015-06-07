@@ -37,15 +37,17 @@ Este relatório abrangirá a arquitetura da nossa aplicação, bem como as nossa
 
 O servidor recebe e responde correctamente aos seguintes HTTP requests:
 
-- *ip/canvas/getRoomList* - Pedido GET que devolve a lista de salas existentes assim como o Ip de alguém que se encontra de momento na sala;
-- *ip/canvas/joinRoom* - Pedido POST com a query : “roomName=<nome>” , que incrementa o número de utilizadores presentes na sala;
-- *ip/canvas/leaveRoom* - Pedido POST com a query “roomName=<nome>”, que decrementa o número de utilizadores presente na sala, e no caso de ser 0 a elimina;
-- *ip/canvas/CreateRoom*  - Pedido POST com a query “userIp=<ip>”, que cria uma sala com o nome default “Sala” com população de 1 e com o ip do utilizador que a criou para que outros de possam juntar;
+- **ip/canvas/getRoomList** - Pedido GET que devolve a lista de salas existentes, assim como o IP de alguém que se encontra de momento na sala;
+- **ip/canvas/joinRoom** - Pedido POST com a query: "roomName=<nome>", que incrementa o número de utilizadores presentes na sala;
+- **ip/canvas/leaveRoom** - Pedido POST com a query "roomName=<nome>", que decrementa o número de utilizadores presente na sala, e no caso de ser 0 a elimina;
+- **ip/canvas/CreateRoom** - Pedido POST com a query "userIp=<ip>", que cria uma sala com o nome default "Sala" com população de 1 e com o IP do utilizador que a criou para que outros se possam juntar.
+
 
 O servidor responde adequadamente com os códigos de resposta HTTP: 
-- 200 em caso de sucesso;
-- 400 em caso de erro de syntax ou de query;
-- 404 quando acedida qualquer file ip/canvas/… que não seja valido
+
+- **200** em caso de sucesso;
+- **400** em caso de erro de syntax ou de query;
+- **404** quando se acede a qualquer ficheiro em `ip/canvas/...` que não seja valido
 
 O servidor corre numa VPS criada com host pela DigitalOcean, pelo que o seu ip nos HTTPRequest enviados pela aplicação está afixado para esse ip/porta/protocolo;
 
