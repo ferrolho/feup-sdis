@@ -33,9 +33,6 @@ Este relatório abrangirá a arquitetura da nossa aplicação, bem como as nossa
 
 #### Servidor HTTP
 
-![image](report-res/network-example.gif)
-###### **Nota -** Caso não consiga visualizar a animação acima, visite o link: http://i.imgur.com/Cbe243P.gif
-
 O servidor recebe e responde correctamente aos seguintes HTTP requests:
 
 - **ip/canvas/getRoomList** - Pedido GET que devolve a lista de salas existentes, assim como o IP de alguém que se encontra de momento na sala;
@@ -95,6 +92,9 @@ Esta é a mensagem de resposta à mensagem **PULL_DRAWING**, e contém o desenho
 Mensagem enviada sempre que um *peer* desenha uma curva nova, para todos os seus *peers*. Esta é a forma de manter a sala toda com o mesmo desenho ao longo do tempo;
 
 ---
+
+![image](report-res/network-example.gif)
+**Nota -** Caso não consiga visualizar a animação acima, visite o link: http://i.imgur.com/Cbe243P.gif
 
 O protocolo da conexão entre *peers* corresponde ao envio de uma mensagem **JOIN** para o único *peer* conhecido ao entrar na sala.  
 Imediatamente depois, é enviado um **GET_PEERS** para o mesmo *peer* utilizado ao enviar a mensagem **JOIN**.  
