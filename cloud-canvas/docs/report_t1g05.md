@@ -126,7 +126,9 @@ Compreendemos melhor a necessidade do estudo e cuidado na escolha da implementa�
 
 Os membros do grupo trabalharam em conjunto, tanto no planeamento como na implementação, e dividimos o nosso esforço igualmente em 25% por cada um.
 
-#### Melhoramentos
+### Melhoramentos
 
-- Alargar para uma aplicação que não se restringa a uma lan, utilizando hole-poking para realizar ligações TCP peer-to-peer*;
-- Deixar o utilizador escolher as salas e criar as salas que quiser pois o servidor já está a permitir isso;
+De seguida encontram-se alguns melhoramentos que poderiam ter sido implementados com mais algum tempo.
+
+- Alargar a aplicação para uma que não se restrinja a uma lan, utilizando *hole-poking* para realizar ligações TCP *peer-to-peer*;
+- Deixar o utilizador escolher as salas, bem como criar as salas que quiser, pois o servidor já está preparado e  permite isso;
