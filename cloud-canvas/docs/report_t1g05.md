@@ -34,6 +34,7 @@ Este relatório abrangirá a arquitetura da nossa aplicação, bem como as nossa
 #### Servidor HTTP
 
 ![image](report-res/network-example.gif)
+###### **Nota -** Caso não consiga visualizar a animação acima, visite o link: http://i.imgur.com/Cbe243P.gif
 
 O servidor recebe e responde correctamente aos seguintes HTTP requests:
 
