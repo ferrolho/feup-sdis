@@ -20,7 +20,7 @@
 A aplicação desenvolvida procura oferecer aos seus utilizadores uma aplicação de desenho colaborativo para multi-plataformas (PC/MAC e Android).
 Fez-se uso de prótocolos TCP *peer-to-peer* e contém um servidor REST que trata de ligar os utilizadores a um peer da sala a que se desejam juntar. É possível para os utilizadores criarem salas de desenho e juntarem-se a outras. Quando alguém se junta a uma sala, é apresentado o ecrã dessa mesma sala, que consiste numa tela. Cada sala é única (o que é desenhado na tela de uma sala não é desenhado nas outras) e permite que os utilizadores desenhem da forma que quiserem ao mesmo tempo. 
 
-*IMAGEM ui*
+![image](report-res/ui.png)
 
 Este relatório abrangirá a arquitetura da nossa aplicação, bem como as nossas decisões de implementação. Informações que achamos relevantes transmitir, e finalmente uma conclusão.
 
